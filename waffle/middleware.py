@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.utils.encoding import smart_str
 
 
 class WaffleMiddleware(object):
@@ -8,6 +9,7 @@ class WaffleMiddleware(object):
             max_age = getattr(settings, 'WAFFLE_MAX_AGE', 2592000)  # 1 month
             format = getattr(settings, 'WAFFLE_COOKIE', 'dwf_%s')
             for k in request.waffles:
-                response.set_cookie(format % k, value=request.waffles[k],
+                name = smart_str(format % k)
+                response.set_cookie(name, value=request.waffles[k],
                                     max_age=max_age, secure=secure)
         return response

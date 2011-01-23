@@ -89,6 +89,7 @@ Django Templates
 
 To use a flag in vanilla Django templates, you can use the ``waffle`` tag::
 
+    {% load waffle_tags %}
     {% waffle flag_name %}
       Content if flag is active
     {% endwaffle %}

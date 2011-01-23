@@ -1,7 +1,7 @@
 from jingo import register
 import jinja2
 
-from waffles import is_active
+from waffle import is_active
 
 
 @register.function

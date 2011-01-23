@@ -8,13 +8,13 @@ from waffle import is_active
 
 def waffle(flag_name):
     def decorator(view):
-        if flag_name.startswith('!'):
-            active = is_active(request, flag_name[1:])
-        else:
-            active = is_active(request, flag_name)
-
         @wraps(view, assigned=available_attrs(view))
         def _wrapped_view(request, *args, **kwargs):
+            if flag_name.startswith('!'):
+                active = is_active(request, flag_name[1:])
+            else:
+                active = is_active(request, flag_name)
+
             if not active:
                 raise Http404
             return view(request, *args, **kwargs)

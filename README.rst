@@ -79,8 +79,14 @@ To use a flag in a Jinja2 template via `Jingo
 
     {% if waffle('flag_name') %}
       Content if flag is active
+    {% endif %}
+
+You can also add an ``{% else %}`` section, of course::
+
+    {% if waffle('flag_name') %}
+      Flag is active!
     {% else %}
-      Content if flag is inactive
+      Flag is inactive!
     {% endif %}
 
 
@@ -92,6 +98,14 @@ To use a flag in vanilla Django templates, you can use the ``waffle`` tag::
     {% load waffle_tags %}
     {% waffle flag_name %}
       Content if flag is active
+    {% endwaffle %}
+
+The ``{% waffle %}`` tag also supports an ``{% else %}`` section::
+
+    {% waffle flag_name %}
+      Flag is active!
+    {% else %}
+      Flag is inactive!
     {% endwaffle %}
 
 

@@ -14,7 +14,7 @@ def is_active(request, flag_name):
 
     if getattr(settings, 'WAFFLE_OVERRIDE', False):
         if flag_name in request.GET:
-            return True
+            return request.GET[flag_name] == '1'
 
     if flag.everyone:
         return True

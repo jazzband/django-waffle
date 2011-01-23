@@ -1,0 +1,176 @@
+=============
+Django Waffle
+=============
+
+Django Waffle is (yet another) feature flipper for Django. You can define the
+conditions for which a flag should be active, and use it in a number of ways.
+
+
+Installation
+============
+
+To start using Waffle, you just need to add it to your
+``INSTALLED_APPS`` and ``MIDDLEWARE_CLASSES``::
+
+    INSTALLED_APPS = (
+        # ...
+        'waffle',
+        # ...
+    )
+
+    MIDDLEWARE_CLASSES = (
+        # ...
+        'waffle.middleware.WaffleMiddleware',
+        # ...
+    )
+
+Since Waffle will be setting cookies on response objects, you probably want it
+*below* any middleware that tweaks cookies before sending them out.
+
+
+Creating a Flag
+===============
+
+Creating and managing flags is done through the Django admin interface. Each
+feature flag is represented by a ``Flag`` object, which has several properties.
+
+Name:
+    The name of the flag. Will be used to identify the flag everywhere.
+Everyone:
+    You can flip this flag on (``Yes``) or off (``No``) for everyone,
+    overriding all other settings. Leave as ``Unknown`` to use normally.
+Percent:
+    A percentage of users for whom the flag will be active. This is maintained
+    through cookies, so clever users can get around it. Still, it's the most
+    common case.
+Superusers:
+    Is this flag always active for superusers?
+Staff:
+    Is this flag always active for staff?
+Authenticated:
+    Is this flag always active for authenticated users?
+Groups:
+    A list of group IDs for which this flag will always be active.
+Users:
+    A list of user IDs for which this flag will always be active.
+
+You can combine multiple settings here. For example, you could offer a feature
+to 12% of users *and* all superusers. When combining settings, the flag will be
+active for the user if *any* of the settings matches for them.
+
+
+Using a Flag
+============
+
+Flags can be used in templates, in views, or wrapped around entire views.
+
+If you try to use a flag that is not defined, it will *always* be **inactive**.
+
+
+Using a Flag in Templates
+-------------------------
+
+
+Jingo/Jinja2
+^^^^^^^^^^^^
+
+To use a flag in a Jinja2 template via `Jingo
+<http://github.com/jbalogh/jingo`_, you can simply do::
+
+    {% if waffle('flag_name') %}
+      Content if flag is active
+    {% else %}
+      Content if flag is inactive
+    {% endif %}
+
+
+Django Templates
+^^^^^^^^^^^^^^^^
+
+To use a flag in vanilla Django templates, you can use the ``waffle`` tag::
+
+    {% waffle flag_name %}
+      Content if flag is active
+    {% endwaffle %}
+
+
+Using a Flag in Views
+---------------------
+
+To use a flag in a view, you just need ``waffle.is_active``::
+
+    import waffle
+
+    def my_view(request):
+        if waffle.is_active(request, 'flag_name'):
+            # Behavior if flag is active.
+        else:
+            # Behavior if flag is inactive.
+
+
+Wraping a Whole View in a Flag
+------------------------------
+
+You can also wrap an entire view in a flag::
+
+    from waffle.decorators import waffle
+
+    @waffle('flag_name')
+    def my_view(request):
+        # View only available if flag is active.
+
+If the flag is *not* active for the request, the view will be a 404.
+
+
+Global Settings
+===============
+
+There are a few global settings you can define to adjust Waffle's behavior.
+
++---------------------+--------------+---------------------------------------+
+| Setting             | Default      | Description                           |
++---------------------+--------------+---------------------------------------+
+| ``WAFFLE_COOKIE``   | ``'dwf_%s'`` | The format for the cookies Waffle     |
+|                     |              | sets. Must contain ``'%s'``.          |
++---------------------+--------------+---------------------------------------+
+| ``WAFFLE_DEFAULT``  | ``False``    | By default, if a flag is undefined,   |
+|                     |              | Waffle treats it as inactive for      |
+|                     |              | everyone. Set this to ``True`` to     |
+|                     |              | treat undefined flags as active.      |
++---------------------+--------------+---------------------------------------+
+| ``WAFFLE_MAX_AGE``  | 2,529,000    | How long should Waffle cookies last?  |
+|                     |              | (Integer, in seconds.) See the        |
+|                     |              | **Cookies** section.                  |
++---------------------+--------------+---------------------------------------+
+| ``WAFFLE_OVERRIDE`` | ``False``    | Whether flags can be forced to be     |
+|                     |              | active from the query string.         |
++---------------------+--------------+---------------------------------------+
+| ``WAFFLE_SECURE``   | ``False``    | Whether to set the ``secure`` flag on |
+|                     |              | cookies.                              |
++---------------------+--------------+---------------------------------------+
+
+
+Overriding Flags
+================
+
+If you turn on the ``WAFFLE_OVERRIDE`` setting, you can guarantee a flag will
+be active for a request by putting it in the query string.
+
+For example, if I use the flag ``example`` in a view that serves the URL
+``/search``, then I can turn on the flag by adding ``?example`` or
+``?example=1`` to the query string.
+
+By default, ``WAFFLE_OVERRIDE`` is off. It may be useful for testing, automated
+testing in particular.
+
+
+Cookies
+=======
+
+When falling back to percentage of active users, Waffle will set a cookie for
+every request, setting the flag's value (on or off) for future requests.
+
+If the cookie is set, its value is used (either True or False) and it is
+re-set. Since cookies are re-set on every request (that uses the flag), you do
+not need to set ``WAFFLE_MAX_AGE`` very high. Just high enough that a typical
+returning user won't potentially flip back and forth between off and on.

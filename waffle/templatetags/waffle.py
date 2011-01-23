@@ -23,7 +23,7 @@ def waffle(parser, token):
         tag, flag_name = token.contents.split(None, 1)
     except ValueError:
         raise template.TemplateSyntaxError, \
-              "%r tag requires arguments" % token.contents.split()[0])
+              "%r tag requires arguments" % token.contents.split()[0]
 
     flag_name = flag_name.strip('\'"')
 

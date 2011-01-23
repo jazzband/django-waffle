@@ -3,7 +3,7 @@ from functools import wraps
 from django.http import Http404
 from django.utils.decorators import available_attrs
 
-from waffles import is_active
+from waffle import is_active
 
 
 def waffle(flag_name):

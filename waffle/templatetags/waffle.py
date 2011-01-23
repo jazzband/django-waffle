@@ -1,6 +1,6 @@
 from django import template
 
-from waffles import is_active
+from waffle import is_active
 
 
 register = template.Library()

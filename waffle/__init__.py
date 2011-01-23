@@ -3,7 +3,7 @@ import random
 
 from django.conf import settings
 
-from waffles.models import Flag
+from waffle.models import Flag
 
 
 def is_active(request, flag_name):

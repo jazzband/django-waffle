@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from waffles.models import Flag
+from waffle.models import Flag
 
 
 class FlagAdmin(admin.ModelAdmin):

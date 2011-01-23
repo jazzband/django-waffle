@@ -136,6 +136,13 @@ You can also wrap an entire view in a flag::
 
 If the flag is *not* active for the request, the view will be a 404.
 
+You can reverse this by putting an exclamation point at the start of the flag
+name, for example::
+
+    @waffle('!flag_name')
+    def my_view(request):
+        # View is only available if flag is INactive.
+
 
 Global Settings
 ===============

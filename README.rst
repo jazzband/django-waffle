@@ -75,7 +75,7 @@ Jingo/Jinja2
 ^^^^^^^^^^^^
 
 To use a flag in a Jinja2 template via `Jingo
-<http://github.com/jbalogh/jingo`_, you can simply do::
+<http://github.com/jbalogh/jingo>`_, you can simply do::
 
     {% if waffle('flag_name') %}
       Content if flag is active

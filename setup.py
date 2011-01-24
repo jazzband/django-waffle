@@ -7,7 +7,7 @@ setup(
     long_description=open('README.rst').read(),
     author='James Socol',
     author_email='james.socol@gmail.com',
-    url='http://github.com/jsocol/bleach',
+    url='http://github.com/jsocol/django-waffle',
     license='BSD',
     packages=['waffle'],
     include_package_data=True,

@@ -196,3 +196,10 @@ If the cookie is set, its value is used (either True or False) and it is
 re-set. Since cookies are re-set on every request (that uses the flag), you do
 not need to set ``WAFFLE_MAX_AGE`` very high. Just high enough that a typical
 returning user won't potentially flip back and forth between off and on.
+
+
+To Do
+=====
+
+* Keep a flag setting for a given user, regardless of browser/device.
+* Add a "dial-up" mode that slowly turns on the flag for all users.

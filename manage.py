@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import os
-import site
 import sys
 
 
@@ -13,7 +12,7 @@ sys.path.insert(0, os.environ['PYTHONPATH'])
 from django.core.management import execute_manager, setup_environ
 
 try:
-    import settings # Assumed to be in the same directory.
+    import settings  # Assumed to be in the same directory.
 except ImportError:
     import sys
     sys.stderr.write(

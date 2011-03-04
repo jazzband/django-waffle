@@ -18,9 +18,10 @@ def process_request(request, view):
     response = view(request)
     return WaffleMiddleware().process_response(request, response)
 
+
 class WaffleTests(TestCase):
     def test_persist_active_flag(self):
-        flag = Flag.objects.create(name='myflag', percent='0.1')
+        Flag.objects.create(name='myflag', percent='0.1')
         request = get()
 
         # Flag stays on.
@@ -31,7 +32,7 @@ class WaffleTests(TestCase):
         eq_('True', response.cookies['dwf_myflag'].value)
 
     def test_persist_inactive_flag(self):
-        flag = Flag.objects.create(name='myflag', percent='99.9')
+        Flag.objects.create(name='myflag', percent='99.9')
         request = get()
 
         # Flag stays off.
@@ -50,7 +51,7 @@ class WaffleTests(TestCase):
 
     def test_superuser(self):
         """Test the superuser switch."""
-        flag = Flag.objects.create(name='myflag', superusers=True)
+        Flag.objects.create(name='myflag', superusers=True)
         request = get()
         response = process_request(request, views.flag_in_view)
         eq_('off', response.content)
@@ -70,7 +71,7 @@ class WaffleTests(TestCase):
 
     def test_staff(self):
         """Test the staff switch."""
-        flag = Flag.objects.create(name='myflag', staff=True)
+        Flag.objects.create(name='myflag', staff=True)
         request = get()
         response = process_request(request, views.flag_in_view)
         eq_('off', response.content)
@@ -128,7 +129,7 @@ class WaffleTests(TestCase):
 
     def test_authenticated(self):
         """Test the authenticated/anonymous switch."""
-        flag = Flag.objects.create(name='myflag', authenticated=True)
+        Flag.objects.create(name='myflag', authenticated=True)
 
         request = get()
         response = process_request(request, views.flag_in_view)
@@ -143,7 +144,7 @@ class WaffleTests(TestCase):
 
     def test_everyone_on(self):
         """Test the 'everyone' switch on."""
-        flag = Flag.objects.create(name='myflag', everyone=True)
+        Flag.objects.create(name='myflag', everyone=True)
 
         request = get()
         request.COOKIES['dwf_myflag'] = 'False'
@@ -159,8 +160,8 @@ class WaffleTests(TestCase):
 
     def test_everyone_off(self):
         """Test the 'everyone' switch off."""
-        flag = Flag.objects.create(name='myflag', everyone=False,
-                                   authenticated=True)
+        Flag.objects.create(name='myflag', everyone=False,
+                            authenticated=True)
 
         request = get()
         request.COOKIES['dwf_myflag'] = 'True'
@@ -176,7 +177,7 @@ class WaffleTests(TestCase):
 
     def test_percent(self):
         """If you have no cookie, you get a cookie!"""
-        flag = Flag.objects.create(name='myflag', percent='50.0')
+        Flag.objects.create(name='myflag', percent='50.0')
         request = get()
         response = process_request(request, views.flag_in_view)
         assert 'dwf_myflag' in response.cookies

@@ -13,7 +13,7 @@ class WaffleNode(template.Node):
         self.flag_name = flag_name
 
     def __repr__(self):
-        return '<Waffle node>'
+        return '<Waffle node: %s>' % self.flag_name
 
     def __iter__(self):
         for node in self.nodelist_true:

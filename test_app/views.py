@@ -17,5 +17,5 @@ def flag_in_jingo(request):
 
 
 def flag_in_django(request):
-    return render_to_response('django.html',
-                              context_instance=RequestContext(request))
+    c = RequestContext(request, {})
+    return render_to_response('django.html', context_instance=c)

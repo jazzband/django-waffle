@@ -35,3 +35,7 @@ MIDDLEWARE_CLASSES = (
 )
 
 ROOT_URLCONF = 'test_app.urls'
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.core.context_processors.request',
+)

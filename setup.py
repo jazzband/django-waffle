@@ -11,7 +11,7 @@ setup(
     license='BSD',
     packages=['waffle', 'waffle.templatetags'],
     include_package_data=True,
-    package_data = { '': ['README.rst'] },
+    package_data={'': ['README.rst']},
     zip_safe=False,
     classifiers=[
         'Development Status :: 4 - Beta',

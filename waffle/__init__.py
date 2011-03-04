@@ -42,17 +42,17 @@ def is_active(request, flag_name):
     if flag.percent > 0:
         if not hasattr(request, 'waffles'):
             request.waffles = {}
-        request.waffles[flag_name] = False
+        request.waffles[flag_name] = [False, flag.rollout]
 
         format = getattr(settings, 'WAFFLE_COOKIE', 'dwf_%s')
         cookie = format % flag_name
         if cookie in request.COOKIES:
-            request.waffles[flag_name] = (request.COOKIES[cookie] == 'True')
-            return request.waffles[flag_name]
+            request.waffles[flag_name][0] = (request.COOKIES[cookie] == 'True')
+            return request.waffles[flag_name][0]
 
         rand = Decimal(random.randint(0, 999)) / 10
         if rand <= flag.percent:
-            request.waffles[flag_name] = True
+            request.waffles[flag_name][0] = True
             return True
 
     return False

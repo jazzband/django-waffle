@@ -22,6 +22,8 @@ class Flag(models.Model):
         'Activate this flag for these user groups.'))
     users = models.ManyToManyField(User, blank=True, help_text=(
         'Activate this flag for these users.'))
+    rollout = models.BooleanField(default=False, help_text=(
+        'Activate roll-out mode?'))
 
     def __unicode__(self):
         return self.name

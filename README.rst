@@ -53,6 +53,8 @@ Groups:
     A list of group IDs for which this flag will always be active.
 Users:
     A list of user IDs for which this flag will always be active.
+Rollout:
+    Activate Rollout mode? (See **Rollout Mode** below.)
 
 You can combine multiple settings here. For example, you could offer a feature
 to 12% of users *and* all superusers. When combining settings, the flag will be
@@ -198,8 +200,27 @@ not need to set ``WAFFLE_MAX_AGE`` very high. Just high enough that a typical
 returning user won't potentially flip back and forth between off and on.
 
 
+Rollout Mode
+============
+
+**Rollout Mode** allows you to gradually enable a feature for all users. In
+"normal" mode, a flag's value will be set in a cookie until ``WAFFLE_MAX_AGE``
+whether the flag is active or not. In Rollout Mode, an *inactive* flag will set
+a session cookie, and an *active* flag will set a longer-lived cookie.
+
+Every time a user starts a new session, they'll have a chance (determined by
+the percentage of the flag) to have the feature turned on "permanently". Once
+it's on, it should stay on, unless they clear their cookies or use a different
+browser (see **To Do**).
+
+To guarantee an even rollout, it will likely be necessary to gradually increase
+the flag's percentage as more and more users get stuck with the *active*
+cookie.
+
+Rollout Mode is enabled **per flag**.
+
+
 To Do
 =====
 
 * Keep a flag setting for a given user, regardless of browser/device.
-* Add a "dial-up" mode that slowly turns on the flag for all users.

@@ -10,6 +10,12 @@ class WaffleMiddleware(object):
             format = getattr(settings, 'WAFFLE_COOKIE', 'dwf_%s')
             for k in request.waffles:
                 name = smart_str(format % k)
-                response.set_cookie(name, value=request.waffles[k],
-                                    max_age=max_age, secure=secure)
+                active, rollout = request.waffles[k]
+                if rollout and not active:
+                    # "Inactive" is a session cookie during rollout mode.
+                    age = None
+                else:
+                    age = max_age
+                response.set_cookie(name, value=active, max_age=age,
+                                    secure=secure)
         return response

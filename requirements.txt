@@ -2,7 +2,8 @@
 nose
 mock
 fabric
-Jinja2
--e git+git://github.com/django/django.git@a85fe4dddc4b13#egg=Django
+Jinja2==2.5.5
+Django==1.2.5
+-e git+git://github.com/jbalogh/test-utils.git#egg=test-utils
 -e git+git://github.com/jbalogh/django-nose.git#egg=django-nose
 -e git+git://github.com/jbalogh/jingo.git#egg=jingo

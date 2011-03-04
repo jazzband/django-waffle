@@ -6,7 +6,7 @@ from test_utils import RequestFactory
 from waffle.middleware import WaffleMiddleware
 
 
-def test_middlware():
+def test_set_cookies():
     get = RequestFactory().get('/foo')
     get.waffles = {'foo': True, 'bar': False}
     resp = HttpResponse()

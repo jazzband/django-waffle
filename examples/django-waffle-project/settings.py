@@ -6,4 +6,15 @@ path = lambda *a: os.path.join(ROOT, *a)
 
 JINJA_CONFIG = {}
 
-TEST_RUNNER = 'test_utils.runner.RadicalTestSuiteRunner'
+TEST_RUNNER = 'django_nose.runner.NoseTestSuiteRunner'
+
+DATABASES = {
+    'default': {
+        'NAME': 'test.db',
+        'ENGINE': 'django.db.backends.sqlite3',
+    }
+}
+
+INSTALLED_APPS = (
+    'django_nose',
+)

@@ -25,4 +25,4 @@ def shell():
 
 
 def test():
-    local('nosetests -s')
+    local('django-admin.py test -s')

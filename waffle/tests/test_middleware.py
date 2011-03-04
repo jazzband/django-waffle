@@ -16,3 +16,6 @@ def test_middlware():
     resp = WaffleMiddleware().process_response(get, resp)
     assert 'dwf_foo' in resp.cookies
     assert 'dwf_bar' in resp.cookies
+
+    eq_('True', resp.cookies['dwf_foo'].value)
+    eq_('False', resp.cookies['dwf_bar'].value)

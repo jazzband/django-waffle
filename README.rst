@@ -220,6 +220,39 @@ cookie.
 Rollout Mode is enabled **per flag**.
 
 
+Waffle in JavaScript
+====================
+
+*New in 0.3*
+
+Waffle now helps you use flags directly in JavaScript. You need to add the
+``wafflejs`` view to your ``urls.py``::
+
+    from waffle.views import wafflejs
+
+    urlpatterns = patterns('',
+        # ...
+        url(r'^wafflejs$', wafflejs, name='wafflejs'),
+        # ...
+    )
+
+You can then load the Waffle JavaScript in your templates::
+
+    <script src="{% url wafflejs %}"></script>
+
+Once you've loaded the JavaScript, you can use the global ``waffle`` function.
+Just pass in a flag name. As in the Python API, if a flag is undefined, it will
+always be ``false``.
+
+::
+
+    if (waffle('some_flag')) {
+        // Flag is active.
+    } else {
+        // Flag is inactive.
+    }
+
+
 To Do
 =====
 

@@ -21,8 +21,20 @@ local = functools.partial(local, capture=False)
 
 
 def shell():
+    """Start a Django shell with the test settings."""
     local('django-admin.py shell')
 
 
 def test():
+    """Run the Waffle test suite."""
     local('django-admin.py test -s')
+
+
+def serve():
+    """Start the Django dev server."""
+    local('django-admin.py runserver')
+
+
+def syncdb():
+    """Create a database for testing in the shell or server."""
+    local('django-admin.py syncdb')

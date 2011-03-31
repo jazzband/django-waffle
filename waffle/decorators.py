@@ -6,7 +6,7 @@ from django.utils.decorators import available_attrs
 from waffle import flag_is_active
 
 
-def waffle(flag_name):
+def waffle_flag(flag_name):
     def decorator(view):
         @wraps(view, assigned=available_attrs(view))
         def _wrapped_view(request, *args, **kwargs):

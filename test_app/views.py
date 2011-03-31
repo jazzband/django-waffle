@@ -3,11 +3,11 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 
 import jingo
-from waffle import is_active
+from waffle import flag_is_active
 
 
 def flag_in_view(request):
-    if is_active(request, 'myflag'):
+    if flag_is_active(request, 'myflag'):
         return HttpResponse('on')
     return HttpResponse('off')
 

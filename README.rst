@@ -114,12 +114,12 @@ The ``{% waffle %}`` tag also supports an ``{% else %}`` section::
 Using a Flag in Views
 ---------------------
 
-To use a flag in a view, you just need ``waffle.is_active``::
+To use a flag in a view, you just need ``waffle.flag_is_active``::
 
     import waffle
 
     def my_view(request):
-        if waffle.is_active(request, 'flag_name'):
+        if waffle.flag_is_active(request, 'flag_name'):
             # Behavior if flag is active.
         else:
             # Behavior if flag is inactive.

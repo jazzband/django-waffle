@@ -6,7 +6,7 @@ from django.conf import settings
 from waffle.models import Flag
 
 
-def is_active(request, flag_name):
+def flag_is_active(request, flag_name):
     try:
         flag = Flag.objects.get(name=flag_name)
     except Flag.DoesNotExist:

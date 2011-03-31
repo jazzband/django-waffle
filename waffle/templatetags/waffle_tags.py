@@ -1,6 +1,6 @@
 from django import template
 
-from waffle import is_active
+from waffle import flag_is_active
 
 
 register = template.Library()
@@ -22,7 +22,7 @@ class WaffleNode(template.Node):
             yield node
 
     def render(self, context):
-        if is_active(context['request'], self.flag_name):
+        if flag_is_active(context['request'], self.flag_name):
             return self.nodelist_true.render(context)
         return self.nodelist_false.render(context)
 

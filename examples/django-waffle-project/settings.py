@@ -19,6 +19,7 @@ DATABASES = {
 }
 
 INSTALLED_APPS = (
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -38,5 +39,6 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'test_app.urls'
 
 TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.contrib.auth.context_processors.auth',
     'django.core.context_processors.request',
 )

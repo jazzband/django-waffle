@@ -28,8 +28,19 @@ Since Waffle will be setting cookies on response objects, you probably want it
 *below* any middleware that tweaks cookies before sending them out.
 
 
-Creating a Flag
-===============
+Flags and Switches
+==================
+
+Waffle supports two separate but ultimately similar concepts: **Flags** and
+**Switches**.
+
+Basically, a Flag is **tied to a request**, while a Switch is **not**.
+Consequently, Flags are much more complicated, while Switches are basically
+just a named boolean in the database.
+
+
+Flags
+-----
 
 Creating and managing flags is done through the Django admin interface. Each
 feature flag is represented by a ``Flag`` object, which has several properties.
@@ -61,57 +72,110 @@ to 12% of users *and* all superusers. When combining settings, the flag will be
 active for the user if *any* of the settings matches for them.
 
 
-Using a Flag
+Switches
+--------
+
+*New in 0.4!*
+
+Switches are also managed through the Django admin. Each ``Switch`` object has
+only two properties:
+
+Name:
+    The name of the switch.
+Active:
+    Is the switch active or inactive.
+
+Like Flags, Switches can be used in views, templates, or wrapped around entire
+templates. But because they don't rely on a ``request`` objects, Switches can
+also be used in crons, Celery tasks, daemons--basically anywhere you can
+access the database.
+
+
+Using Waffle
 ============
 
-Flags can be used in templates, in views, or wrapped around entire views.
+Flags and Switches can be used in templates, in views, or wrapped around
+entire views.
 
-If you try to use a flag that is not defined, it will *always* be **inactive**.
+If you try to use a flag or switch that is not defined, it will *always*
+be **inactive**.
 
 
-Using a Flag in Templates
+Using Waffle in Templates
 -------------------------
 
 
 Jingo/Jinja2
 ^^^^^^^^^^^^
 
-To use a flag in a Jinja2 template via `Jingo
+To use a Flag in a Jinja2 template via `Jingo
 <http://github.com/jbalogh/jingo>`_, you can simply do::
 
-    {% if waffle('flag_name') %}
+    {% if waffle_flag('flag_name') %}
       Content if flag is active
     {% endif %}
 
 You can also add an ``{% else %}`` section, of course::
 
-    {% if waffle('flag_name') %}
+    {% if waffle_flag('flag_name') %}
       Flag is active!
     {% else %}
       Flag is inactive!
+    {% endif %}
+
+To use a Switch in a Jinja2 template via `Jingo
+<http://github.com/jbalogh/jingo>`_, you can do::
+
+    {% if waffle_switch('switch_name') %}
+      Content if switch is active
+    {% endif %}
+
+You can also add an ``{% else %}`` section, of course::
+
+    {% if waffle_switch('switch_name') %}
+      Switch is active!
+    {% else %}
+      Switch is inactive!
     {% endif %}
 
 
 Django Templates
 ^^^^^^^^^^^^^^^^
 
-To use a flag in vanilla Django templates, you can use the ``waffle`` tag::
+To use a *flag* in vanilla Django templates, you can use the ``waffleflag``
+tag::
 
     {% load waffle_tags %}
-    {% waffle flag_name %}
+    {% waffleflag flag_name %}
       Content if flag is active
-    {% endwaffle %}
+    {% endwaffleflag %}
 
-The ``{% waffle %}`` tag also supports an ``{% else %}`` section::
+The ``{% waffleflag %}`` tag also supports an ``{% else %}`` section::
 
-    {% waffle flag_name %}
+    {% waffleflag flag_name %}
       Flag is active!
     {% else %}
       Flag is inactive!
-    {% endwaffle %}
+    {% endwaffleflag %}
+
+To use a *switch* in vanilla Django templates, you can use the
+``waffleswitch`` tag::
+
+    {% load waffle_tags %}
+    {% waffleswitch flag_name %}
+      Content if switch is active
+    {% endwaffleswitch %}
+
+The ``{% waffleswitch %}`` tag also supports an ``{% else %}`` section::
+
+    {% waffleswitch flag_name %}
+      Switch is active!
+    {% else %}
+      Switch is inactive!
+    {% endwaffleswitch %}
 
 
-Using a Flag in Views
+Using Waffle in Views
 ---------------------
 
 To use a flag in a view, you just need ``waffle.flag_is_active``::
@@ -124,24 +188,44 @@ To use a flag in a view, you just need ``waffle.flag_is_active``::
         else:
             # Behavior if flag is inactive.
 
+For switches, just use the ``switch_is_active`` method::
 
-Wraping a Whole View in a Flag
-------------------------------
+    import waffle
+
+    def myview(request):
+        if waffle.switch_is_active('myswitch'):
+            return 'switch is active'
+        return 'switch is inactive'
+
+Because it doesn't need a ``request`` object, ``switch_is_active`` can be used
+anywhere.
+
+
+Wraping a Whole View
+--------------------
 
 You can also wrap an entire view in a flag::
 
-    from waffle.decorators import waffle
+    from waffle.decorators import waffle_flag
 
-    @waffle('flag_name')
+    @waffle_flag('flag_name')
     def my_view(request):
         # View only available if flag is active.
 
-If the flag is *not* active for the request, the view will be a 404.
+...or a switch::
 
-You can reverse this by putting an exclamation point at the start of the flag
-name, for example::
+    from waffle.decorators import waffle_switch
 
-    @waffle('!flag_name')
+    @waffle_switch('switch_name')
+    def my_view(request):
+        # View only available if switch is active.
+
+If the flag or switch is *not* active for the request, the view will be a 404.
+
+You can reverse either decorator with an exclamation point at the start of the
+flag or switch name, for example::
+
+    @waffle_flag('!flag_name')
     def my_view(request):
         # View is only available if flag is INactive.
 
@@ -187,6 +271,8 @@ string, or turn it off by adding ``?example=0``.
 By default, ``WAFFLE_OVERRIDE`` is off. It may be useful for testing, automated
 testing in particular.
 
+Switches cannot be overridden at this time.
+
 
 Cookies
 =======
@@ -222,8 +308,6 @@ Rollout Mode is enabled **per flag**.
 
 Waffle in JavaScript
 ====================
-
-*New in 0.3*
 
 Waffle now helps you use flags directly in JavaScript. You need to add the
 ``wafflejs`` view to your ``urls.py``::

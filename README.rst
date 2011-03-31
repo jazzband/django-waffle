@@ -324,16 +324,22 @@ You can then load the Waffle JavaScript in your templates::
 
     <script src="{% url wafflejs %}"></script>
 
-Once you've loaded the JavaScript, you can use the global ``waffle`` function.
-Just pass in a flag name. As in the Python API, if a flag is undefined, it will
-always be ``false``.
+Once you've loaded the JavaScript, you can use the global ``waffle`` object.
+Just pass in a flag name. As in the Python API, if a flag or switch is
+undefined, it will always be ``false``.
 
 ::
 
-    if (waffle('some_flag')) {
+    if (waffle.flag('some_flag')) {
         // Flag is active.
     } else {
         // Flag is inactive.
+    }
+
+    if (waffle.switch('some_switch')) {
+        // Switch is active.
+    } else {
+        // Switch is inactive.
     }
 
 

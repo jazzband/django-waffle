@@ -1,4 +1,5 @@
 from django.contrib.auth.models import Group, User
+from django.core.cache import cache
 from django.db import models
 
 
@@ -32,6 +33,10 @@ class Flag(models.Model):
     def __unicode__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        super(Flag, self).save(*args, **kwargs)
+        cache.set('waffle:flag:{n}'.format(n=self.name), self)
+
 
 class Switch(models.Model):
     """A feature switch.
@@ -46,3 +51,7 @@ class Switch(models.Model):
 
     def __unicode__(self):
         return u'%s: %s' % (self.name, 'on' if self.active else 'off')
+
+    def save(self, *args, **kwargs):
+        super(Switch, self).save(*args, **kwargs)
+        cache.set('waffle:switch:{n}'.format(n=self.name), self)

@@ -2,15 +2,20 @@ from decimal import Decimal
 import random
 
 from django.conf import settings
+from django.core.cache import cache
 
 from waffle.models import Flag, Switch
 
 
 def flag_is_active(request, flag_name):
-    try:
-        flag = Flag.objects.get(name=flag_name)
-    except Flag.DoesNotExist:
-        return getattr(settings, 'WAFFLE_DEFAULT', False)
+    key = 'waffle:flag:{n}'.format(n=flag_name)
+    flag = cache.get(key)
+    if not flag:
+        try:
+            flag = Flag.objects.get(name=flag_name)
+            cache.set(key, flag)
+        except Flag.DoesNotExist:
+            return getattr(settings, 'WAFFLE_DEFAULT', False)
 
     if getattr(settings, 'WAFFLE_OVERRIDE', False):
         if flag_name in request.GET:
@@ -59,9 +64,13 @@ def flag_is_active(request, flag_name):
 
 
 def switch_is_active(switch_name):
-    try:
-        switch = Switch.objects.get(name=switch_name)
-    except Switch.DoesNotExist:
-        return False
+    key = 'waffle:switch:{n}'.format(n=switch_name)
+    switch = cache.get(key)
+    if not switch:
+        try:
+            switch = Switch.objects.get(name=switch_name)
+            cache.set(key, switch)
+        except Switch.DoesNotExist:
+            return False
 
     return switch.active

@@ -1,5 +1,11 @@
-{% if waffle('flag') %}
-  on
+{% if waffle_flag('flag') %}
+  flag on
 {% else %}
-  off
+  flag off
+{% endif %}
+
+{% if waffle_switch('switch') %}
+  switch on
+{% else %}
+  switch off
 {% endif %}

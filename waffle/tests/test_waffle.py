@@ -4,8 +4,9 @@ from nose.tools import eq_
 from test_utils import RequestFactory, TestCase
 
 from test_app import views
+import waffle
 from waffle.middleware import WaffleMiddleware
-from waffle.models import Flag
+from waffle.models import Flag, Switch
 
 
 def get():
@@ -181,3 +182,13 @@ class WaffleTests(TestCase):
         request = get()
         response = process_request(request, views.flag_in_view)
         assert 'dwf_myflag' in response.cookies
+
+
+class SwitchTests(TestCase):
+    def test_switch_active(self):
+        switch = Switch.objects.create(name='myswitch', active=True)
+        assert waffle.switch_is_active(switch.name)
+
+    def test_switch_inactive(self):
+        switch = Switch.objects.create(name='myswitch', active=False)
+        assert not waffle.switch_is_active(switch.name)

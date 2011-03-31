@@ -18,12 +18,14 @@ def process_request(request, view):
 
 
 class WaffleTemplateTests(TestCase):
-    def test_django_tag(self):
+    def test_django_tags(self):
         request = get()
         response = process_request(request, views.flag_in_django)
-        self.assertContains(response, 'off')
+        self.assertContains(response, 'flag off')
+        self.assertContains(response, 'switch off')
 
-    def test_jingo_tag(self):
+    def test_jingo_tags(self):
         request = get()
         response = process_request(request, views.flag_in_jingo)
-        self.assertContains(response, 'off')
+        self.assertContains(response, 'flag off')
+        self.assertContains(response, 'switch off')

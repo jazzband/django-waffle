@@ -1,6 +1,13 @@
 {% load waffle_tags %}
-{% waffle flag %}
-  on
+{% waffleflag flag %}
+  flag on
 {% else %}
-  off
-{% endwaffle %}
+  flag off
+{% endwaffleflag %}
+
+
+{% waffleswitch switch %}
+  switch on
+{% else %}
+  switch off
+{% endwaffleswitch %}

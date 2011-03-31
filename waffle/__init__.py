@@ -3,7 +3,7 @@ import random
 
 from django.conf import settings
 
-from waffle.models import Flag
+from waffle.models import Flag, Switch
 
 
 def flag_is_active(request, flag_name):
@@ -56,3 +56,12 @@ def flag_is_active(request, flag_name):
             return True
 
     return False
+
+
+def switch_is_active(switch_name):
+    try:
+        switch = Switch.objects.get(name=switch_name)
+    except Switch.DoesNotExist:
+        return False
+
+    return switch.active

@@ -3,7 +3,11 @@ from django.db import models
 
 
 class Flag(models.Model):
-    """A feature flag."""
+    """A feature flag.
+
+    Flags are active (or not) on a per-request basis.
+
+    """
     name = models.CharField(max_length=100, unique=True,
                             help_text='The human/computer readable name.')
     everyone = models.NullBooleanField(blank=True, help_text=(
@@ -27,3 +31,18 @@ class Flag(models.Model):
 
     def __unicode__(self):
         return self.name
+
+
+class Switch(models.Model):
+    """A feature switch.
+
+    Switches are active, or inactive, globally.
+
+    """
+    name = models.CharField(max_length=100, unique=True,
+                            help_text='The human/computer readable name.')
+    active = models.BooleanField(default=False, help_text=(
+        'Is this flag active?'))
+
+    def __unicode__(self):
+        return u'%s: %s' % (self.name, 'on' if self.active else 'off')

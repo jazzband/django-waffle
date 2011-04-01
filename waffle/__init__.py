@@ -8,10 +8,10 @@ from django.db.models.signals import post_save
 from waffle.models import Flag, Switch
 
 
-FLAG_CACHE_KEY = 'waffle:flag:{n}'
-FLAG_USERS_CACHE_KEY = 'waffle:flag:{n}:users'
-FLAG_GROUPS_CACHE_KEY = 'waffle:flag:{n}:groups'
-SWITCH_CACHE_KEY = 'waffle:switch:{n}'
+FLAG_CACHE_KEY = u'waffle:flag:{n}'
+FLAG_USERS_CACHE_KEY = u'waffle:flag:{n}:users'
+FLAG_GROUPS_CACHE_KEY = u'waffle:flag:{n}:groups'
+SWITCH_CACHE_KEY = u'waffle:switch:{n}'
 
 
 def flag_is_active(request, flag_name):

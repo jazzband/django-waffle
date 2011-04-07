@@ -1,5 +1,5 @@
 from nose.tools import eq_
-from test_utils import RequestFactory, TestCase
+from test_utils import TestCase
 
 from waffle.models import Flag, Switch
 

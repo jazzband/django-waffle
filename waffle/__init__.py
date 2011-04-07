@@ -125,5 +125,5 @@ def ucache_switch(**kwargs):
     switch = kwargs.get('instance')
     cache.delete(SWITCH_CACHE_KEY.format(n=switch.name))
 
-post_delete.connect(ucache_switch, sender=Switch, dispatch_uid='uncache_switch')
-
+post_delete.connect(ucache_switch, sender=Switch,
+                    dispatch_uid='uncache_switch')

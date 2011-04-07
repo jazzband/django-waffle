@@ -12,6 +12,7 @@ FLAG_CACHE_KEY = u'waffle:flag:{n}'
 FLAG_USERS_CACHE_KEY = u'waffle:flag:{n}:users'
 FLAG_GROUPS_CACHE_KEY = u'waffle:flag:{n}:groups'
 SWITCH_CACHE_KEY = u'waffle:switch:{n}'
+COOKIE_NAME = getattr(settings, 'WAFFLE_COOKIE', 'dwf_%s')
 
 
 def flag_is_active(request, flag_name):
@@ -63,8 +64,7 @@ def flag_is_active(request, flag_name):
             request.waffles = {}
         request.waffles[flag_name] = [False, flag.rollout]
 
-        format = getattr(settings, 'WAFFLE_COOKIE', 'dwf_%s')
-        cookie = format % flag_name
+        cookie = COOKIE_NAME % flag_name
         if cookie in request.COOKIES:
             request.waffles[flag_name][0] = (request.COOKIES[cookie] == 'True')
             return request.waffles[flag_name][0]

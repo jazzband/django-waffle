@@ -46,3 +46,6 @@ class Switch(models.Model):
 
     def __unicode__(self):
         return u'%s: %s' % (self.name, 'on' if self.active else 'off')
+
+    class Meta:
+        verbose_name_plural = 'Switches'

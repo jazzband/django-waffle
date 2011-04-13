@@ -9,9 +9,11 @@ from waffle.models import Flag, Switch
 
 
 FLAG_CACHE_KEY = u'waffle:flag:{n}'
+FLAGS_ALL_CACHE_KEY = u'waffle:flags:all'
 FLAG_USERS_CACHE_KEY = u'waffle:flag:{n}:users'
 FLAG_GROUPS_CACHE_KEY = u'waffle:flag:{n}:groups'
 SWITCH_CACHE_KEY = u'waffle:switch:{n}'
+SWITCHES_ALL_CACHE_KEY = u'waffle:switches:all'
 COOKIE_NAME = getattr(settings, 'WAFFLE_COOKIE', 'dwf_%s')
 
 
@@ -94,36 +96,41 @@ def cache_flag(**kwargs):
     # action is included for m2m_changed signal. Only cache on the post_*.
     if not action or action in ['post_add', 'post_remove', 'post_clear']:
         f = kwargs.get('instance')
-        cache.set(FLAG_CACHE_KEY.format(n=f.name), f)
-        cache.set(FLAG_USERS_CACHE_KEY.format(n=f.name), f.users.all())
-        cache.set(FLAG_GROUPS_CACHE_KEY.format(n=f.name), f.groups.all())
-
-post_save.connect(cache_flag, sender=Flag, dispatch_uid='cache_flag')
-m2m_changed.connect(cache_flag, sender=Flag.users.through,
-                    dispatch_uid='cache_flag_users')
-m2m_changed.connect(cache_flag, sender=Flag.groups.through,
-                    dispatch_uid='cache_flag_groups')
+        cache.add(FLAG_CACHE_KEY.format(n=f.name), f)
+        cache.add(FLAG_USERS_CACHE_KEY.format(n=f.name), f.users.all())
+        cache.add(FLAG_GROUPS_CACHE_KEY.format(n=f.name), f.groups.all())
+        cache.set(FLAGS_ALL_CACHE_KEY, None, 5)
 
 
 def uncache_flag(**kwargs):
     flag = kwargs.get('instance')
-    cache.delete_many([FLAG_CACHE_KEY.format(n=flag.name),
-                       FLAG_USERS_CACHE_KEY.format(n=flag.name),
-                       FLAG_GROUPS_CACHE_KEY.format(n=flag.name)])
+    data = {
+        FLAG_CACHE_KEY.format(n=flag.name): None,
+        FLAG_USERS_CACHE_KEY.format(n=flag.name): None,
+        FLAG_GROUPS_CACHE_KEY.format(n=flag.name): None,
+        FLAGS_ALL_CACHE_KEY: None
+    }
+    cache.set_many(data, 5)
 
+post_save.connect(uncache_flag, sender=Flag, dispatch_uid='cache_flag')
 post_delete.connect(uncache_flag, sender=Flag, dispatch_uid='uncache_flag')
+m2m_changed.connect(uncache_flag, sender=Flag.users.through,
+                    dispatch_uid='cache_flag_users')
+m2m_changed.connect(uncache_flag, sender=Flag.groups.through,
+                    dispatch_uid='cache_flag_groups')
 
 
 def cache_switch(**kwargs):
     switch = kwargs.get('instance')
     cache.set(SWITCH_CACHE_KEY.format(n=switch.name), switch)
+    cache.set(SWITCHES_ALL_CACHE_KEY, None, 5)
 
-post_save.connect(cache_switch, sender=Switch, dispatch_uid='cache_switch')
 
-
-def ucache_switch(**kwargs):
+def uncache_switch(**kwargs):
     switch = kwargs.get('instance')
-    cache.delete(SWITCH_CACHE_KEY.format(n=switch.name))
+    cache.set(SWITCH_CACHE_KEY.format(n=switch.name), None, 5)
+    cache.set(SWITCHES_ALL_CACHE_KEY, None, 5)
 
-post_delete.connect(ucache_switch, sender=Switch,
+post_delete.connect(uncache_switch, sender=Switch,
                     dispatch_uid='uncache_switch')
+post_save.connect(uncache_switch, sender=Switch, dispatch_uid='cache_switch')

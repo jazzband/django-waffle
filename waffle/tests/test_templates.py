@@ -30,3 +30,4 @@ class WaffleTemplateTests(TestCase):
         response = process_request(request, views.flag_in_jingo)
         self.assertContains(response, 'flag off')
         self.assertContains(response, 'switch off')
+        self.assertContains(response, 'sample')

@@ -129,13 +129,13 @@ Jingo/Jinja2
 To use a Flag in a Jinja2 template via `Jingo
 <http://github.com/jbalogh/jingo>`_, you can simply do::
 
-    {% if waffle_flag('flag_name') %}
+    {% if waffle.flag('flag_name') %}
       Content if flag is active
     {% endif %}
 
 You can also add an ``{% else %}`` section, of course::
 
-    {% if waffle_flag('flag_name') %}
+    {% if waffle.flag('flag_name') %}
       Flag is active!
     {% else %}
       Flag is inactive!
@@ -144,13 +144,13 @@ You can also add an ``{% else %}`` section, of course::
 To use a Switch in a Jinja2 template via `Jingo
 <http://github.com/jbalogh/jingo>`_, you can do::
 
-    {% if waffle_switch('switch_name') %}
+    {% if waffle.switch('switch_name') %}
       Content if switch is active
     {% endif %}
 
 You can also add an ``{% else %}`` section, of course::
 
-    {% if waffle_switch('switch_name') %}
+    {% if waffle.switch('switch_name') %}
       Switch is active!
     {% else %}
       Switch is inactive!
@@ -158,7 +158,7 @@ You can also add an ``{% else %}`` section, of course::
 
 For Samples::
 
-    {% if waffle_sample('sample_name') %}
+    {% if waffle.sample('sample_name') %}
       Sample is active!
     {% else %}
       Sample is inactive!

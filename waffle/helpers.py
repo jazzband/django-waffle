@@ -1,20 +1,16 @@
-from jingo import register
+import jingo
 import jinja2
 
 from waffle import flag_is_active, sample_is_active, switch_is_active
 
 
-@register.function
 @jinja2.contextfunction
-def waffle_flag(context, flag_name):
+def flag_helper(context, flag_name):
     return flag_is_active(context['request'], flag_name)
 
 
-@register.function
-def waffle_switch(switch_name):
-    return switch_is_active(switch_name)
-
-
-@register.function
-def waffle_sample(sample_name):
-    return sample_is_active(sample_name)
+jingo.env.globals['waffle'] = {
+    'flag': flag_helper,
+    'switch': switch_is_active,
+    'sample': sample_is_active,
+}

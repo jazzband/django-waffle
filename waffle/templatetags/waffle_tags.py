@@ -1,6 +1,6 @@
 from django import template
 
-from waffle import flag_is_active, switch_is_active
+from waffle import flag_is_active, sample_is_active, switch_is_active
 
 
 register = template.Library()
@@ -29,7 +29,7 @@ class WaffleNode(template.Node):
 
 
 @register.tag
-def waffleflag(parser, token):
+def flag(parser, token):
     try:
         tag, flag_name = token.contents.split(None, 1)
     except ValueError:
@@ -39,10 +39,10 @@ def waffleflag(parser, token):
     flag_name = flag_name.strip('\'"')
     condition = lambda r, n: flag_is_active(r, n)
 
-    nodelist_true = parser.parse(('else', 'endwaffleflag'))
+    nodelist_true = parser.parse(('else', 'endflag'))
     token = parser.next_token()
     if token.contents == 'else':
-        nodelist_false = parser.parse(('endwaffleflag',))
+        nodelist_false = parser.parse(('endflag',))
         parser.delete_first_token()
     else:
         nodelist_false = template.NodeList()
@@ -51,7 +51,7 @@ def waffleflag(parser, token):
 
 
 @register.tag
-def waffleswitch(parser, token):
+def switch(parser, token):
     try:
         tag, switch_name = token.contents.split(None, 1)
     except ValueError:
@@ -61,12 +61,34 @@ def waffleswitch(parser, token):
     switch_name = switch_name.strip('\'"')
     condition = lambda r, n: switch_is_active(n)
 
-    nodelist_true = parser.parse(('else', 'endwaffleswitch'))
+    nodelist_true = parser.parse(('else', 'endswitch'))
     token = parser.next_token()
     if token.contents == 'else':
-        nodelist_false = parser.parse(('endwaffleswitch',))
+        nodelist_false = parser.parse(('endswitch',))
         parser.delete_first_token()
     else:
         nodelist_false = template.NodeList()
 
     return WaffleNode(nodelist_true, nodelist_false, condition, switch_name)
+
+
+@register.tag
+def sample(parser, token):
+    try:
+        tag, sample_name = token.contents.split(None, 1)
+    except ValueError:
+        raise template.TemplateSyntaxError, \
+              "%r tag requires an argument" % token.contents.split()[0]
+
+    sample_name = sample_name.strip('\'"')
+    condition = lambda r, n: sample_is_active(n)
+
+    nodelist_true = parser.parse(('else', 'endsample'))
+    token = parser.next_token()
+    if token.contents == 'else':
+        nodelist_false = parser.parse(('endsample',))
+        parser.delete_first_token()
+    else:
+        nodelist_false = template.NodeList()
+
+    return WaffleNode(nodelist_true, nodelist_false, condition, sample_name)

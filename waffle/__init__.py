@@ -5,13 +5,15 @@ from django.conf import settings
 from django.core.cache import cache
 from django.db.models.signals import post_save, post_delete, m2m_changed
 
-from waffle.models import Flag, Switch
+from waffle.models import Flag, Sample, Switch
 
 
 FLAG_CACHE_KEY = u'waffle:flag:{n}'
 FLAGS_ALL_CACHE_KEY = u'waffle:flags:all'
 FLAG_USERS_CACHE_KEY = u'waffle:flag:{n}:users'
 FLAG_GROUPS_CACHE_KEY = u'waffle:flag:{n}:groups'
+SAMPLE_CACHE_KEY = u'waffle:sample:{n}'
+SAMPLES_ALL_CACHE_KEY = u'waffle:samples:all'
 SWITCH_CACHE_KEY = u'waffle:switch:{n}'
 SWITCHES_ALL_CACHE_KEY = u'waffle:switches:all'
 COOKIE_NAME = getattr(settings, 'WAFFLE_COOKIE', 'dwf_%s')
@@ -91,6 +93,21 @@ def switch_is_active(switch_name):
     return switch.active
 
 
+def sample_is_active(sample_name):
+    sample = cache.get(SAMPLE_CACHE_KEY.format(n=sample_name))
+    if not sample:
+        try:
+            sample = Sample.objects.get(name=sample_name)
+            cache_sample(instance=sample)
+        except Sample.DoesNotExist:
+            return False
+
+    rand = Decimal(random.randint(0, 999)) / 10
+    if rand <= sample.percent:
+        return True
+    return False
+
+
 def cache_flag(**kwargs):
     action = kwargs.get('action', None)
     # action is included for m2m_changed signal. Only cache on the post_*.
@@ -99,7 +116,6 @@ def cache_flag(**kwargs):
         cache.add(FLAG_CACHE_KEY.format(n=f.name), f)
         cache.add(FLAG_USERS_CACHE_KEY.format(n=f.name), f.users.all())
         cache.add(FLAG_GROUPS_CACHE_KEY.format(n=f.name), f.groups.all())
-        cache.set(FLAGS_ALL_CACHE_KEY, None, 5)
 
 
 def uncache_flag(**kwargs):
@@ -112,18 +128,32 @@ def uncache_flag(**kwargs):
     }
     cache.set_many(data, 5)
 
-post_save.connect(uncache_flag, sender=Flag, dispatch_uid='cache_flag')
-post_delete.connect(uncache_flag, sender=Flag, dispatch_uid='uncache_flag')
+post_save.connect(uncache_flag, sender=Flag, dispatch_uid='save_flag')
+post_delete.connect(uncache_flag, sender=Flag, dispatch_uid='delete_flag')
 m2m_changed.connect(uncache_flag, sender=Flag.users.through,
-                    dispatch_uid='cache_flag_users')
+                    dispatch_uid='m2m_flag_users')
 m2m_changed.connect(uncache_flag, sender=Flag.groups.through,
-                    dispatch_uid='cache_flag_groups')
+                    dispatch_uid='m2m_flag_groups')
+
+
+def cache_sample(**kwargs):
+    sample = kwargs.get('instance')
+    cache.add(SAMPLE_CACHE_KEY.format(n=sample.name), sample)
+
+
+def uncache_sample(**kwargs):
+    sample = kwargs.get('instance')
+    cache.set(SAMPLE_CACHE_KEY.format(n=sample.name), None, 5)
+    cache.set(SAMPLES_ALL_CACHE_KEY, None, 5)
+
+post_save.connect(uncache_sample, sender=Sample, dispatch_uid='save_sample')
+post_delete.connect(uncache_sample, sender=Sample,
+                    dispatch_uid='delete_sample')
 
 
 def cache_switch(**kwargs):
     switch = kwargs.get('instance')
-    cache.set(SWITCH_CACHE_KEY.format(n=switch.name), switch)
-    cache.set(SWITCHES_ALL_CACHE_KEY, None, 5)
+    cache.add(SWITCH_CACHE_KEY.format(n=switch.name), switch)
 
 
 def uncache_switch(**kwargs):
@@ -132,5 +162,5 @@ def uncache_switch(**kwargs):
     cache.set(SWITCHES_ALL_CACHE_KEY, None, 5)
 
 post_delete.connect(uncache_switch, sender=Switch,
-                    dispatch_uid='uncache_switch')
-post_save.connect(uncache_switch, sender=Switch, dispatch_uid='cache_switch')
+                    dispatch_uid='delete_switch')
+post_save.connect(uncache_switch, sender=Switch, dispatch_uid='save_switch')

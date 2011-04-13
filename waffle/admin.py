@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from waffle.models import Flag, Switch
+from waffle.models import Flag, Sample, Switch
 
 
 def enable_for_all(ma, request, qs):
@@ -37,5 +37,10 @@ class SwitchAdmin(admin.ModelAdmin):
     list_filter = ('active',)
 
 
+class SampleAdmin(admin.ModelAdmin):
+    list_display = ('name', 'percent')
+
+
 admin.site.register(Flag, FlagAdmin)
+admin.site.register(Sample, SampleAdmin)
 admin.site.register(Switch, SwitchAdmin)

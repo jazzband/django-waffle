@@ -6,7 +6,7 @@ from test_utils import RequestFactory, TestCase
 from test_app import views
 import waffle
 from waffle.middleware import WaffleMiddleware
-from waffle.models import Flag, Switch
+from waffle.models import Flag, Sample, Switch
 
 
 def get():
@@ -192,3 +192,13 @@ class SwitchTests(TestCase):
     def test_switch_inactive(self):
         switch = Switch.objects.create(name='myswitch', active=False)
         assert not waffle.switch_is_active(switch.name)
+
+
+class SampleTests(TestCase):
+    def test_sample_100(self):
+        sample = Sample.objects.create(name='sample', percent='100.0')
+        assert waffle.sample_is_active(sample.name)
+
+    def test_sample_0(self):
+        sample = Sample.objects.create(name='sample', percent='0.0')
+        assert not waffle.sample_is_active(sample.name)

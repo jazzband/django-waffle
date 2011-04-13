@@ -49,3 +49,17 @@ class Switch(models.Model):
 
     class Meta:
         verbose_name_plural = 'Switches'
+
+
+class Sample(models.Model):
+    """A sample is true some percentage of the time, but is not connected
+    to users or requests.
+    """
+    name = models.CharField(max_length=100, unique=True,
+                            help_text='The human/computer readable name.')
+    percent = models.DecimalField(max_digits=4, decimal_places=1, help_text=(
+        'A number between 0.0 and 100.0 to indicate a percentage of the time '
+        'this sample will be active.'))
+
+    def __unicode__(self):
+        return self.name

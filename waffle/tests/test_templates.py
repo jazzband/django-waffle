@@ -23,6 +23,7 @@ class WaffleTemplateTests(TestCase):
         response = process_request(request, views.flag_in_django)
         self.assertContains(response, 'flag off')
         self.assertContains(response, 'switch off')
+        self.assertContains(response, 'sample')
 
     def test_jingo_tags(self):
         request = get()

@@ -28,15 +28,16 @@ Since Waffle will be setting cookies on response objects, you probably want it
 *below* any middleware that tweaks cookies before sending them out.
 
 
-Flags and Switches
-==================
+Flags, Switches and Samples
+===========================
 
-Waffle supports two separate but ultimately similar concepts: **Flags** and
-**Switches**.
+Waffle supports three separate but ultimately similar concepts: **Flags** and
+**Switches**, and **Samples**.
 
-Basically, a Flag is **tied to a request**, while a Switch is **not**.
-Consequently, Flags are much more complicated, while Switches are basically
-just a named boolean in the database.
+Basically, a Flag is **tied to a request**, while Switches and Samples are
+**not**. Consequently, Flags are much more complicated, while Switches are
+just a named boolean in the database, and Samples are just a percentage stored
+in the database.
 
 
 Flags
@@ -75,8 +76,6 @@ active for the user if *any* of the settings matches for them.
 Switches
 --------
 
-*New in 0.4!*
-
 Switches are also managed through the Django admin. Each ``Switch`` object has
 only two properties:
 
@@ -91,11 +90,30 @@ also be used in crons, Celery tasks, daemons--basically anywhere you can
 access the database.
 
 
+Samples
+-------
+
+*New in 0.6!*
+
+Samples, also managed through the Django admin, have two properties:
+
+Name:
+    The name.
+Percent:
+    A number from 0.0 to 100.0 that determines how often the sample will be
+    active.
+
+Samples are useful for datamining or other "some of the time" tasks that are
+not linked to a user or request--that is, unlike Flags, they do not set cookies
+and can't be reliably assumed to be a given value for a given user.
+
+
 Using Waffle
 ============
 
 Flags and Switches can be used in templates, in views, or wrapped around
-entire views.
+entire views. Samples can be used in templates or views but to wrap an entire
+view.
 
 If you try to use a flag or switch that is not defined, it will *always*
 be **inactive**.
@@ -138,42 +156,59 @@ You can also add an ``{% else %}`` section, of course::
       Switch is inactive!
     {% endif %}
 
+For Samples::
+
+    {% if waffle_sample('sample_name') %}
+      Sample is active!
+    {% else %}
+      Sample is inactive!
+    {% endif %}
+
 
 Django Templates
 ^^^^^^^^^^^^^^^^
 
-To use a *flag* in vanilla Django templates, you can use the ``waffleflag``
-tag::
+*Changed in 0.6!*
+
+To use a *flag* in vanilla Django templates, you can use the ``flag`` tag::
 
     {% load waffle_tags %}
-    {% waffleflag flag_name %}
+    {% flag flag_name %}
       Content if flag is active
-    {% endwaffleflag %}
+    {% endflag %}
 
-The ``{% waffleflag %}`` tag also supports an ``{% else %}`` section::
+The ``{% flag %}`` tag also supports an ``{% else %}`` section::
 
-    {% waffleflag flag_name %}
+    {% flag flag_name %}
       Flag is active!
     {% else %}
       Flag is inactive!
-    {% endwaffleflag %}
+    {% endflag %}
 
-To use a *switch* in vanilla Django templates, you can use the
-``waffleswitch`` tag::
+To use a *switch* in vanilla Django templates, you can use the ``switch``
+tag::
 
     {% load waffle_tags %}
-    {% waffleswitch flag_name %}
+    {% switch switch_name %}
       Content if switch is active
-    {% endwaffleswitch %}
+    {% endswitch %}
 
-The ``{% waffleswitch %}`` tag also supports an ``{% else %}`` section::
+The ``{% switch %}`` tag also supports an ``{% else %}`` section::
 
-    {% waffleswitch flag_name %}
+    {% switch switch_name %}
       Switch is active!
     {% else %}
       Switch is inactive!
-    {% endwaffleswitch %}
+    {% endswitch %}
 
+
+To use a *sample*, just use the ``sample`` tag::
+
+    {% sample sample_name %}
+      Sample is active!
+    {% else %} {# Optional `else` section #}
+      Sample is inactive!
+    {% endsample %}
 
 Using Waffle in Views
 ---------------------
@@ -200,9 +235,18 @@ For switches, just use the ``switch_is_active`` method::
 Because it doesn't need a ``request`` object, ``switch_is_active`` can be used
 anywhere.
 
+Similarly, ``sample_is_active`` can be used anywhere, since it does not require
+a ``request`` object::
 
-Wraping a Whole View
---------------------
+    import waffle
+
+    def myview(request):
+        if waffle.sample_is_active('mysample'):
+            # Some percent of requests.
+
+
+Wrapping a Whole View
+---------------------
 
 You can also wrap an entire view in a flag::
 
@@ -341,6 +385,15 @@ undefined, it will always be ``false``.
     } else {
         // Switch is inactive.
     }
+
+    if (waffle.sample('some_sample')) {
+        // Sample is active.
+    } else {
+        // Sample is inactive.
+    }
+
+``waffle.sample(foo)`` will return the same value *on a given request* but
+that value may not persist across multiple requests.
 
 
 To Do

@@ -21,7 +21,7 @@ COOKIE_NAME = getattr(settings, 'WAFFLE_COOKIE', 'dwf_%s')
 
 def flag_is_active(request, flag_name):
     flag = cache.get(FLAG_CACHE_KEY.format(n=flag_name))
-    if not flag:
+    if flag is None:
         try:
             flag = Flag.objects.get(name=flag_name)
             cache_flag(instance=flag)
@@ -73,8 +73,7 @@ def flag_is_active(request, flag_name):
             request.waffles[flag_name][0] = (request.COOKIES[cookie] == 'True')
             return request.waffles[flag_name][0]
 
-        rand = Decimal(random.randint(0, 999)) / 10
-        if rand <= flag.percent:
+        if Decimal(str(random.uniform(0, 100))) <= flag.percent:
             request.waffles[flag_name][0] = True
             return True
 
@@ -83,7 +82,7 @@ def flag_is_active(request, flag_name):
 
 def switch_is_active(switch_name):
     switch = cache.get(SWITCH_CACHE_KEY.format(n=switch_name))
-    if not switch:
+    if switch is None:
         try:
             switch = Switch.objects.get(name=switch_name)
             cache_switch(instance=switch)
@@ -95,17 +94,14 @@ def switch_is_active(switch_name):
 
 def sample_is_active(sample_name):
     sample = cache.get(SAMPLE_CACHE_KEY.format(n=sample_name))
-    if not sample:
+    if sample is None:
         try:
             sample = Sample.objects.get(name=sample_name)
             cache_sample(instance=sample)
         except Sample.DoesNotExist:
             return False
 
-    rand = Decimal(random.randint(0, 999)) / 10
-    if rand <= sample.percent:
-        return True
-    return False
+    return Decimal(str(random.uniform(0, 100))) <= sample.percent
 
 
 def cache_flag(**kwargs):

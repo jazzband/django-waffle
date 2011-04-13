@@ -183,6 +183,11 @@ class WaffleTests(TestCase):
         response = process_request(request, views.flag_in_view)
         assert 'dwf_myflag' in response.cookies
 
+    def test_undefined(self):
+        """Undefined flags are always false."""
+        request = get()
+        assert not waffle.flag_is_active(request, 'foo')
+
 
 class SwitchTests(TestCase):
     def test_switch_active(self):
@@ -193,6 +198,9 @@ class SwitchTests(TestCase):
         switch = Switch.objects.create(name='myswitch', active=False)
         assert not waffle.switch_is_active(switch.name)
 
+    def test_undefined(self):
+        assert not waffle.switch_is_active('foo')
+
 
 class SampleTests(TestCase):
     def test_sample_100(self):
@@ -202,3 +210,6 @@ class SampleTests(TestCase):
     def test_sample_0(self):
         sample = Sample.objects.create(name='sample', percent='0.0')
         assert not waffle.sample_is_active(sample.name)
+
+    def test_undefined(self):
+        assert not waffle.sample_is_active('foo')

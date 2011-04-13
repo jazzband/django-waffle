@@ -112,8 +112,8 @@ Using Waffle
 ============
 
 Flags and Switches can be used in templates, in views, or wrapped around
-entire views. Samples can be used in templates or views but to wrap an entire
-view.
+entire views. Samples can be used in templates or views but not to wrap an
+entire view.
 
 If you try to use a flag or switch that is not defined, it will *always*
 be **inactive**.

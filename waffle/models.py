@@ -28,6 +28,8 @@ class Flag(models.Model):
         'Activate this flag for these users.'))
     rollout = models.BooleanField(default=False, help_text=(
         'Activate roll-out mode?'))
+    note = models.TextField(blank=True, help_text=(
+        'Note where this Flag is used.'))
 
     def __unicode__(self):
         return self.name
@@ -43,6 +45,8 @@ class Switch(models.Model):
                             help_text='The human/computer readable name.')
     active = models.BooleanField(default=False, help_text=(
         'Is this flag active?'))
+    note = models.TextField(blank=True, help_text=(
+        'Note where this Switch is used.'))
 
     def __unicode__(self):
         return u'%s: %s' % (self.name, 'on' if self.active else 'off')
@@ -60,6 +64,8 @@ class Sample(models.Model):
     percent = models.DecimalField(max_digits=4, decimal_places=1, help_text=(
         'A number between 0.0 and 100.0 to indicate a percentage of the time '
         'this sample will be active.'))
+    note = models.TextField(blank=True, help_text=(
+        'Note where this Sample is used.'))
 
     def __unicode__(self):
         return self.name

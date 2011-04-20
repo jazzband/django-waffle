@@ -4,6 +4,7 @@ mock
 fabric
 Jinja2==2.5.5
 Django==1.2.5
+south
 -e git+git://github.com/jbalogh/test-utils.git#egg=test-utils
 -e git+git://github.com/jbalogh/django-nose.git#egg=django-nose
 -e git+git://github.com/jbalogh/jingo.git#egg=jingo

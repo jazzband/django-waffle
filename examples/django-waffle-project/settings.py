@@ -25,6 +25,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django_nose',
+    'south',
     'waffle',
     'test_app',
 )

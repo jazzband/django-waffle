@@ -67,6 +67,8 @@ Users:
     A list of user IDs for which this flag will always be active.
 Rollout:
     Activate Rollout mode? (See **Rollout Mode** below.)
+Note:
+    Describe where the flag is used.
 
 You can combine multiple settings here. For example, you could offer a feature
 to 12% of users *and* all superusers. When combining settings, the flag will be
@@ -83,6 +85,8 @@ Name:
     The name of the switch.
 Active:
     Is the switch active or inactive.
+Note:
+    Describe where the switch is used.
 
 Like Flags, Switches can be used in views, templates, or wrapped around entire
 templates. But because they don't rely on a ``request`` objects, Switches can
@@ -93,8 +97,6 @@ access the database.
 Samples
 -------
 
-*New in 0.6!*
-
 Samples, also managed through the Django admin, have two properties:
 
 Name:
@@ -102,6 +104,8 @@ Name:
 Percent:
     A number from 0.0 to 100.0 that determines how often the sample will be
     active.
+Note:
+    Describe where the sample is used.
 
 Samples are useful for datamining or other "some of the time" tasks that are
 not linked to a user or request--that is, unlike Flags, they do not set cookies
@@ -167,8 +171,6 @@ For Samples::
 
 Django Templates
 ^^^^^^^^^^^^^^^^
-
-*Changed in 0.6!*
 
 To use a *flag* in vanilla Django templates, you can use the ``flag`` tag::
 

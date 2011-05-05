@@ -1,6 +1,6 @@
 from functools import wraps
 
-from django.http import HttpResponseNotFound
+from django.http import Http404
 from django.utils.decorators import available_attrs
 
 from waffle import flag_is_active, switch_is_active
@@ -16,7 +16,7 @@ def waffle_flag(flag_name):
                 active = flag_is_active(request, flag_name)
 
             if not active:
-                return HttpResponseNotFound()
+                raise Http404
             return view(request, *args, **kwargs)
         return _wrapped_view
     return decorator
@@ -32,7 +32,7 @@ def waffle_switch(switch_name):
                 active = switch_is_active(switch_name)
 
             if not active:
-                return HttpResponseNotFound()
+                raise Http404
             return view(request, *args, **kwargs)
         return _wrapped_view
     return decorator

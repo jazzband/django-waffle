@@ -1,12 +1,13 @@
 from django.conf.urls.defaults import patterns, url, include
 from django.contrib import admin
+from django.http import HttpResponseNotFound, HttpResponseServerError
 
 from test_app import views
 from waffle.views import wafflejs
 
 
-handler404 = None
-handler500 = None
+handler404 = lambda r: HttpResponseNotFound()
+handler500 = lambda r: HttpResponseServerError()
 
 admin.autodiscover()
 

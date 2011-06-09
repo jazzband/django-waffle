@@ -8,6 +8,10 @@ from django.db.models.signals import post_save, post_delete, m2m_changed
 from waffle.models import Flag, Sample, Switch
 
 
+VERSION = (0, 7, 3)
+__version__ = '.'.join(map(str, VERSION))
+
+
 FLAG_CACHE_KEY = u'waffle:flag:{n}'
 FLAGS_ALL_CACHE_KEY = u'waffle:flags:all'
 FLAG_USERS_CACHE_KEY = u'waffle:flag:{n}:users'

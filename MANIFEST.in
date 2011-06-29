@@ -1,2 +1,3 @@
 include LICENSE
 include README.rst
+include waffle/templates/waffle/waffle.js

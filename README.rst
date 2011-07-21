@@ -10,7 +10,7 @@ Installation
 ============
 
 To start using Waffle, you just need to add it to your
-``INSTALLED_APPS`` and ``MIDDLEWARE_CLASSES``, and make sure to add the 
+``INSTALLED_APPS`` and ``MIDDLEWARE_CLASSES``, and make sure to add the
 ``request`` context processor::
 
     TEMPLATE_CONTEXT_PROCESSORS = (
@@ -288,27 +288,30 @@ Global Settings
 
 There are a few global settings you can define to adjust Waffle's behavior.
 
-+---------------------+--------------+---------------------------------------+
-| Setting             | Default      | Description                           |
-+=====================+==============+=======================================+
-| ``WAFFLE_COOKIE``   | ``'dwf_%s'`` | The format for the cookies Waffle     |
-|                     |              | sets. Must contain ``'%s'``.          |
-+---------------------+--------------+---------------------------------------+
-| ``WAFFLE_DEFAULT``  | ``False``    | By default, if a flag is undefined,   |
-|                     |              | Waffle treats it as inactive for      |
-|                     |              | everyone. Set this to ``True`` to     |
-|                     |              | treat undefined flags as active.      |
-+---------------------+--------------+---------------------------------------+
-| ``WAFFLE_MAX_AGE``  | 2,529,000    | How long should Waffle cookies last?  |
-|                     |              | (Integer, in seconds.) See the        |
-|                     |              | **Cookies** section.                  |
-+---------------------+--------------+---------------------------------------+
-| ``WAFFLE_OVERRIDE`` | ``False``    | Whether flags can be forced to be     |
-|                     |              | active from the query string.         |
-+---------------------+--------------+---------------------------------------+
-| ``WAFFLE_SECURE``   | ``False``    | Whether to set the ``secure`` flag on |
-|                     |              | cookies.                              |
-+---------------------+--------------+---------------------------------------+
+
+``WAFFLE_COOKIE``:
+    The format for the cookies Waffle sets. Must contain ``%s``. Defaults to
+    ``dwf_%s``.
+``WAFFLE_FLAG_DEFAULT``:
+    When a Flag is undefined in the database, Waffle considers it ``False``.
+    Set this to ``True`` to make Waffle consider undefined flags ``True``.
+    Defaults to ``False``.
+``WAFFLE_SWITCH_DEFAULT``:
+    When a Switch is undefined in the database, Waffle considers it ``False``.
+    Set this to ``True`` to make Waffle consider undefined switches ``True``.
+    Defaults to ``False``.
+``WAFFLE_SAMPLE_DEFAULT``:
+    When a Sample is undefined in the database, Waffle considers it ``False``.
+    Set this to ``True`` to make Waffle consider undefined samples ``True``.
+    Defaults to ``False``.
+``WAFFLE_MAX_AGE``:
+    How long should Waffle cookies last? (Integer, in seconds.) See the
+    **Cookies** section. Defaults to ``2529000`` (one month).
+``WAFFLE_OVERRIDE``:
+    Whether Flags can be controlled from the query string. Defaults to
+    ``False``.
+``WAFFLE_SECURE``:
+    Whether to set the ``secure`` flag on cookies. Defaults to ``False``.
 
 
 Overriding Flags

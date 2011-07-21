@@ -1,5 +1,7 @@
+from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, Group, User
 
+import mock
 from nose.tools import eq_
 from test_utils import RequestFactory, TestCase
 
@@ -9,8 +11,8 @@ from waffle.middleware import WaffleMiddleware
 from waffle.models import Flag, Sample, Switch
 
 
-def get():
-    request = RequestFactory().get('/foo')
+def get(**kw):
+    request = RequestFactory().get('/foo', data=kw)
     request.user = AnonymousUser()
     return request
 
@@ -188,6 +190,18 @@ class WaffleTests(TestCase):
         request = get()
         assert not waffle.flag_is_active(request, 'foo')
 
+    @mock.patch.object(settings._wrapped, 'WAFFLE_FLAG_DEFAULT', True)
+    def test_undefined_default(self):
+        """WAFFLE_FLAG_DEFAULT controls undefined flags."""
+        request = get()
+        assert waffle.flag_is_active(request, 'foo')
+
+    @mock.patch.object(settings._wrapped, 'WAFFLE_OVERRIDE', True)
+    def test_override(self):
+        request = get(foo='1')
+        Flag.objects.create(name='foo')  # Off for everyone.
+        assert waffle.flag_is_active(request, 'foo')
+
 
 class SwitchTests(TestCase):
     def test_switch_active(self):
@@ -201,6 +215,10 @@ class SwitchTests(TestCase):
     def test_undefined(self):
         assert not waffle.switch_is_active('foo')
 
+    @mock.patch.object(settings._wrapped, 'WAFFLE_SWITCH_DEFAULT', True)
+    def test_undefined_default(self):
+        assert waffle.switch_is_active('foo')
+
 
 class SampleTests(TestCase):
     def test_sample_100(self):
@@ -213,3 +231,7 @@ class SampleTests(TestCase):
 
     def test_undefined(self):
         assert not waffle.sample_is_active('foo')
+
+    @mock.patch.object(settings._wrapped, 'WAFFLE_SAMPLE_DEFAULT', True)
+    def test_undefined_default(self):
+        assert waffle.sample_is_active('foo')

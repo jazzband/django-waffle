@@ -214,6 +214,16 @@ class WaffleTests(TestCase):
         assert 'foo' in request.waffle_tests
         assert not request.waffle_tests['foo']
 
+    def test_testing_disabled_flag(self):
+        Flag.objects.create(name='foo')
+        request = get(dwft_foo='1')
+        assert not waffle.flag_is_active(request, 'foo')
+        assert not hasattr(request, 'waffle_tests')
+
+        request = get(dwft_foo='0')
+        assert not waffle.flag_is_active(request, 'foo')
+        assert not hasattr(request, 'waffle_tests')
+
 
 class SwitchTests(TestCase):
     def test_switch_active(self):

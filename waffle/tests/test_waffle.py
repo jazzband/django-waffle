@@ -202,6 +202,18 @@ class WaffleTests(TestCase):
         Flag.objects.create(name='foo')  # Off for everyone.
         assert waffle.flag_is_active(request, 'foo')
 
+    def test_testing_flag(self):
+        Flag.objects.create(name='foo', testing=True)
+        request = get(dwft_foo='1')
+        assert waffle.flag_is_active(request, 'foo')
+        assert 'foo' in request.waffle_tests
+        assert request.waffle_tests['foo']
+
+        request = get(dwft_foo='0')
+        assert not waffle.flag_is_active(request, 'foo')
+        assert 'foo' in request.waffle_tests
+        assert not request.waffle_tests['foo']
+
 
 class SwitchTests(TestCase):
     def test_switch_active(self):

@@ -21,6 +21,7 @@ SAMPLES_ALL_CACHE_KEY = u'waffle:samples:all'
 SWITCH_CACHE_KEY = u'waffle:switch:{n}'
 SWITCHES_ALL_CACHE_KEY = u'waffle:switches:all'
 COOKIE_NAME = getattr(settings, 'WAFFLE_COOKIE', 'dwf_%s')
+TEST_COOKIE_NAME = getattr(settings, 'WAFFLE_TESTING_COOKIE', 'dwft_%s')
 
 
 def flag_is_active(request, flag_name):
@@ -36,10 +37,22 @@ def flag_is_active(request, flag_name):
         if flag_name in request.GET:
             return request.GET[flag_name] == '1'
 
+
     if flag.everyone:
         return True
     elif flag.everyone == False:
         return False
+
+    if flag.testing:  # Testing mode is on.
+        tc = TEST_COOKIE_NAME % flag_name
+        if tc in request.COOKIES:
+            return request.COOKIES[tc] == 'True'
+        if tc in request.GET:
+            on = request.GET[tc] == '1'
+            if not hasattr(request, 'waffle_tests'):
+                request.waffle_tests = {}
+            request.waffle_tests[flag_name] = on
+            return on
 
     user = request.user
 

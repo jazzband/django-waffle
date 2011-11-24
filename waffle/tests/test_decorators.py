@@ -32,3 +32,17 @@ class DecoratorTests(TestCase):
         Switch.objects.create(name='foo', active=True)
         resp = self.client.get('/switch-off')
         eq_(404, resp.status_code)
+
+    def test_switch_with_template(self):
+        resp = self.client.get('/switch-off', template="django.html")
+        eq_(200, resp.status_code)
+        Switch.objects.create(name='foo', active=True)
+        resp = self.client.get('/switch-off', tempalte="django.html")
+        eq_(200, resp.status_code)
+
+    def test_flag_with_template(self):
+        resp = self.client.get('/flag-on', template="django.html")
+        eq_(200, resp.status_code)
+        Flag.objects.create(name='foo', everyone=True)
+        resp = self.client.get('/flag-on', template="django.html")
+        eq_(200, resp.status_code)

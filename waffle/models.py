@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib.auth.models import Group, User
 from django.db import models
 
@@ -32,9 +34,19 @@ class Flag(models.Model):
         'Activate roll-out mode?'))
     note = models.TextField(blank=True, help_text=(
         'Note where this Flag is used.'))
+    date_created = models.DateTimeField(default=datetime.now, db_index=True, help_text=(
+        'Date when this Flag was created'))
+    date_modified = models.DateTimeField(default=datetime.now, help_text=(
+        'Date when this Flag was last modified'))
 
     def __unicode__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.date_created = datetime.now()
+        self.date_modified = datetime.now()
+        super(Flag, self).save(*args, **kwargs)
 
 
 class Switch(models.Model):

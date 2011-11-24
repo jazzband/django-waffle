@@ -17,7 +17,8 @@ class FlagAdmin(admin.ModelAdmin):
     actions = [enable_for_all, disable_for_all]
     list_display = ('name', 'everyone', 'percent', 'superusers', 'staff',
                     'authenticated')
-    list_filter = ('everyone', 'superusers', 'staff', 'authenticated')
+    list_filter = ('everyone', 'superusers', 'staff', 'authenticated',
+        'date_created', 'date_modified')
     raw_id_fields = ('users', 'groups')
 
 

@@ -19,4 +19,4 @@ class Command(BaseCommand):
             switch.active = state == "on"
             switch.save()
         except Switch.DoesNotExist:
-            raise CommandError('THis switch doesn\'t exists')
+            raise CommandError('This switch doesn\'t exists')

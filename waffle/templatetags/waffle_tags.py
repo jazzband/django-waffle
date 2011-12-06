@@ -23,7 +23,7 @@ class WaffleNode(template.Node):
             yield node
 
     def render(self, context):
-        if self.condition(context['request'], self.name):
+        if self.condition(context.get('request'), self.name):
             return self.nodelist_true.render(context)
         return self.nodelist_false.render(context)
 

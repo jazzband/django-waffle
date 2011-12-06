@@ -9,6 +9,8 @@ TEMPLATE_DEBUG = True
 
 JINJA_CONFIG = {}
 
+SITE_ID = 1
+
 TEST_RUNNER = 'django_nose.runner.NoseTestSuiteRunner'
 
 DATABASES = {

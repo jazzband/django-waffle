@@ -25,6 +25,13 @@ class WaffleTemplateTests(TestCase):
         self.assertContains(response, 'switch off')
         self.assertContains(response, 'sample')
 
+    def test_no_request_context(self):
+        """Switches and Samples shouldn't require a request context."""
+        request = get()
+        content = process_request(request, views.no_request_context)
+        assert 'switch off' in content
+        assert 'sample' in content
+
     def test_jingo_tags(self):
         request = get()
         response = process_request(request, views.flag_in_jingo)

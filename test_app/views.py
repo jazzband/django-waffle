@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.template import Context, RequestContext
+from django.template.loader import render_to_string
 
 import jingo
 from waffle import flag_is_active
@@ -20,6 +21,10 @@ def flag_in_jingo(request):
 def flag_in_django(request):
     c = RequestContext(request, {})
     return render_to_response('django.html', context_instance=c)
+
+def no_request_context(request):
+    c = Context({})
+    return render_to_string('django_email.html', context_instance=c)
 
 
 @waffle_switch('foo')

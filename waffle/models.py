@@ -35,9 +35,9 @@ class Flag(models.Model):
     note = models.TextField(blank=True, help_text=(
         'Note where this Flag is used.'))
     created = models.DateTimeField(auto_now_add=True, db_index=True,
-        help_text=('Date when this Flag was created'))
+        help_text=('Date when this Flag was created.'))
     modified = models.DateTimeField(auto_now=True, help_text=(
-        'Date when this Flag was last modified'))
+        'Date when this Flag was last modified.'))
 
     def __unicode__(self):
         return self.name
@@ -55,6 +55,10 @@ class Switch(models.Model):
         'Is this flag active?'))
     note = models.TextField(blank=True, help_text=(
         'Note where this Switch is used.'))
+    created = models.DateTimeField(auto_now_add=True, db_index=True,
+        help_text=('Date when this Switch was created.'))
+    modified = models.DateTimeField(auto_now=True, help_text=(
+        'Date when this Switch was last modified.'))
 
     def __unicode__(self):
         return u'%s: %s' % (self.name, 'on' if self.active else 'off')
@@ -74,6 +78,10 @@ class Sample(models.Model):
         'this sample will be active.'))
     note = models.TextField(blank=True, help_text=(
         'Note where this Sample is used.'))
+    created = models.DateTimeField(auto_now_add=True, db_index=True,
+        help_text=('Date when this Sample was created.'))
+    modified = models.DateTimeField(auto_now=True, help_text=(
+        'Date when this Sample was last modified.'))
 
     def __unicode__(self):
         return self.name

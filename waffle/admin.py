@@ -39,12 +39,14 @@ disable_switches.short_description = 'Disable the selected switches.'
 
 class SwitchAdmin(admin.ModelAdmin):
     actions = [enable_switches, disable_switches]
-    list_display = ('name', 'active')
+    date_hierarchy = 'created'
+    list_display = ('name', 'active', 'created', 'modified')
     list_filter = ('active',)
 
 
 class SampleAdmin(admin.ModelAdmin):
-    list_display = ('name', 'percent')
+    date_hierarchy = 'created'
+    list_display = ('name', 'percent', 'created', 'modified')
 
 
 admin.site.register(Flag, FlagAdmin)

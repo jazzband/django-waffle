@@ -65,6 +65,11 @@ def flag_is_active(request, flag_name):
     if flag.superusers and user.is_superuser:
         return True
 
+    if flag.languages:
+        languages = flag.languages.split(',')
+        if hasattr(request, 'LANGUAGE_CODE') and request.LANGUAGE_CODE in languages:
+            return True
+
     flag_users = cache.get(FLAG_USERS_CACHE_KEY.format(n=flag.name))
     if flag_users == None:
         flag_users = flag.users.all()

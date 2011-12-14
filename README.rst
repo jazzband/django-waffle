@@ -312,6 +312,11 @@ There are a few global settings you can define to adjust Waffle's behavior.
     ``False``.
 ``WAFFLE_SECURE``:
     Whether to set the ``secure`` flag on cookies. Defaults to ``False``.
+``WAFFLE_CACHE_PREFIX``:
+    Waffle tries to store objects in cache pretty aggressively. If you ever
+    upgrade and change the shape of the objects (for example upgrading from
+    <0.7.5 to >0.7.5) you'll want to set this to something other than
+    ``'waffle:'``.
 
 
 Overriding Flags

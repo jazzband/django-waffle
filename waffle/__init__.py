@@ -84,6 +84,8 @@ def flag_is_active(request, flag_name):
     if flag.percent > 0:
         if not hasattr(request, 'waffles'):
             request.waffles = {}
+        elif flag_name in request.waffles:
+            return request.waffles[flag_name][0]
         request.waffles[flag_name] = [False, flag.rollout]
 
         cookie = COOKIE_NAME % flag_name

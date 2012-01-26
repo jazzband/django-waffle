@@ -1,3 +1,5 @@
+import random
+
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, Group, User
 
@@ -184,6 +186,23 @@ class WaffleTests(TestCase):
         request = get()
         response = process_request(request, views.flag_in_view)
         assert 'dwf_myflag' in response.cookies
+
+    @mock.patch.object(random, 'uniform')
+    def test_reroll(self, uniform):
+        """Even without a cookie, calling flag_is_active twice should return
+        the same value."""
+        Flag.objects.create(name='myflag', percent='50.0')
+        # Make sure we're not really random.
+        request = get()  # Create a clean request.
+        assert not hasattr(request, 'waffles')
+        uniform.return_value = '10'  # < 50. Flag is True.
+        assert waffle.flag_is_active(request, 'myflag')
+        assert hasattr(request, 'waffles')  # We should record this flag.
+        assert 'myflag' in request.waffles
+        assert request.waffles['myflag'][0]
+        uniform.return_value = '70'  # > 50. Normally, Flag would be False.
+        assert waffle.flag_is_active(request, 'myflag')
+        assert request.waffles['myflag'][0]
 
     def test_undefined(self):
         """Undefined flags are always false."""

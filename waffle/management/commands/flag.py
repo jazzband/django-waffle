@@ -7,6 +7,11 @@ from waffle.models import Flag
 
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
+        make_option('-l', '--list',
+            action='store_true',
+            dest='list_flag',
+            default=False,
+            help="List existing samples."),
         make_option('--everyone',
             action='store_true',
             dest='everyone',
@@ -59,6 +64,14 @@ class Command(BaseCommand):
     args = "<flag_name>"
 
     def handle(self, flag_name=None, *args, **options):
+        list_flag = options['list_flag']
+
+        if list_flag:
+            print "Flags:"
+            for flag in Flag.objects.iterator():
+                print "%s" % (flag.name)
+            return
+
         if not flag_name:
             raise CommandError('You need to specify a flag name.')
 

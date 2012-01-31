@@ -1,13 +1,29 @@
+from optparse import make_option
+
 from django.core.management.base import BaseCommand, CommandError
 
 from waffle.models import Sample
 
 
 class Command(BaseCommand):
+    option_list = BaseCommand.option_list + (
+        make_option('-l', '--list',
+            action='store_true', dest='list_sample', default=False,
+            help="List existing samples."),
+    )
+
     help = "Change percentage of a sample."
     args = "<sample_name> <percent>"
 
     def handle(self, sample_name=None, percent=None, *args, **options):
+        list_sample = options['list_sample']
+
+        if list_sample:
+            print "Samples:"
+            for sample in Sample.objects.iterator():
+                print "%s: %s%%" % (sample.name, sample.percent)
+            return
+
         if not (sample_name and percent):
             raise CommandError('You need to specify a sample name and percentage.')
 

@@ -30,4 +30,4 @@ class Command(BaseCommand):
             setattr(flag, attribute, value)
             flag.save()
         except Flag.DoesNotExist:
-            raise CommandError('This flag doesn\'t exists')
+            raise CommandError('This flag doesn\'t exist')

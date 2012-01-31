@@ -23,4 +23,4 @@ class Command(BaseCommand):
             sample.percent = percent
             sample.save()
         except Sample.DoesNotExist:
-            raise CommandError('This sample doesn\'t exists')
+            raise CommandError('This sample doesn\'t exist')

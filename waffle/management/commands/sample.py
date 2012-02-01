@@ -10,6 +10,12 @@ class Command(BaseCommand):
         make_option('-l', '--list',
             action='store_true', dest='list_sample', default=False,
             help="List existing samples."),
+        make_option('--create',
+            action='store_true',
+            dest='create',
+            default=False,
+            help='If the sample doesn\'t exist, create it.'
+        )
     )
 
     help = "Change percentage of a sample."
@@ -34,9 +40,15 @@ class Command(BaseCommand):
         except ValueError:
             raise CommandError('You need to enter a valid percentage value')
 
-        try:
-            sample = Sample.objects.get(name=sample_name)
-            sample.percent = percent
-            sample.save()
-        except Sample.DoesNotExist:
-            raise CommandError('This sample doesn\'t exist')
+        if options['create']:
+            sample, created = Sample.objects.get_or_create(name=sample_name, defaults={'percent': 0})
+            if created:
+                print "Creating sample: %s" % sample_name
+        else:
+            try:
+                sample = Sample.objects.get(name=sample_name)
+            except Sample.DoesNotExist:
+                raise CommandError('This sample doesn\'t exist')
+
+        sample.percent = percent
+        sample.save()

@@ -73,7 +73,7 @@ class Command(BaseCommand):
             return
 
         if not flag_name:
-            raise CommandError('You need to specify a flag name.')
+            raise CommandError("You need to specify a flag name.")
 
         if options['create']:
             flag, created = Flag.objects.get_or_create(name=flag_name)
@@ -83,7 +83,7 @@ class Command(BaseCommand):
             try:
                 flag = Flag.objects.get(name=flag_name)
             except Flag.DoesNotExist:
-                raise CommandError('This flag doesn\'t exist')
+                raise CommandError("This flag doesn't exist")
 
         # Loop through all options, setting Flag attributes that match (ie. don't want to try setting flag.verbosity)
         for option in options:

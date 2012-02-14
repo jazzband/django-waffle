@@ -14,7 +14,7 @@ class Command(BaseCommand):
             action='store_true',
             dest='create',
             default=False,
-            help='If the switch doesn\'t exist, create it.'
+            help="If the switch doesn't exist, create it."
         )
     )
     help = "Activate or deactivate a switch."
@@ -30,7 +30,7 @@ class Command(BaseCommand):
             return
 
         if not (switch_name and state):
-            raise CommandError('You need to specify a switch name and state.')
+            raise CommandError("You need to specify a switch name and state.")
 
         if not state in ["on", "off"]:
             raise CommandError('You need to specify state of switch with "on" or "off"')
@@ -43,7 +43,7 @@ class Command(BaseCommand):
             try:
                 switch = Switch.objects.get(name=switch_name)
             except Switch.DoesNotExist:
-                raise CommandError('This switch doesn\'t exist')
+                raise CommandError("This switch doesn't exist")
 
         switch.active = state == "on"
         switch.save()

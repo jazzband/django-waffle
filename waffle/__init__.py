@@ -11,16 +11,21 @@ from waffle.models import Flag, Sample, Switch
 VERSION = (0, 8, 1)
 __version__ = '.'.join(map(str, VERSION))
 
+SUFFIX = getattr(settings, 'WAFFLE_TABLE_SUFFIX', '')
+CACHE_PREFIX = getattr(settings, 'WAFFLE_CACHE_PREFIX', u'waffle')
 
-CACHE_PREFIX = getattr(settings, 'WAFFLE_CACHE_PREFIX', u'waffle:')
-FLAG_CACHE_KEY = CACHE_PREFIX + u'flag:{n}'
-FLAGS_ALL_CACHE_KEY = CACHE_PREFIX + u'flags:all'
-FLAG_USERS_CACHE_KEY = CACHE_PREFIX + u'flag:{n}:users'
-FLAG_GROUPS_CACHE_KEY = CACHE_PREFIX + u'flag:{n}:groups'
-SAMPLE_CACHE_KEY = CACHE_PREFIX + u'sample:{n}'
-SAMPLES_ALL_CACHE_KEY = CACHE_PREFIX + u'samples:all'
-SWITCH_CACHE_KEY = CACHE_PREFIX + u'switch:{n}'
-SWITCHES_ALL_CACHE_KEY = CACHE_PREFIX + u'switches:all'
+
+def key(name):
+    return u':'.join([CACHE_PREFIX, SUFFIX, name])
+
+FLAG_CACHE_KEY = key(u'waffle:flag:{n}')
+FLAGS_ALL_CACHE_KEY = key(u'waffle:flags:all')
+FLAG_USERS_CACHE_KEY = key(u'waffle:flag:{n}:users')
+FLAG_GROUPS_CACHE_KEY = key(u'waffle:flag:{n}:groups')
+SAMPLE_CACHE_KEY = key(u'waffle:sample:{n}')
+SAMPLES_ALL_CACHE_KEY = key(u'waffle:samples:all')
+SWITCH_CACHE_KEY = key(u'waffle:switch:{n}')
+SWITCHES_ALL_CACHE_KEY = key(u'waffle:switches:all')
 COOKIE_NAME = getattr(settings, 'WAFFLE_COOKIE', 'dwf_%s')
 TEST_COOKIE_NAME = getattr(settings, 'WAFFLE_TESTING_COOKIE', 'dwft_%s')
 

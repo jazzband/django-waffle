@@ -17,7 +17,7 @@ class FlagAdmin(admin.ModelAdmin):
     actions = [enable_for_all, disable_for_all]
     date_hierarchy = 'created'
     list_display = ('name', 'everyone', 'percent', 'superusers', 'staff',
-                    'authenticated')
+                    'authenticated', 'note')
     list_filter = ('everyone', 'superusers', 'staff', 'authenticated',
                    'created', 'modified')
     raw_id_fields = ('users', 'groups')
@@ -40,13 +40,13 @@ disable_switches.short_description = 'Disable the selected switches.'
 class SwitchAdmin(admin.ModelAdmin):
     actions = [enable_switches, disable_switches]
     date_hierarchy = 'created'
-    list_display = ('name', 'active', 'created', 'modified')
+    list_display = ('name', 'active', 'created', 'modified', 'note')
     list_filter = ('active',)
 
 
 class SampleAdmin(admin.ModelAdmin):
     date_hierarchy = 'created'
-    list_display = ('name', 'percent', 'created', 'modified')
+    list_display = ('name', 'percent', 'created', 'modified', 'note')
 
 
 admin.site.register(Flag, FlagAdmin)

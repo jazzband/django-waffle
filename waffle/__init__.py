@@ -25,6 +25,13 @@ COOKIE_NAME = getattr(settings, 'WAFFLE_COOKIE', 'dwf_%s')
 TEST_COOKIE_NAME = getattr(settings, 'WAFFLE_TESTING_COOKIE', 'dwft_%s')
 
 
+def set_flag(request, flag_name, active=True, session_only=False):
+    """Set a flag value on a request object."""
+    if not hasattr(request, 'waffles'):
+        request.waffles = {}
+    request.waffles[flag_name] = [active, session_only]
+
+
 def flag_is_active(request, flag_name):
     flag = cache.get(FLAG_CACHE_KEY.format(n=flag_name))
     if flag is None:
@@ -86,16 +93,17 @@ def flag_is_active(request, flag_name):
             request.waffles = {}
         elif flag_name in request.waffles:
             return request.waffles[flag_name][0]
-        request.waffles[flag_name] = [False, flag.rollout]
 
         cookie = COOKIE_NAME % flag_name
         if cookie in request.COOKIES:
-            request.waffles[flag_name][0] = (request.COOKIES[cookie] == 'True')
-            return request.waffles[flag_name][0]
+            flag_active = (request.COOKIES[cookie] == 'True')
+            set_flag(request, flag_name, flag_active, flag.rollout)
+            return flag_active
 
         if Decimal(str(random.uniform(0, 100))) <= flag.percent:
-            request.waffles[flag_name][0] = True
+            set_flag(request, flag_name, True, flag.rollout)
             return True
+        set_flag(request, flag_name, False, flag.rollout)
 
     return False
 

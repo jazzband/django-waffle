@@ -2,6 +2,7 @@ import random
 
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, Group, User
+from django.db import connection
 
 import mock
 from nose.tools import eq_
@@ -259,6 +260,17 @@ class SwitchTests(TestCase):
     @mock.patch.object(settings._wrapped, 'WAFFLE_SWITCH_DEFAULT', True)
     def test_undefined_default(self):
         assert waffle.switch_is_active('foo')
+
+    @mock.patch.object(settings._wrapped, 'DEBUG', True)
+    def test_no_query(self):
+        """Do not make two queries for a non-existent switch."""
+        assert not Switch.objects.filter(name='foo').exists()
+        queries = len(connection.queries)
+        assert not waffle.switch_is_active('foo')
+        assert len(connection.queries) > queries, 'We should make one query.'
+        queries = len(connection.queries)
+        assert not waffle.switch_is_active('foo')
+        eq_(queries, len(connection.queries), 'We should only make one query.')
 
 
 class SampleTests(TestCase):

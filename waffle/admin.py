@@ -21,6 +21,7 @@ class FlagAdmin(admin.ModelAdmin):
     list_filter = ('everyone', 'superusers', 'staff', 'authenticated',
                    'created', 'modified')
     raw_id_fields = ('users', 'groups')
+    ordering = ('-id',)
 
 
 def enable_switches(ma, request, qs):
@@ -42,11 +43,13 @@ class SwitchAdmin(admin.ModelAdmin):
     date_hierarchy = 'created'
     list_display = ('name', 'active', 'created', 'modified', 'note')
     list_filter = ('active',)
+    ordering = ('-id',)
 
 
 class SampleAdmin(admin.ModelAdmin):
     date_hierarchy = 'created'
     list_display = ('name', 'percent', 'created', 'modified', 'note')
+    ordering = ('-id',)
 
 
 admin.site.register(Flag, FlagAdmin)

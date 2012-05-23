@@ -27,6 +27,9 @@ TEST_COOKIE_NAME = getattr(settings, 'WAFFLE_TESTING_COOKIE', 'dwft_%s')
 
 class DoesNotExist(object):
     """The record does not exist."""
+    @property
+    def active(self):
+        return getattr(settings, 'WAFFLE_SWITCH_DEFAULT', False)
 
 
 def set_flag(request, flag_name, active=True, session_only=False):
@@ -119,12 +122,10 @@ def switch_is_active(switch_name):
             switch = Switch.objects.get(name=switch_name)
             cache_switch(instance=switch)
         except Switch.DoesNotExist:
-            s = DoesNotExist()
-            s.name = switch_name
-            cache_switch(instance=s)
-        else:
-            return switch.active
-    return getattr(settings, 'WAFFLE_SWITCH_DEFAULT', False)
+            switch = DoesNotExist()
+            switch.name = switch_name
+            cache_switch(instance=switch)
+    return switch.active
 
 
 def sample_is_active(sample_name):

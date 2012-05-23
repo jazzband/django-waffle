@@ -2,6 +2,7 @@ import random
 
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, Group, User
+from django.core.cache import cache
 from django.db import connection
 
 import mock
@@ -253,6 +254,24 @@ class SwitchTests(TestCase):
     def test_switch_inactive(self):
         switch = Switch.objects.create(name='myswitch', active=False)
         assert not waffle.switch_is_active(switch.name)
+
+    def test_switch_active_from_cache(self):
+        """Do not make two queries for an existing active switch."""
+        switch = Switch.objects.create(name='myswitch', active=True)
+        # Get the value once so that it will be put into the cache
+        assert waffle.switch_is_active(switch.name)
+        queries = len(connection.queries)
+        assert waffle.switch_is_active(switch.name)
+        eq_(queries, len(connection.queries), 'We should only make one query.')
+
+    def test_switch_inactive_from_cache(self):
+        """Do not make two queries for an existing inactive switch."""
+        switch = Switch.objects.create(name='myswitch', active=False)
+        # Get the value once so that it will be put into the cache
+        assert not waffle.switch_is_active(switch.name)
+        queries = len(connection.queries)
+        assert not waffle.switch_is_active(switch.name)
+        eq_(queries, len(connection.queries), 'We should only make one query.')
 
     def test_undefined(self):
         assert not waffle.switch_is_active('foo')

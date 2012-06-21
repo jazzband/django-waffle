@@ -1,4 +1,7 @@
-from datetime import datetime
+try:
+    from django.utils import timezone as datetime
+except ImportError:
+    from datetime import datetime
 
 from django.contrib.auth.models import Group, User
 from django.db import models
@@ -34,13 +37,17 @@ class Flag(models.Model):
         'Activate roll-out mode?'))
     note = models.TextField(blank=True, help_text=(
         'Note where this Flag is used.'))
-    created = models.DateTimeField(auto_now_add=True, db_index=True,
+    created = models.DateTimeField(default=datetime.now, db_index=True,
         help_text=('Date when this Flag was created.'))
-    modified = models.DateTimeField(auto_now=True, help_text=(
+    modified = models.DateTimeField(default=datetime.now, help_text=(
         'Date when this Flag was last modified.'))
 
     def __unicode__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        self.modified = datetime.now()
+        super(Flag, self).save(*args, **kwargs)
 
 
 class Switch(models.Model):
@@ -55,13 +62,17 @@ class Switch(models.Model):
         'Is this flag active?'))
     note = models.TextField(blank=True, help_text=(
         'Note where this Switch is used.'))
-    created = models.DateTimeField(auto_now_add=True, db_index=True,
+    created = models.DateTimeField(default=datetime.now, db_index=True,
         help_text=('Date when this Switch was created.'))
-    modified = models.DateTimeField(auto_now=True, help_text=(
+    modified = models.DateTimeField(default=datetime.now, help_text=(
         'Date when this Switch was last modified.'))
 
     def __unicode__(self):
         return u'%s: %s' % (self.name, 'on' if self.active else 'off')
+
+    def save(self, *args, **kwargs):
+        self.modified = datetime.now()
+        super(Switch, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name_plural = 'Switches'
@@ -78,10 +89,14 @@ class Sample(models.Model):
         'this sample will be active.'))
     note = models.TextField(blank=True, help_text=(
         'Note where this Sample is used.'))
-    created = models.DateTimeField(auto_now_add=True, db_index=True,
+    created = models.DateTimeField(default=datetime.now, db_index=True,
         help_text=('Date when this Sample was created.'))
-    modified = models.DateTimeField(auto_now=True, help_text=(
+    modified = models.DateTimeField(default=datetime.now, help_text=(
         'Date when this Sample was last modified.'))
 
     def __unicode__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        self.modified = datetime.now()
+        super(Sample, self).save(*args, **kwargs)

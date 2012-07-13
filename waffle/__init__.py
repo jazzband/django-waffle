@@ -52,10 +52,9 @@ def flag_is_active(request, flag_name):
         if flag_name in request.GET:
             return request.GET[flag_name] == '1'
 
-
     if flag.everyone:
         return True
-    elif flag.everyone == False:
+    elif flag.everyone is False:
         return False
 
     if flag.testing:  # Testing mode is on.
@@ -82,18 +81,19 @@ def flag_is_active(request, flag_name):
 
     if flag.languages:
         languages = flag.languages.split(',')
-        if hasattr(request, 'LANGUAGE_CODE') and request.LANGUAGE_CODE in languages:
+        if (hasattr(request, 'LANGUAGE_CODE') and
+                request.LANGUAGE_CODE in languages):
             return True
 
     flag_users = cache.get(FLAG_USERS_CACHE_KEY.format(n=flag.name))
-    if flag_users == None:
+    if flag_users is None:
         flag_users = flag.users.all()
         cache_flag(instance=flag)
     if user in flag_users:
         return True
 
     flag_groups = cache.get(FLAG_GROUPS_CACHE_KEY.format(n=flag.name))
-    if flag_groups == None:
+    if flag_groups is None:
         flag_groups = flag.groups.all()
         cache_flag(instance=flag)
     for group in flag_groups:

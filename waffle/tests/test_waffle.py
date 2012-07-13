@@ -2,7 +2,6 @@ import random
 
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, Group, User
-from django.core.cache import cache
 from django.db import connection
 
 import mock

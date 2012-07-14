@@ -95,6 +95,20 @@ class WaffleTests(TestCase):
         eq_('off', response.content)
         assert not 'dwf_myflag' in response.cookies
 
+    def test_languages(self):
+        Flag.objects.create(name='myflag', languages='en,fr')
+        request = get()
+        response = process_request(request, views.flag_in_view)
+        eq_('off', response.content)
+
+        request.LANGUAGE_CODE = 'en'
+        response = process_request(request, views.flag_in_view)
+        eq_('on', response.content)
+
+        request.LANGUAGE_CODE = 'de'
+        response = process_request(request, views.flag_in_view)
+        eq_('off', response.content)
+
     def test_user(self):
         """Test the per-user switch."""
         user = User.objects.create(username='foo')

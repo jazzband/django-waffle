@@ -393,18 +393,17 @@ Rollout Mode is enabled **per flag**.
 Waffle in JavaScript
 ====================
 
-Waffle now helps you use flags directly in JavaScript. You need to add
-the ``wafflejs`` view to your ``urls.py``::
-
-    from waffle.views import wafflejs
+Waffle now helps you use flags directly in JavaScript. You need to add the
+Waffle URLs to your URL config::
 
     urlpatterns = patterns('',
         # ...
-        url(r'^wafflejs$', wafflejs, name='wafflejs'),
+        (r'^', include('waffle.urls')),
         # ...
     )
 
-You can then load the Waffle JavaScript in your templates::
+This adds a named URL route called ``wafflejs``. You can then load the Waffle
+JavaScript in your templates::
 
     <script src="{% url wafflejs %}"></script>
 

@@ -1,10 +1,6 @@
 # These are required to run the tests.
-nose
-mock
-fabric
-Jinja2>=2.6
-Django==1.3.1
-south
--e git+git://github.com/jbalogh/test-utils.git#egg=test-utils
--e git+git://github.com/jbalogh/django-nose.git#egg=django-nose
--e git+git://github.com/jbalogh/jingo.git#egg=jingo
+Django==1.4.1
+
+# Everything else is in a Django-version-free version
+# for TravisCI.
+-r travis.txt

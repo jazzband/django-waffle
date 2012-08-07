@@ -1,0 +1,11 @@
+# These are the requirements for Travis, e.g. we don't specify Django
+# versions.
+nose==1.1.2
+mock==1.0b1
+fabric==1.4.3
+Jinja2>=2.6
+south==0.7.6
+-e git+git://github.com/jbalogh/test-utils.git@3c2214d193d#egg=test-utils
+-e git+git://github.com/jbalogh/django-nose.git@e3942c2c9d91267#egg=django-nose
+-e git+git://github.com/jbalogh/jingo.git@1dc0e0bf4a0118#egg=jingo
+

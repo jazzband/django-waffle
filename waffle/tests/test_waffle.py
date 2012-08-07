@@ -245,7 +245,7 @@ class WaffleTests(TestCase):
 
         # GET param should override cookie
         request = get(dwft_foo='0')
-        request.COOKIES['dwft_foo'] = True
+        request.COOKIES['dwft_foo'] = 'True'
         assert not waffle.flag_is_active(request, 'foo')
         assert 'foo' in request.waffle_tests
         assert not request.waffle_tests['foo']
@@ -259,6 +259,23 @@ class WaffleTests(TestCase):
         request = get(dwft_foo='0')
         assert not waffle.flag_is_active(request, 'foo')
         assert not hasattr(request, 'waffle_tests')
+
+    def test_set_then_unset_testing_flag(self):
+        Flag.objects.create(name='myflag', testing=True)
+        response = self.client.get('/flag_in_view?dwft_myflag=1')
+        eq_('on', response.content)
+
+        response = self.client.get('/flag_in_view')
+        eq_('on', response.content)
+
+        response = self.client.get('/flag_in_view?dwft_myflag=0')
+        eq_('off', response.content)
+
+        response = self.client.get('/flag_in_view')
+        eq_('off', response.content)
+
+        response = self.client.get('/flag_in_view?dwft_myflag=1')
+        eq_('on', response.content)
 
 
 class SwitchTests(TestCase):

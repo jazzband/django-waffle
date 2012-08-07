@@ -4,12 +4,18 @@ from waffle.models import Flag, Sample, Switch
 
 
 def enable_for_all(ma, request, qs):
-    qs.update(everyone=True)
+    # Iterate over all objects to cause cache invalidation.
+    for f in qs.all():
+        f.everyone = True
+        f.save()
 enable_for_all.short_description = 'Enable selected flags for everyone.'
 
 
 def disable_for_all(ma, request, qs):
-    qs.update(everyone=False)
+    # Iterate over all objects to cause cache invalidation.
+    for f in qs.all():
+        f.everyone = False
+        f.save()
 disable_for_all.short_description = 'Disable selected flags for everyone.'
 
 

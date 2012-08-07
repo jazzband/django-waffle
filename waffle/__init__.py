@@ -59,14 +59,14 @@ def flag_is_active(request, flag_name):
 
     if flag.testing:  # Testing mode is on.
         tc = TEST_COOKIE_NAME % flag_name
-        if tc in request.COOKIES:
-            return request.COOKIES[tc] == 'True'
         if tc in request.GET:
             on = request.GET[tc] == '1'
             if not hasattr(request, 'waffle_tests'):
                 request.waffle_tests = {}
             request.waffle_tests[flag_name] = on
             return on
+        if tc in request.COOKIES:
+            return request.COOKIES[tc] == 'True'
 
     user = request.user
 

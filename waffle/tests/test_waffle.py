@@ -243,7 +243,9 @@ class WaffleTests(TestCase):
         assert 'foo' in request.waffle_tests
         assert request.waffle_tests['foo']
 
+        # GET param should override cookie
         request = get(dwft_foo='0')
+        request.COOKIES['dwft_foo'] = True
         assert not waffle.flag_is_active(request, 'foo')
         assert 'foo' in request.waffle_tests
         assert not request.waffle_tests['foo']

@@ -44,9 +44,12 @@ def flag_is_active(request, flag_name):
     if flag is None:
         try:
             flag = Flag.objects.get(name=flag_name)
-            cache_flag(instance=flag)
         except Flag.DoesNotExist:
-            return getattr(settings, 'WAFFLE_FLAG_DEFAULT', False)
+            if getattr(settings, 'WAFFLE_FLAG_AUTOCREATE', False):
+                flag = Flag.objects.create(name=flag_name)
+            else:
+                return getattr(settings, 'WAFFLE_FLAG_DEFAULT', False)
+        cache_flag(instance=flag)
 
     if getattr(settings, 'WAFFLE_OVERRIDE', False):
         if flag_name in request.GET:
@@ -127,8 +130,11 @@ def switch_is_active(switch_name):
             switch = Switch.objects.get(name=switch_name)
             cache_switch(instance=switch)
         except Switch.DoesNotExist:
-            switch = DoesNotExist()
-            switch.name = switch_name
+            if getattr(settings, 'WAFFLE_SWITCH_AUTOCREATE', False):
+                switch = Switch.objects.create(name=switch_name)
+            else:
+                switch = DoesNotExist()
+                switch.name = switch_name
             cache_switch(instance=switch)
     return switch.active
 
@@ -140,7 +146,10 @@ def sample_is_active(sample_name):
             sample = Sample.objects.get(name=sample_name)
             cache_sample(instance=sample)
         except Sample.DoesNotExist:
-            return getattr(settings, 'WAFFLE_SAMPLE_DEFAULT', False)
+            if getattr(settings, 'WAFFLE_SAMPLE_AUTOCREATE', False):
+                sample = Sample.objects.create(name=sample_name)
+            else:
+                return getattr(settings, 'WAFFLE_SAMPLE_DEFAULT', False)
 
     return Decimal(str(random.uniform(0, 100))) <= sample.percent
 

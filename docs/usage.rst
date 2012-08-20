@@ -295,6 +295,15 @@ behavior.
     ever upgrade and change the shape of the objects (for example
     upgrading from <0.7.5 to >0.7.5) you'll want to set this to
     something other than ``'waffle:'``.
+``WAFFLE_FLAG_AUTOCREATE``:
+    Whether new Flags will be created automatically when used. Defaults to
+    ``False``.
+``WAFFLE_SWITCH_AUTOCREATE``:
+    Whether new Switches will be created automatically when used. Defaults to
+    ``False``.
+``WAFFLE_SAMPLE_AUTOCREATE``:
+    Whether new Samples will be created automatically when used. Defaults to
+    ``False``.
 
 
 .. _overriding-flags:

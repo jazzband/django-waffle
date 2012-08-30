@@ -9,13 +9,13 @@
         {% for sample, value in samples %}'{{ sample }}': {% if value %}true{% else %}false{% endif %}{% if not forloop.last %},{% endif %}{% endfor %}
         };
     window.waffle = {
-        "flag": function waffle_flag(flag_name) {
+        "flag_is_active": function waffle_flag(flag_name) {
             return !!FLAGS[flag_name];
         },
-        "switch": function waffle_switch(switch_name) {
+        "switch_is_active": function waffle_switch(switch_name) {
             return !!SWITCHES[switch_name];
         },
-        "sample": function waffle_sample(sample_name) {
+        "sample_is_active": function waffle_sample(sample_name) {
             return !!SAMPLES[sample_name];
         }
     };

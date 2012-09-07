@@ -411,26 +411,29 @@ Once you've loaded the JavaScript, you can use the global ``waffle``
 object.  Just pass in a flag name. As in the Python API, if a flag or
 switch is undefined, it will always be ``false``.
 
+The function names don't match those in Python because 'switch' is a
+reserved word in JavaScript.
+
 ::
 
-    if (waffle.flag('some_flag')) {
+    if (waffle.flag_is_active('some_flag')) {
         // Flag is active.
     } else {
         // Flag is inactive.
     }
 
-    if (waffle.switch('some_switch')) {
+    if (waffle.switch_is_active('some_switch')) {
         // Switch is active.
     } else {
         // Switch is inactive.
     }
 
-    if (waffle.sample('some_sample')) {
+    if (waffle.sample_is_active('some_sample')) {
         // Sample is active.
     } else {
         // Sample is inactive.
     }
 
-``waffle.sample(foo)`` will return the same value *on a given request*
+``waffle.sample_is_active(foo)`` will return the same value *on a given request*
 but that value may not persist across multiple requests.
 

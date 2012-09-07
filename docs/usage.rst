@@ -411,9 +411,6 @@ Once you've loaded the JavaScript, you can use the global ``waffle``
 object.  Just pass in a flag name. As in the Python API, if a flag or
 switch is undefined, it will always be ``false``.
 
-The function names don't match those in Python because 'switch' is a
-reserved word in JavaScript.
-
 ::
 
     if (waffle.flag_is_active('some_flag')) {

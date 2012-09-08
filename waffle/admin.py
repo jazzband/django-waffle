@@ -8,7 +8,7 @@ def enable_for_all(ma, request, qs):
     for f in qs.all():
         f.everyone = True
         f.save()
-enable_for_all.short_description = 'Enable selected flags for everyone.'
+enable_for_all.short_description = 'Enable selected flags for everyone'
 
 
 def disable_for_all(ma, request, qs):
@@ -16,7 +16,7 @@ def disable_for_all(ma, request, qs):
     for f in qs.all():
         f.everyone = False
         f.save()
-disable_for_all.short_description = 'Disable selected flags for everyone.'
+disable_for_all.short_description = 'Disable selected flags for everyone'
 
 
 class FlagAdmin(admin.ModelAdmin):
@@ -33,14 +33,14 @@ def enable_switches(ma, request, qs):
     for switch in qs:
         switch.active = True
         switch.save()
-enable_switches.short_description = 'Enable the selected switches.'
+enable_switches.short_description = 'Enable the selected switches'
 
 
 def disable_switches(ma, request, qs):
     for switch in qs:
         switch.active = False
         switch.save()
-disable_switches.short_description = 'Disable the selected switches.'
+disable_switches.short_description = 'Disable the selected switches'
 
 
 class SwitchAdmin(admin.ModelAdmin):

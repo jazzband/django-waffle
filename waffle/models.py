@@ -39,11 +39,11 @@ class Flag(models.Model):
     rollout = models.BooleanField(default=False, help_text=(
         'Activate roll-out mode?'))
     note = models.TextField(blank=True, help_text=(
-        'Note where this Flag is used.'))
+        'Note where this flag is used.'))
     created = models.DateTimeField(default=datetime.now, db_index=True,
-        help_text=('Date when this Flag was created.'))
+        help_text=('Date when this flag was created.'))
     modified = models.DateTimeField(default=datetime.now, help_text=(
-        'Date when this Flag was last modified.'))
+        'Date when this flag was last modified.'))
 
     def __unicode__(self):
         return self.name
@@ -62,13 +62,13 @@ class Switch(models.Model):
     name = models.CharField(max_length=100, unique=True,
                             help_text='The human/computer readable name.')
     active = models.BooleanField(default=False, help_text=(
-        'Is this flag active?'))
+        'Is this switch active?'))
     note = models.TextField(blank=True, help_text=(
-        'Note where this Switch is used.'))
+        'Note where this switch is used.'))
     created = models.DateTimeField(default=datetime.now, db_index=True,
-        help_text=('Date when this Switch was created.'))
+        help_text=('Date when this switch was created.'))
     modified = models.DateTimeField(default=datetime.now, help_text=(
-        'Date when this Switch was last modified.'))
+        'Date when this switch was last modified.'))
 
     def __unicode__(self):
         return u'%s: %s' % (self.name, 'on' if self.active else 'off')
@@ -78,7 +78,7 @@ class Switch(models.Model):
         super(Switch, self).save(*args, **kwargs)
 
     class Meta:
-        verbose_name_plural = 'Switches'
+        verbose_name_plural = 'switches'
 
 
 class Sample(models.Model):
@@ -91,11 +91,11 @@ class Sample(models.Model):
         'A number between 0.0 and 100.0 to indicate a percentage of the time '
         'this sample will be active.'))
     note = models.TextField(blank=True, help_text=(
-        'Note where this Sample is used.'))
+        'Note where this sample is used.'))
     created = models.DateTimeField(default=datetime.now, db_index=True,
-        help_text=('Date when this Sample was created.'))
+        help_text=('Date when this sample was created.'))
     modified = models.DateTimeField(default=datetime.now, help_text=(
-        'Date when this Sample was last modified.'))
+        'Date when this sample was last modified.'))
 
     def __unicode__(self):
         return self.name

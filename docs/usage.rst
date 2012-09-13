@@ -309,12 +309,12 @@ or you can enable it per-flag with Testing property.
 This only works for flags---Switches cannot be overridden at this
 time.
 
-The querystring parameter will be ``dwft-<name-of-flag>``. For
-example, if I have a flag named "ab-testing", then I can override the
+The querystring parameter will be ``dwft_<name_of_flag>``. For
+example, if I have a flag named "ab_testing", then I can override the
 setting with these urls:
 
-* http://example.com/?dwft-ab-testing=0 -- Off
-* http://example.com/?dwft-ab-testing=1 -- On
+* http://example.com/?dwft_ab_testing=0 -- Off
+* http://example.com/?dwft_ab_testing=1 -- On
 
 .. Note::
 

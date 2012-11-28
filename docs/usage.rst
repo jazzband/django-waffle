@@ -309,12 +309,12 @@ or you can enable it per-flag with Testing property.
 This only works for flags---Switches cannot be overridden at this
 time.
 
-The querystring parameter will be ``dwft-<name-of-flag>``. For
-example, if I have a flag named "ab-testing", then I can override the
+The querystring parameter will be ``dwft_<name_of_flag>``. For
+example, if I have a flag named "ab_testing", then I can override the
 setting with these urls:
 
-* http://example.com/?dwft-ab-testing=0 -- Off
-* http://example.com/?dwft-ab-testing=1 -- On
+* http://example.com/?dwft_ab_testing=0 -- Off
+* http://example.com/?dwft_ab_testing=1 -- On
 
 .. Note::
 
@@ -413,24 +413,24 @@ switch is undefined, it will always be ``false``.
 
 ::
 
-    if (waffle.flag('some_flag')) {
+    if (waffle.flag_is_active('some_flag')) {
         // Flag is active.
     } else {
         // Flag is inactive.
     }
 
-    if (waffle.switch('some_switch')) {
+    if (waffle.switch_is_active('some_switch')) {
         // Switch is active.
     } else {
         // Switch is inactive.
     }
 
-    if (waffle.sample('some_sample')) {
+    if (waffle.sample_is_active('some_sample')) {
         // Sample is active.
     } else {
         // Sample is inactive.
     }
 
-``waffle.sample(foo)`` will return the same value *on a given request*
+``waffle.sample_is_active(foo)`` will return the same value *on a given request*
 but that value may not persist across multiple requests.
 

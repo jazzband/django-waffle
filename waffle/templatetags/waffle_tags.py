@@ -1,4 +1,5 @@
 from django import template
+from django.template.base import VariableDoesNotExist
 
 from waffle import flag_is_active, sample_is_active, switch_is_active
 
@@ -7,11 +8,12 @@ register = template.Library()
 
 
 class WaffleNode(template.Node):
-    def __init__(self, nodelist_true, nodelist_false, condition, name):
+    def __init__(self, nodelist_true, nodelist_false, condition, name, compiled_name):
         self.nodelist_true = nodelist_true
         self.nodelist_false = nodelist_false
         self.condition = condition
         self.name = name
+        self.compiled_name = compiled_name
 
     def __repr__(self):
         return '<Waffle node: %s>' % self.name
@@ -23,72 +25,50 @@ class WaffleNode(template.Node):
             yield node
 
     def render(self, context):
-        if self.condition(context.get('request', None), self.name):
+        try:
+            name = self.compiled_name.resolve(context)
+        except VariableDoesNotExist:
+            name = self.name
+        if not name:
+            name = self.name
+        if self.condition(context.get('request', None), name):
             return self.nodelist_true.render(context)
         return self.nodelist_false.render(context)
+
+    @classmethod
+    def handle_token(cls, parser, token, kind, condition):
+        bits = token.split_contents()
+        if len(bits) < 2:
+            raise template.TemplateSyntaxError("%r tag requires an argument" %
+                                               bits[0])
+
+        name = bits[1]
+        compiled_name = parser.compile_filter(name)
+
+        nodelist_true = parser.parse(('else', 'end%s' % kind))
+        token = parser.next_token()
+        if token.contents == 'else':
+            nodelist_false = parser.parse(('end%s' % kind,))
+            parser.delete_first_token()
+        else:
+            nodelist_false = template.NodeList()
+
+        return cls(nodelist_true, nodelist_false, condition, name, compiled_name)
 
 
 @register.tag
 def flag(parser, token):
-    try:
-        tag, flag_name = token.contents.split(None, 1)
-    except ValueError:
-        raise template.TemplateSyntaxError, \
-              "%r tag requires an argument" % token.contents.split()[0]
-
-    flag_name = flag_name.strip('\'"')
-    condition = lambda r, n: flag_is_active(r, n)
-
-    nodelist_true = parser.parse(('else', 'endflag'))
-    token = parser.next_token()
-    if token.contents == 'else':
-        nodelist_false = parser.parse(('endflag',))
-        parser.delete_first_token()
-    else:
-        nodelist_false = template.NodeList()
-
-    return WaffleNode(nodelist_true, nodelist_false, condition, flag_name)
+    flag_is_active, sample_is_active, switch_is_active
+    return WaffleNode.handle_token(parser, token, 'flag', flag_is_active)
 
 
 @register.tag
 def switch(parser, token):
-    try:
-        tag, switch_name = token.contents.split(None, 1)
-    except ValueError:
-        raise template.TemplateSyntaxError, \
-              "%r tag requires an argument" % token.contents.split()[0]
-
-    switch_name = switch_name.strip('\'"')
-    condition = lambda r, n: switch_is_active(n)
-
-    nodelist_true = parser.parse(('else', 'endswitch'))
-    token = parser.next_token()
-    if token.contents == 'else':
-        nodelist_false = parser.parse(('endswitch',))
-        parser.delete_first_token()
-    else:
-        nodelist_false = template.NodeList()
-
-    return WaffleNode(nodelist_true, nodelist_false, condition, switch_name)
+    condition = lambda request, name: switch_is_active(name)
+    return WaffleNode.handle_token(parser, token, 'switch', condition)
 
 
 @register.tag
 def sample(parser, token):
-    try:
-        tag, sample_name = token.contents.split(None, 1)
-    except ValueError:
-        raise template.TemplateSyntaxError, \
-              "%r tag requires an argument" % token.contents.split()[0]
-
-    sample_name = sample_name.strip('\'"')
-    condition = lambda r, n: sample_is_active(n)
-
-    nodelist_true = parser.parse(('else', 'endsample'))
-    token = parser.next_token()
-    if token.contents == 'else':
-        nodelist_false = parser.parse(('endsample',))
-        parser.delete_first_token()
-    else:
-        nodelist_false = template.NodeList()
-
-    return WaffleNode(nodelist_true, nodelist_false, condition, sample_name)
+    condition = lambda request, name: sample_is_active(name)
+    return WaffleNode.handle_token(parser, token, 'sample', condition)

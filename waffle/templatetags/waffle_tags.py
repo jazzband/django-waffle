@@ -58,7 +58,6 @@ class WaffleNode(template.Node):
 
 @register.tag
 def flag(parser, token):
-    flag_is_active, sample_is_active, switch_is_active
     return WaffleNode.handle_token(parser, token, 'flag', flag_is_active)
 
 

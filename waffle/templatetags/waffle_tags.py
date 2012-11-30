@@ -71,3 +71,18 @@ def switch(parser, token):
 def sample(parser, token):
     condition = lambda request, name: sample_is_active(name)
     return WaffleNode.handle_token(parser, token, 'sample', condition)
+
+
+@register.filter('flag')
+def flag_filter(name, request):
+    return flag_is_active(request, name)
+
+
+@register.filter('switch')
+def switch_filter(name):
+    return switch_is_active(name)
+
+
+@register.filter('sample')
+def sample_filter(name):
+    return sample_is_active(name)

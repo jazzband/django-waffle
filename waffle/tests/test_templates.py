@@ -24,6 +24,9 @@ class WaffleTemplateTests(TestCase):
         self.assertContains(response, 'flag off')
         self.assertContains(response, 'switch off')
         self.assertContains(response, 'sample')
+        self.assertContains(response, 'flag_var off')
+        self.assertContains(response, 'switch_var off')
+        self.assertContains(response, 'sample_var')
 
     def test_no_request_context(self):
         """Switches and Samples shouldn't require a request context."""

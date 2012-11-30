@@ -19,8 +19,13 @@ def flag_in_jingo(request):
 
 
 def flag_in_django(request):
-    c = RequestContext(request, {})
+    c = RequestContext(request, {
+        'flag_var': 'flag_var',
+        'switch_var': 'switch_var',
+        'sample_var': 'sample_var',
+    })
     return render_to_response('django.html', context_instance=c)
+
 
 def no_request_context(request):
     c = Context({})

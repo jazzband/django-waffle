@@ -8,7 +8,8 @@ register = template.Library()
 
 
 class WaffleNode(template.Node):
-    def __init__(self, nodelist_true, nodelist_false, condition, name, compiled_name):
+    def __init__(self, nodelist_true, nodelist_false, condition, name,
+                 compiled_name):
         self.nodelist_true = nodelist_true
         self.nodelist_false = nodelist_false
         self.condition = condition
@@ -53,7 +54,8 @@ class WaffleNode(template.Node):
         else:
             nodelist_false = template.NodeList()
 
-        return cls(nodelist_true, nodelist_false, condition, name, compiled_name)
+        return cls(nodelist_true, nodelist_false, condition,
+                   name, compiled_name)
 
 
 @register.tag

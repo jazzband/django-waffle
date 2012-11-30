@@ -11,6 +11,8 @@ JINJA_CONFIG = {}
 
 SITE_ID = 1
 
+SECRET_KEY = 'foobar'
+
 TEST_RUNNER = 'django_nose.runner.NoseTestSuiteRunner'
 
 DATABASES = {

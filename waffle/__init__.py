@@ -96,8 +96,9 @@ def flag_is_active(request, flag_name):
     if flag_groups is None:
         flag_groups = flag.groups.all()
         cache_flag(instance=flag)
+    user_groups = user.groups.all()
     for group in flag_groups:
-        if group in user.groups.all():
+        if group in user_groups:
             return True
 
     if flag.percent > 0:

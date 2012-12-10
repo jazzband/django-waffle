@@ -295,6 +295,10 @@ behavior.
     ever upgrade and change the shape of the objects (for example
     upgrading from <0.7.5 to >0.7.5) you'll want to set this to
     something other than ``'waffle:'``.
+ ``WAFFLE_TABLE_SUFFIX``:
+    What suffix to add to Waffle DB table names, if any. Useful for
+    multiple sites with different waffle flags accessing the same
+    DB. Defaults to ``None``.
 
 
 .. _overriding-flags:

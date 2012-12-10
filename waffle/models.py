@@ -5,6 +5,12 @@ except ImportError:
 
 from django.contrib.auth.models import Group, User
 from django.db import models
+from django.conf import settings
+
+
+SUFFIX = getattr(settings, 'WAFFLE_TABLE_SUFFIX', '')
+if SUFFIX:
+    SUFFIX = '_' + SUFFIX
 
 
 class Flag(models.Model):
@@ -45,6 +51,9 @@ class Flag(models.Model):
     modified = models.DateTimeField(default=datetime.now, help_text=(
         'Date when this Flag was last modified.'))
 
+    class Meta:
+        db_table = 'waffle_flag' + SUFFIX
+
     def __unicode__(self):
         return self.name
 
@@ -79,6 +88,7 @@ class Switch(models.Model):
 
     class Meta:
         verbose_name_plural = 'Switches'
+        db_table = 'waffle_switch' + SUFFIX
 
 
 class Sample(models.Model):
@@ -96,6 +106,9 @@ class Sample(models.Model):
         help_text=('Date when this Sample was created.'))
     modified = models.DateTimeField(default=datetime.now, help_text=(
         'Date when this Sample was last modified.'))
+
+    class Meta:
+        db_table = 'waffle_sample' + SUFFIX
 
     def __unicode__(self):
         return self.name

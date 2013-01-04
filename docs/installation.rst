@@ -2,9 +2,9 @@
 Installation
 ============
 
-To start using Waffle, you just need to add it to your
-``INSTALLED_APPS`` and ``MIDDLEWARE_CLASSES``, and make sure to add
-the ``request`` context processor::
+To start using Waffle, you need to add it to your ``INSTALLED_APPS`` and
+``MIDDLEWARE_CLASSES``, and make sure to add the ``request`` context
+processor::
 
     TEMPLATE_CONTEXT_PROCESSORS = (
         # ...
@@ -28,3 +28,8 @@ Since Waffle will be setting cookies on response objects, you probably
 want it *below* any middleware that tweaks cookies before sending them
 out.
 
+If you're using South_, you can run ``manage.py migrate`` to create the
+necessary tables. If not, you'll need to create and run the schema
+migrations however you handle that.
+
+.. _South: http://south.aeracode.org/

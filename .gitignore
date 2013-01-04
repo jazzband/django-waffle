@@ -8,3 +8,4 @@ dist
 .project
 .pydevproject
 .settings
+docs/_*

@@ -1,5 +1,6 @@
 from decimal import Decimal
 import random
+import hashlib
 
 from django.conf import settings
 from django.core.cache import cache
@@ -40,7 +41,7 @@ def set_flag(request, flag_name, active=True, session_only=False):
 
 
 def flag_is_active(request, flag_name):
-    flag = cache.get(FLAG_CACHE_KEY.format(n=flag_name))
+    flag = cache.get(FLAG_CACHE_KEY.format(n=hashlib.md5(flag_name).hexdigest()))
     if flag is None:
         try:
             flag = Flag.objects.get(name=flag_name)
@@ -85,14 +86,14 @@ def flag_is_active(request, flag_name):
                 request.LANGUAGE_CODE in languages):
             return True
 
-    flag_users = cache.get(FLAG_USERS_CACHE_KEY.format(n=flag.name))
+    flag_users = cache.get(FLAG_USERS_CACHE_KEY.format(n=hashlib.md5(flag.name).hexdigest()))
     if flag_users is None:
         flag_users = flag.users.all()
         cache_flag(instance=flag)
     if user in flag_users:
         return True
 
-    flag_groups = cache.get(FLAG_GROUPS_CACHE_KEY.format(n=flag.name))
+    flag_groups = cache.get(FLAG_GROUPS_CACHE_KEY.format(n=hashlib.md5(flag.name).hexdigest()))
     if flag_groups is None:
         flag_groups = flag.groups.all()
         cache_flag(instance=flag)
@@ -122,7 +123,7 @@ def flag_is_active(request, flag_name):
 
 
 def switch_is_active(switch_name):
-    switch = cache.get(SWITCH_CACHE_KEY.format(n=switch_name))
+    switch = cache.get(SWITCH_CACHE_KEY.format(n=hashlib.md5(switch_name).hexdigest()))
     if switch is None:
         try:
             switch = Switch.objects.get(name=switch_name)
@@ -135,7 +136,7 @@ def switch_is_active(switch_name):
 
 
 def sample_is_active(sample_name):
-    sample = cache.get(SAMPLE_CACHE_KEY.format(n=sample_name))
+    sample = cache.get(SAMPLE_CACHE_KEY.format(n=hashlib.md5(sample_name).hexdigest()))
     if sample is None:
         try:
             sample = Sample.objects.get(name=sample_name)
@@ -151,17 +152,17 @@ def cache_flag(**kwargs):
     # action is included for m2m_changed signal. Only cache on the post_*.
     if not action or action in ['post_add', 'post_remove', 'post_clear']:
         f = kwargs.get('instance')
-        cache.add(FLAG_CACHE_KEY.format(n=f.name), f)
-        cache.add(FLAG_USERS_CACHE_KEY.format(n=f.name), f.users.all())
-        cache.add(FLAG_GROUPS_CACHE_KEY.format(n=f.name), f.groups.all())
+        cache.add(FLAG_CACHE_KEY.format(n=hashlib.md5(f.name).hexdigest()), f)
+        cache.add(FLAG_USERS_CACHE_KEY.format(n=hashlib.md5(f.name).hexdigest()), f.users.all())
+        cache.add(FLAG_GROUPS_CACHE_KEY.format(n=hashlib.md5(f.name).hexdigest()), f.groups.all())
 
 
 def uncache_flag(**kwargs):
     flag = kwargs.get('instance')
     data = {
-        FLAG_CACHE_KEY.format(n=flag.name): None,
-        FLAG_USERS_CACHE_KEY.format(n=flag.name): None,
-        FLAG_GROUPS_CACHE_KEY.format(n=flag.name): None,
+        FLAG_CACHE_KEY.format(n=hashlib.md5(flag.name).hexdigest()): None,
+        FLAG_USERS_CACHE_KEY.format(n=hashlib.md5(flag.name).hexdigest()): None,
+        FLAG_GROUPS_CACHE_KEY.format(n=hashlib.md5(flag.name).hexdigest()): None,
         FLAGS_ALL_CACHE_KEY: None
     }
     cache.set_many(data, 5)
@@ -176,12 +177,12 @@ m2m_changed.connect(uncache_flag, sender=Flag.groups.through,
 
 def cache_sample(**kwargs):
     sample = kwargs.get('instance')
-    cache.add(SAMPLE_CACHE_KEY.format(n=sample.name), sample)
+    cache.add(SAMPLE_CACHE_KEY.format(n=hashlib.md5(sample.name).hexdigest()), sample)
 
 
 def uncache_sample(**kwargs):
     sample = kwargs.get('instance')
-    cache.set(SAMPLE_CACHE_KEY.format(n=sample.name), None, 5)
+    cache.set(SAMPLE_CACHE_KEY.format(n=hashlib.md5(sample.name).hexdigest()), None, 5)
     cache.set(SAMPLES_ALL_CACHE_KEY, None, 5)
 
 post_save.connect(uncache_sample, sender=Sample, dispatch_uid='save_sample')
@@ -191,12 +192,12 @@ post_delete.connect(uncache_sample, sender=Sample,
 
 def cache_switch(**kwargs):
     switch = kwargs.get('instance')
-    cache.add(SWITCH_CACHE_KEY.format(n=switch.name), switch)
+    cache.add(SWITCH_CACHE_KEY.format(n=hashlib.md5(switch.name).hexdigest()), switch)
 
 
 def uncache_switch(**kwargs):
     switch = kwargs.get('instance')
-    cache.set(SWITCH_CACHE_KEY.format(n=switch.name), None, 5)
+    cache.set(SWITCH_CACHE_KEY.format(n=hashlib.md5(switch.name).hexdigest()), None, 5)
     cache.set(SWITCHES_ALL_CACHE_KEY, None, 5)
 
 post_delete.connect(uncache_switch, sender=Switch,

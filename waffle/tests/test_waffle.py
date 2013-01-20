@@ -6,12 +6,13 @@ from django.db import connection
 
 import mock
 from nose.tools import eq_
-from test_utils import RequestFactory, TestCase
+from test_utils import RequestFactory
 
 from test_app import views
 import waffle
 from waffle.middleware import WaffleMiddleware
 from waffle.models import Flag, Sample, Switch
+from waffle.tests.base import TestCase
 
 
 def get(**kw):

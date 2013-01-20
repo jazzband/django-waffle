@@ -1,7 +1,8 @@
 from django.core.urlresolvers import reverse
 
 from nose.tools import eq_
-from test_utils import TestCase
+
+from waffle.tests.base import TestCase
 
 
 class WaffleViewTests(TestCase):

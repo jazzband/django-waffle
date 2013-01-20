@@ -3,8 +3,10 @@ try:
 except ImportError:
     from datetime import datetime
 
-from django.contrib.auth.models import Group, User
+from django.contrib.auth.models import Group
 from django.db import models
+
+from waffle.compat import User
 
 
 class Flag(models.Model):

@@ -128,6 +128,15 @@ def flag_is_active(request, flag_name):
     return False
 
 
+def switch_set_active(name, active):
+    """Sets, or unsets, the named switch, creating it if necessary."""
+    switch, _ = Switch.objects.get_or_create(name=name)
+    switch.active = active
+    switch.save()
+    cache_switch(instance=switch)
+    return switch
+
+
 def switch_is_active(switch_name):
     switch = cache.get(keyfmt(SWITCH_CACHE_KEY, switch_name))
     if switch is None:

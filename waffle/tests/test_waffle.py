@@ -326,6 +326,18 @@ class SwitchTests(TestCase):
         assert not waffle.switch_is_active('foo')
         eq_(queries, len(connection.queries), 'We should only make one query.')
 
+    def test_switch_set_active(self):
+        # Setting non-existing switch creates it
+        switch1 = waffle.switch_set_active('foo', True)
+        assert waffle.switch_is_active('foo')
+
+        # Setting existing switch overwrites it
+        switch2 = waffle.switch_set_active('foo', False)
+        assert not waffle.switch_is_active('foo')
+
+        # This is the same switch
+        assert switch1 == switch2
+
 
 class SampleTests(TestCase):
     def test_sample_100(self):

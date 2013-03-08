@@ -5,6 +5,7 @@ from django.views.decorators.cache import never_cache
 from waffle import (flag_is_active, sample_is_active, FLAGS_ALL_CACHE_KEY,
                     SWITCHES_ALL_CACHE_KEY, SAMPLES_ALL_CACHE_KEY)
 from waffle.models import Flag, Sample, Switch
+from django.conf import settings
 
 
 @never_cache
@@ -27,5 +28,8 @@ def wafflejs(request):
     sample_values = [(s, sample_is_active(s)) for s in samples]
     return render_to_response('waffle/waffle.js', {'flags': flag_values,
                                                    'switches': switches,
-                                                   'samples': sample_values},
+                                                   'samples': sample_values,
+                                                   'flag_default': getattr(settings, 'WAFFLE_FLAG_DEFAULT', False),
+                                                   'switch_default': getattr(settings, 'WAFFLE_SWITCH_DEFAULT', False),
+                                                   'sample_default': getattr(settings, 'WAFFLE_SAMPLE_DEFAULT', False)},
                               mimetype='application/x-javascript')

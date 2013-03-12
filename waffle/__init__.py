@@ -133,7 +133,6 @@ def switch_set_active(name, active):
     switch, _ = Switch.objects.get_or_create(name=name)
     switch.active = active
     switch.save()
-    cache_switch(instance=switch)
     return switch
 
 

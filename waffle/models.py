@@ -79,6 +79,9 @@ class Switch(models.Model):
         self.modified = datetime.now()
         super(Switch, self).save(*args, **kwargs)
 
+        from waffle import cache_switch  # To avoid circular dependency
+        cache_switch(instance=self)
+
     class Meta:
         verbose_name_plural = 'Switches'
 

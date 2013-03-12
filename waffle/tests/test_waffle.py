@@ -308,6 +308,24 @@ class SwitchTests(TestCase):
         assert not waffle.switch_is_active(switch.name)
         eq_(queries, len(connection.queries), 'We should only make one query.')
 
+    def test_switch_auto_updates_cache(self):
+        """Update the cache whenever a switch changes."""
+        switch = Switch.objects.create(name='myswitch', active=False)
+
+        # Get the value once so that it will be put into the cache
+        assert not waffle.switch_is_active(switch.name)
+
+        # Update the switch (which will also update the cached value)
+        switch.active = True
+        switch.save()
+
+        queries = len(connection.queries)
+
+        # The updated cached value is immediately returned
+        assert waffle.switch_is_active(switch.name)
+
+        eq_(queries, len(connection.queries), 'We should only make one query.')
+
     def test_undefined(self):
         assert not waffle.switch_is_active('foo')
 

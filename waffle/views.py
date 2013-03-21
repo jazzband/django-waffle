@@ -26,10 +26,18 @@ def wafflejs(request):
         samples = Sample.objects.values_list('name', flat=True)
         cache.add(SAMPLES_ALL_CACHE_KEY, samples)
     sample_values = [(s, sample_is_active(s)) for s in samples]
-    return render_to_response('waffle/waffle.js', {'flags': flag_values,
-                                                   'switches': switches,
-                                                   'samples': sample_values,
-                                                   'flag_default': getattr(settings, 'WAFFLE_FLAG_DEFAULT', False),
-                                                   'switch_default': getattr(settings, 'WAFFLE_SWITCH_DEFAULT', False),
-                                                   'sample_default': getattr(settings, 'WAFFLE_SAMPLE_DEFAULT', False)},
+
+    flag_default = getattr(settings, 'WAFFLE_FLAG_DEFAULT', False)
+    switch_default = getattr(settings, 'WAFFLE_SWITCH_DEFAULT', False)
+    sample_default = getattr(settings, 'WAFFLE_SAMPLE_DEFAULT', False)
+
+    return render_to_response('waffle/waffle.js',
+                              {
+                                'flags': flag_values,
+                                'switches': switches,
+                                'samples': sample_values,
+                                'flag_default': flag_default,
+                                'switch_default': switch_default,
+                                'sample_default': sample_default,
+                              },
                               mimetype='application/x-javascript')

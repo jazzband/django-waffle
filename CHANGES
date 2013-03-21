@@ -1,0 +1,102 @@
+================
+Waffle Changelog
+================
+
+v0.9.1
+======
+
+- Real Django 1.5 support.
+- JavaScript obeys WAFFLE_*_DEFAULT settings.
+
+v0.9
+====
+
+- Reorganized documentation.
+- Hash form values for better memcached keys.
+- Simplified and improved Django template tags.
+- Renamed JS functions to *_is_active to avoid reserved keywords.
+
+v0.8.1
+======
+
+- Fix cache flushing issues.
+- Fix order of flag_is_active checks.
+- Add a waffle.urls module.
+- Add management commands.
+- Add language support to flags.
+- Better caching for missing flags/switches/samples.
+- Re-add 'note' field.
+- Created a set_flag method to make custom flag cookie triggers easier.
+
+v0.8
+====
+
+- Fix issue with repeated flag_is_active calls.
+- Add created/modified dates to models.
+- Add WAFFLE_CACHE_PREFIX settings.
+
+v0.7.6
+======
+
+- Fix waffle template functions when no request is present.
+- Added testing mode to flags.
+- Add WAFFLE_*_DEFAULT for switches and samples.
+
+v0.7.5
+======
+
+- Fix issue with stale cache using bulk admin actions.
+
+v0.7.4
+======
+
+- Fix waffle.js in Safari.
+
+v0.7.2
+======
+
+- Handle 404s correctly.
+
+v0.7.1
+======
+
+- I am bad at packaging.
+
+v0.7
+====
+
+- Add 'note' field.
+- Add migrations for Samples.
+- Clean up Jinja2 functions.
+
+v0.6
+====
+
+- Add Samples.
+
+v0.5
+====
+
+- Fix waffle.js view with Switches.
+- Add South migrations.
+- Cache values to save database queries.
+
+v0.4
+====
+
+- Add Switches.
+
+v0.3
+====
+
+- Add waffle.js view.
+
+v0.2.1
+======
+
+- Add bulk admin actions.
+
+v0.2
+====
+
+- Add rollout mode to Flags.

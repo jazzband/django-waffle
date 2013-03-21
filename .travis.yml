@@ -3,10 +3,8 @@ python:
  - "2.6"
  - "2.7"
 env:
- - DJANGO_VERSION=1.3.5
- - DJANGO_VERSION=1.4.3
- - DJANGO_VERSION=1.5b2
+ - DJANGO_VERSION=1.4.5
+ - DJANGO_VERSION=1.5
 install:
- - pip install -qe git+https://github.com/django/django.git@${DJANGO_VERSION}#egg=Django
- - pip install -q -r travis.txt --use-mirrors
+ - pip install -q Django==${DJANGO_VERSION} -r travis.txt --use-mirrors
 script: fab test

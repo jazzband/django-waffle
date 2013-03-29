@@ -92,6 +92,12 @@ def flag_is_active(request, flag_name):
                 request.LANGUAGE_CODE in languages):
             return True
 
+    if flag.useragents:
+        useragents = [u.strip() for u in flag.useragents.split('|')]
+        if (hasattr(request, 'HTTP_USER_AGENT') and 
+                request.HTTP_USER_AGENT in useragents):
+            return True
+
     flag_users = cache.get(keyfmt(FLAG_USERS_CACHE_KEY, flag.name))
     if flag_users is None:
         flag_users = flag.users.all()

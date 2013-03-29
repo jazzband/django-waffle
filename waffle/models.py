@@ -42,6 +42,8 @@ class Flag(models.Model):
         'Activate roll-out mode?'))
     note = models.TextField(blank=True, help_text=(
         'Note where this Flag is used.'))
+    useragents = models.TextField(blank=True, default='', help_text=(
+        'List of user agents this flag applies to (pipe separated)'))
     created = models.DateTimeField(default=datetime.now, db_index=True,
         help_text=('Date when this Flag was created.'))
     modified = models.DateTimeField(default=datetime.now, help_text=(

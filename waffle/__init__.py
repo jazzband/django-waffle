@@ -94,8 +94,8 @@ def flag_is_active(request, flag_name):
 
     if flag.useragents:
         useragents = [u.strip() for u in flag.useragents.split('|')]
-        if (hasattr(request, 'HTTP_USER_AGENT') and 
-                request.HTTP_USER_AGENT in useragents):
+        if ('HTTP_USER_AGENT' in request.META and 
+                request.META['HTTP_USER_AGENT'] in useragents):
             return True
 
     flag_users = cache.get(keyfmt(FLAG_USERS_CACHE_KEY, flag.name))

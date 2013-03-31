@@ -215,12 +215,12 @@ class WaffleTests(TestCase):
         eq_('off', response.content)
 
         # test with chrome user agent 
-        request.HTTP_USER_AGENT = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1312.60 Safari/537.17'
+        request.META['HTTP_USER_AGENT'] = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1312.60 Safari/537.17'
         response = process_request(request, views.flag_in_view)
         eq_('on', response.content)
 
         # test with IE 9 user agent
-        request.HTTP_USER_AGENT = 'Mozilla/5.0 (Windows; U; MSIE 9.0; WIndows NT 9.0; en-US))'
+        request.META['HTTP_USER_AGENT'] = 'Mozilla/5.0 (Windows; U; MSIE 9.0; WIndows NT 9.0; en-US))'
         response = process_request(request, views.flag_in_view)
         eq_('off', response.content)
 

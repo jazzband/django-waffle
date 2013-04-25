@@ -18,7 +18,7 @@ class Flag(models.Model):
     name = models.CharField(max_length=100, unique=True,
                             help_text='The human/computer readable name.')
     everyone = models.NullBooleanField(blank=True, help_text=(
-        'Turn this flag on (True) or off (False) for all users.'))
+        'Flip this flag on (Yes) or off (No) for everyone, overriding all other settings. Leave as Unknown to use normally.'))
     percent = models.DecimalField(max_digits=3, decimal_places=1, null=True,
                                   blank=True, help_text=(
         'A number between 0.0 and 99.9 to indicate a percentage of users for '
@@ -26,11 +26,11 @@ class Flag(models.Model):
     testing = models.BooleanField(default=False, help_text=(
         'Allow this flag to be set for a session for user testing.'))
     superusers = models.BooleanField(default=True, help_text=(
-        'Activate this flag for superusers?'))
+        'Flag always active for superusers?'))
     staff = models.BooleanField(default=False, help_text=(
-        'Activate this flag for staff?'))
+        'Flag always active for staff?'))
     authenticated = models.BooleanField(default=False, help_text=(
-        'Activate this flag for authenticate users?'))
+        'Flag always active for authenticate users?'))
     languages = models.TextField(blank=True, default='', help_text=(
         'Activate this flag for users with one of these languages (comma '
         'separated list)'))

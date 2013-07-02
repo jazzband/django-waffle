@@ -40,7 +40,7 @@ class WaffleViewTests(TestCase):
         assert ('myswitch', False) in response.context['switches']
 
     def test_flush_all_samples(self):
-        """Test the 'SAMPLES_ALL' list gets invalidates correctly."""
+        """Test the 'SAMPLES_ALL' list gets invalidated correctly."""
         Sample.objects.create(name='sample1', percent='100.0')
         response = self.client.get(reverse('wafflejs'))
         eq_(200, response.status_code)

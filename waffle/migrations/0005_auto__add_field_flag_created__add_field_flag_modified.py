@@ -4,15 +4,23 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
+try:
+    from django.utils.timezone import now
+except ImportError:
+    now = datetime.datetime.now
+
+default_datetime = now()
+
+
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
         
         # Adding field 'Flag.created'
-        db.add_column('waffle_flag', 'created', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, default=datetime.datetime(2011, 12, 7, 10, 19, 18, 930661), db_index=True, blank=True), keep_default=False)
+        db.add_column('waffle_flag', 'created', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, default=default_datetime, db_index=True, blank=True), keep_default=False)
 
         # Adding field 'Flag.modified'
-        db.add_column('waffle_flag', 'modified', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, default=datetime.datetime(2011, 12, 7, 10, 19, 27, 811182), blank=True), keep_default=False)
+        db.add_column('waffle_flag', 'modified', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, default=default_datetime, blank=True), keep_default=False)
 
 
     def backwards(self, orm):

@@ -20,6 +20,7 @@ Contents:
 
    installation
    types
+   commandline
    usage
    testing-waffles
    contributing

@@ -2,6 +2,17 @@
 Waffle Changelog
 ================
 
+
+v0.9.2
+======
+
+- Add get_flags method to waffle.js.
+- Fix issue with South migrations and custom user models in Django 1.5.
+- Document command-line access and get more useful information from it.
+- Support non-naive datetimes when appropriate.
+- Fix a cache invalidation issue.
+
+
 v0.9.1
 ======
 

@@ -199,6 +199,24 @@ behavior.
     ever upgrade and change the shape of the objects (for example
     upgrading from <0.7.5 to >0.7.5) you'll want to set this to
     something other than ``'waffle:'``.
+``WAFFLE_FLAG_AUTOCREATE``:
+    Whether new Flags will be created automatically when used. Defaults to
+    ``False``.
+``WAFFLE_FLAG_DEFAULTS``:
+    A dictionary of defaults for flags. Defaults to ``{}``. See
+    :ref:`autocreation`.
+``WAFFLE_SWITCH_AUTOCREATE``:
+    Whether new Switches will be created automatically when used. Defaults to
+    ``False``.
+``WAFFLE_SWITCH_DEFAULTS``:
+    A dictionary of defaults for flags. Defaults to ``{}``. See
+    :ref:`autocreation`.
+``WAFFLE_SAMPLE_AUTOCREATE``:
+    Whether new Samples will be created automatically when used. Defaults to
+    ``False``.
+``WAFFLE_SAMPLE_DEFAULTS``:
+    A dictionary of defaults for flags. Defaults to ``{}``. See
+    :ref:`autocreation`.
 
 
 .. _overriding-flags:
@@ -241,6 +259,25 @@ By default, ``WAFFLE_OVERRIDE`` is off. It may be useful for testing,
 automated testing in particular.
 
 ``WAFFLE_OVERRIDE`` let's you overrides **all** flags.
+
+.. _autocreation:
+
+Autocreation with defaults
+--------------------------
+
+It is possible to autocreate flags. For flags, switches and samples there are
+the respective ``WAFFLE_FLAG_AUTOCREATE``, ``WAFFLE_SWITCH_AUTOCREATE`` and
+``WAFFLE_SAMPLE_DEFAULTS``. For each type, there's also a defaults settings.
+For example for samples::
+
+    WAFFLE_SAMPLE_DEFAULTS = {
+        'special_sample': {
+            'percent': Decimal(0.15)
+        }
+    }
+
+It is a dictionary where every key is the name and value a dictionary with
+model field defaults.
 
 
 testing Property

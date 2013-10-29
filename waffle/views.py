@@ -41,4 +41,4 @@ def wafflejs(request):
                                 'switch_default': switch_default,
                                 'sample_default': sample_default,
                               },
-                              mimetype='application/x-javascript')
+                              content_type='application/x-javascript')

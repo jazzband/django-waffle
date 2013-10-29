@@ -29,6 +29,33 @@
         if(SAMPLES[sample_name] === undefined) return true;
       {% endif %}
       return !!SAMPLES[sample_name];
+    },
+    "active_flags": function waffle_active_flags() {
+        names = [];
+        for (name in FLAGS) {
+            if (!!FLAGS[name]) {
+                names.push(name);
+            }
+        }
+        return names;
+    },
+    "active_switches": function waffle_active_switches() {
+        names = [];
+        for (name in SWITCHES) {
+            if (!!SWITCHES[name]) {
+                names.push(name);
+            }
+        }
+        return names;
+    },
+    "active_samples": function waffle_active_samples() {
+        names = [];
+        for (name in SAMPLES) {
+            if (!!SAMPLES[name]) {
+                names.push(name);
+            }
+        }
+        return names;
     }
   };
 })();

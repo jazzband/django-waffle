@@ -9,6 +9,9 @@
     {% for sample, value in samples %}'{{ sample }}': {% if value %}true{% else %}false{% endif %}{% if not forloop.last %},{% endif %}{% endfor %}
     };
   window.waffle = {
+    "get_flags": function get_flags() {
+      return FLAGS;
+    },
     "flag_is_active": function waffle_flag(flag_name) {
       {% if flag_default %}
         if(FLAGS[flag_name] === undefined) return true;

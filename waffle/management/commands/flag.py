@@ -62,7 +62,14 @@ class Command(BaseCommand):
         if list_flag:
             print "Flags:"
             for flag in Flag.objects.iterator():
-                print "%s" % (flag.name)
+                print "\nNAME: %s" % (flag.name)
+                print "SUPERUSERS: %s" % (flag.superusers)
+                print "EVERYONE: %s" % (flag.everyone)
+                print "AUTHENTICATED: %s" % (flag.authenticated)
+                print "PERCENT: %s" % (flag.percent)
+                print "TESTING: %s" % (flag.testing)
+                print "ROLLOUT: %s" % (flag.rollout)
+                print "STAFF: %s" % (flag.staff)
             return
 
         if not flag_name:

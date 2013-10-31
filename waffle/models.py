@@ -35,6 +35,8 @@ class Flag(models.Model):
     languages = models.TextField(blank=True, default='', help_text=(
         'Activate this flag for users with one of these languages (comma '
         'separated list)'))
+    useragents = models.TextField(blank=True, default='', help_text=(
+        'List of user agents this flag applies to (pipe separated)'))
     groups = models.ManyToManyField(Group, blank=True, help_text=(
         'Activate this flag for these user groups.'))
     users = models.ManyToManyField(User, blank=True, help_text=(

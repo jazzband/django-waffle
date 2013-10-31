@@ -23,7 +23,7 @@ class FlagAdmin(admin.ModelAdmin):
     actions = [enable_for_all, disable_for_all]
     date_hierarchy = 'created'
     list_display = ('name', 'note', 'everyone', 'percent', 'superusers',
-                    'staff', 'authenticated', 'languages')
+                    'staff', 'authenticated', 'languages', 'useragents')
     list_filter = ('everyone', 'superusers', 'staff', 'authenticated')
     raw_id_fields = ('users', 'groups')
     ordering = ('-id',)

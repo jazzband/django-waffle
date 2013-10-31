@@ -205,6 +205,25 @@ class WaffleTests(TestCase):
         response = process_request(request, views.flag_in_view)
         assert 'dwf_myflag' in response.cookies
 
+    def test_useragent_flag(self):
+        """Test the user agent flag"""
+        Flag.objects.create(name='myflag', 
+            useragents='Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1312.60 Safari/537.17')
+
+        request = get()
+        response = process_request(request, views.flag_in_view)
+        eq_('off', response.content)
+
+        # test with chrome user agent 
+        request.META['HTTP_USER_AGENT'] = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1312.60 Safari/537.17'
+        response = process_request(request, views.flag_in_view)
+        eq_('on', response.content)
+
+        # test with IE 9 user agent
+        request.META['HTTP_USER_AGENT'] = 'Mozilla/5.0 (Windows; U; MSIE 9.0; WIndows NT 9.0; en-US))'
+        response = process_request(request, views.flag_in_view)
+        eq_('off', response.content)
+
     @mock.patch.object(random, 'uniform')
     def test_reroll(self, uniform):
         """Even without a cookie, calling flag_is_active twice should return

@@ -1,10 +1,9 @@
-from django.test import Client
+from django import test
+from django.core import cache
 
-from test_utils import TestCase as BaseTestCase
 
+class TestCase(test.TransactionTestCase):
 
-class TestCase(BaseTestCase):
-    def setUp(self):
-        super(TestCase, self).setUp()
-
-        self.client = Client()
+    def _pre_setup(self):
+        cache.cache.clear()
+        super(TestCase, self)._pre_setup()

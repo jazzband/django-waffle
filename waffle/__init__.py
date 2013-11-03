@@ -29,7 +29,7 @@ TEST_COOKIE_NAME = getattr(settings, 'WAFFLE_TESTING_COOKIE', 'dwft_%s')
 def keyfmt(k, v=None):
     if v is None:
         return CACHE_PREFIX + k
-    return CACHE_PREFIX + hashlib.md5(k % v).hexdigest()
+    return CACHE_PREFIX + hashlib.md5((k % v).encode('utf-8')).hexdigest()
 
 
 class DoesNotExist(object):
@@ -108,7 +108,7 @@ def flag_is_active(request, flag_name):
         if group in user_groups:
             return True
 
-    if flag.percent > 0:
+    if flag.percent and flag.percent > 0:
         if not hasattr(request, 'waffles'):
             request.waffles = {}
         elif flag_name in request.waffles:

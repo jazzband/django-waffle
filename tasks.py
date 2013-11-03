@@ -25,7 +25,7 @@ def shell():
 @task
 def test():
     """Run the Waffle test suite."""
-    run('django-admin.py test')
+    run('django-admin.py test', pty=True)
 
 
 @task

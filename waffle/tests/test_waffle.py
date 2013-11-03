@@ -3,10 +3,10 @@ import random
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, Group, User
 from django.db import connection
+from django.test import RequestFactory
 
 import mock
 from nose.tools import eq_
-from test_utils import RequestFactory
 
 from test_app import views
 import waffle

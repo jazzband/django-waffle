@@ -5,6 +5,5 @@ mock==1.0b1
 invoke==0.5.1
 Jinja2>=2.6
 South==dev
--e git+git://github.com/jbalogh/test-utils.git@3c2214d193d#egg=test-utils
 django-nose==1.2
 -e git+git://github.com/jbalogh/jingo.git@3b64b768#egg=jingo

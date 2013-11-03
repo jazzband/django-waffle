@@ -1,9 +1,8 @@
 from django.http import HttpResponse
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, render
 from django.template import Context, RequestContext
 from django.template.loader import render_to_string
 
-import jingo
 from waffle import flag_is_active
 from waffle.decorators import waffle_flag, waffle_switch
 
@@ -15,7 +14,7 @@ def flag_in_view(request):
 
 
 def flag_in_jingo(request):
-    return jingo.render(request, 'jingo.html')
+    return render(request, 'jingo.html')
 
 
 def flag_in_django(request):

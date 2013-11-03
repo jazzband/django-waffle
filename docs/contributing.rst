@@ -23,9 +23,9 @@ Done!
 Running Things
 ==============
 
-Running Django apps without a Django project is a pain, so we use Fabric to
-pave over all that. Almost everything runs through ``fab``. To see a list of
-the commands, run ``fab -l``::
+Running Django apps without a Django project is a pain, so we use invoke to
+pave over all that. Almost everything runs through ``invoke``. To see a list of
+the commands, run ``invoke -l``::
 
     Available commands:
 
@@ -36,11 +36,11 @@ the commands, run ``fab -l``::
         syncdb   Create a database for testing in the shell or server.
         test     Run the Waffle test suite.
 
-To run the tests, just run ``fab test``.
+To run the tests, just run ``invoke test``.
 
-To manually test out the app and admin, you'll want to run ``fab syncdb`` then
-``fab migrate``, then you can run ``fab serve`` to start the Django dev server,
-or ``fab shell`` to open the Django shell.
+To manually test out the app and admin, you'll want to run ``invoke syncdb`` then
+``invoke migrate``, then you can run ``invoke serve`` to start the Django dev server,
+or ``invoke shell`` to open the Django shell.
 
 
 Writing Patches

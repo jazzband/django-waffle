@@ -29,6 +29,9 @@
         if(SAMPLES[sample_name] === undefined) return true;
       {% endif %}
       return !!SAMPLES[sample_name];
-    }
+    },
+    "FLAGS": FLAGS,
+    "SWITCHES": SWITCHES,
+    "SAMPLES": SAMPLES
   };
 })();

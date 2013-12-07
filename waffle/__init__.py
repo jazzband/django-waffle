@@ -5,6 +5,7 @@ import hashlib
 from django.conf import settings
 from django.core.cache import cache
 from django.db.models.signals import post_save, post_delete, m2m_changed
+from django.utils.encoding import smart_bytes
 
 from waffle.models import Flag, Sample, Switch
 
@@ -29,7 +30,7 @@ TEST_COOKIE_NAME = getattr(settings, 'WAFFLE_TESTING_COOKIE', 'dwft_%s')
 def keyfmt(k, v=None):
     if v is None:
         return CACHE_PREFIX + k
-    return CACHE_PREFIX + hashlib.md5(k % v).hexdigest()
+    return CACHE_PREFIX + hashlib.md5(smart_bytes(k % v)).hexdigest()
 
 
 class DoesNotExist(object):
@@ -108,7 +109,7 @@ def flag_is_active(request, flag_name):
         if group in user_groups:
             return True
 
-    if flag.percent > 0:
+    if flag.percent and flag.percent > 0:
         if not hasattr(request, 'waffles'):
             request.waffles = {}
         elif flag_name in request.waffles:

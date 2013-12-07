@@ -4,10 +4,8 @@ you don't have a settings.py file.  I can never remember to define
 DJANGO_SETTINGS_MODULE, so I run these commands which get the right env
 automatically.
 """
-import functools
 import os
-
-from fabric.api import local as _local
+from invoke import run, task
 
 
 NAME = os.path.basename(os.path.dirname(__file__))
@@ -17,34 +15,38 @@ os.environ['DJANGO_SETTINGS_MODULE'] = '%s-project.settings' % NAME
 os.environ['PYTHONPATH'] = os.pathsep.join([ROOT,
                                             os.path.join(ROOT, 'examples')])
 
-_local = functools.partial(_local, capture=False)
 
-
+@task
 def shell():
     """Start a Django shell with the test settings."""
-    _local('django-admin.py shell')
+    run('django-admin.py shell')
 
 
+@task
 def test():
     """Run the Waffle test suite."""
-    _local('django-admin.py test')
+    run('django-admin.py test', pty=True)
 
 
+@task
 def serve():
     """Start the Django dev server."""
-    _local('django-admin.py runserver')
+    run('django-admin.py runserver')
 
 
+@task
 def syncdb():
     """Create a database for testing in the shell or server."""
-    _local('django-admin.py syncdb')
+    run('django-admin.py syncdb')
 
 
+@task
 def schema():
     """Create a schema migration for any changes."""
-    _local('django-admin.py schemamigration waffle --auto')
+    run('django-admin.py schemamigration waffle --auto')
 
 
+@task
 def migrate():
     """Update a testing database with south."""
-    _local('django-admin.py migrate')
+    run('django-admin.py migrate')

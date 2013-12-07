@@ -2,10 +2,8 @@
 # versions.
 nose==1.1.2
 mock==1.0b1
-fabric==1.4.3
+invoke==0.5.1
 Jinja2>=2.6
-south==0.7.6
--e git+git://github.com/jbalogh/test-utils.git@3c2214d193d#egg=test-utils
--e git+git://github.com/jbalogh/django-nose.git@e3942c2c9d91267#egg=django-nose
--e git+git://github.com/jbalogh/jingo.git@1dc0e0bf4a0118#egg=jingo
-
+South==dev
+django-nose==1.2
+-e git+git://github.com/jbalogh/jingo.git@3b64b768#egg=jingo

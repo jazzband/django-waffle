@@ -297,8 +297,14 @@ Rollout Mode is enabled **per flag**.
 Waffle in JavaScript
 ====================
 
-Waffle now helps you use flags directly in JavaScript. You need to add
-the Waffle URLs to your URL config::
+Waffle now helps you use flags directly in JavaScript. You can create a global
+``waffle`` object for your JavaScript with either the ``wafflejs`` view, or the
+``wafflejs`` template tag (django) or helper (jinja).
+
+wafflejs view
+-------------
+To use the ``wafflejs`` view, You need to add the Waffle URLs to your URL 
+config::
 
     urlpatterns = patterns('',
         # ...
@@ -310,6 +316,34 @@ This adds a named URL route called ``wafflejs``. You can then load the
 Waffle JavaScript in your templates::
 
     <script src="{% url wafflejs %}"></script>
+
+wafflejs tag/helper
+-------------------
+
+To use the tag or helper, simply call it from within a ``<script>`` block in a 
+template. This removes an extra HTTP request for the ``wafflejs`` resource.
+
+Django tag::
+
+    <script type="text/javascript">
+    {% wafflejs %}
+    </script>
+
+Jinja helper::
+
+    <script type="text/javascript">
+    {{ waffle.wafflejs() }}
+    </script>
+
+If using Jingo_, you need to add ``waffle`` to your ``JINGO_EXCLUDE_APPS``
+for the ``waffle.js`` template to render.::
+
+   JINGO_EXCLUDE_APPS = (
+       'waffle',
+   )
+
+Use the waffle object
+---------------------
 
 Once you've loaded the JavaScript, you can use the global ``waffle``
 object.  Just pass in a flag name. As in the Python API, if a flag or

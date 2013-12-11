@@ -2,6 +2,7 @@ from django import template
 from django.template.base import VariableDoesNotExist
 
 from waffle import flag_is_active, sample_is_active, switch_is_active
+from waffle.views import _generate_waffle_js
 
 
 register = template.Library()
@@ -73,3 +74,13 @@ def switch(parser, token):
 def sample(parser, token):
     condition = lambda request, name: sample_is_active(name)
     return WaffleNode.handle_token(parser, token, 'sample', condition)
+
+
+class InlineWaffleJSNode(template.Node):
+    def render(self, context):
+        return _generate_waffle_js(context['request'])
+
+
+@register.tag
+def wafflejs(parser, token):
+    return InlineWaffleJSNode()

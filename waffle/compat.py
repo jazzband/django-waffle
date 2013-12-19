@@ -1,6 +1,6 @@
 import django
 
-__all__ = ['User']
+__all__ = ['User', 'get_user_model']
 
 # Django 1.5+ compatibility
 if django.VERSION >= (1, 5):

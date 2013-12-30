@@ -43,6 +43,17 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'test_app.urls'
 
+TEMPLATE_LOADERS = (
+    'jingo.Loader',
+    'django.template.loaders.filesystem.Loader',
+    'django.template.loaders.app_directories.Loader',
+)
+
+JINGO_EXCLUDE_APPS = (
+    'django',
+    'waffle',
+)
+
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
     'django.core.context_processors.request',

@@ -13,7 +13,7 @@ from django.conf import settings
 @never_cache
 def wafflejs(request):
     return HttpResponse(_generate_waffle_js(request),
-                       mimetype='application/x-javascript')
+                        content_type='application/x-javascript')
 
 
 def _generate_waffle_js(request):

@@ -9,7 +9,7 @@ setup(
     author_email='james.socol@gmail.com',
     url='http://github.com/jsocol/django-waffle',
     license='BSD',
-    packages=find_packages(exclude=['test_app']),
+    packages=find_packages(exclude=['test_app', 'test_settings']),
     include_package_data=True,
     package_data={'': ['README.rst']},
     zip_safe=False,

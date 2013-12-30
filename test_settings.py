@@ -7,13 +7,13 @@ path = lambda *a: os.path.join(ROOT, *a)
 DEBUG = True
 TEMPLATE_DEBUG = True
 
+TEST_RUNNER = 'django_nose.runner.NoseTestSuiteRunner'
+
 JINJA_CONFIG = {}
 
 SITE_ID = 1
 
 SECRET_KEY = 'foobar'
-
-TEST_RUNNER = 'django_nose.runner.NoseTestSuiteRunner'
 
 DATABASES = {
     'default': {

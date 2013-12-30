@@ -8,4 +8,4 @@ env:
  - DJANGO_VERSION=1.6
 install:
  - pip install -q "Django>=${DJANGO_VERSION},<${DJANGO_VERSION}.99" -r travis.txt
-script: fab test
+script: ./run.sh test

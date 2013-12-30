@@ -23,24 +23,12 @@ Done!
 Running Things
 ==============
 
-Running Django apps without a Django project is a pain, so we use Fabric to
-pave over all that. Almost everything runs through ``fab``. To see a list of
-the commands, run ``fab -l``::
+Waffle comes with a helper shell script to run tests and create schema
+migrations: ``run.sh``. To run the tests, just::
 
-    Available commands:
+    $ ./run.sh test
 
-        migrate  Update a testing database with south.
-        schema   Create a schema migration for any changes.
-        serve    Start the Django dev server.
-        shell    Start a Django shell with the test settings.
-        syncdb   Create a database for testing in the shell or server.
-        test     Run the Waffle test suite.
-
-To run the tests, just run ``fab test``.
-
-To manually test out the app and admin, you'll want to run ``fab syncdb`` then
-``fab migrate``, then you can run ``fab serve`` to start the Django dev server,
-or ``fab shell`` to open the Django shell.
+Run the script with no arguments to see all the options.
 
 
 Writing Patches

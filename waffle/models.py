@@ -45,6 +45,10 @@ class AbstractFlag(models.Model):
     def __unicode__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        self.modified = datetime.now()
+        super(AbstractFlag, self).save(*args, **kwargs)
+
     class Meta:
         abstract = True
 
@@ -59,10 +63,6 @@ class Flag(AbstractFlag):
         'Activate this flag for these user groups.'))
     users = models.ManyToManyField(User, blank=True, help_text=(
         'Activate this flag for these users.'))
-
-    def save(self, *args, **kwargs):
-        self.modified = datetime.now()
-        super(Flag, self).save(*args, **kwargs)
 
 
 class Switch(models.Model):

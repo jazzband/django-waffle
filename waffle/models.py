@@ -9,10 +9,8 @@ from django.db import models
 from waffle.compat import User
 
 
-class Flag(models.Model):
-    """A feature flag.
-
-    Flags are active (or not) on a per-request basis.
+class AbstractFlag(models.Model):
+    """Abstract base class for feature flags.
 
     """
     name = models.CharField(max_length=100, unique=True,
@@ -35,10 +33,6 @@ class Flag(models.Model):
     languages = models.TextField(blank=True, default='', help_text=(
         'Activate this flag for users with one of these languages (comma '
         'separated list)'))
-    groups = models.ManyToManyField(Group, blank=True, help_text=(
-        'Activate this flag for these user groups.'))
-    users = models.ManyToManyField(User, blank=True, help_text=(
-        'Activate this flag for these users.'))
     rollout = models.BooleanField(default=False, help_text=(
         'Activate roll-out mode?'))
     note = models.TextField(blank=True, help_text=(
@@ -50,6 +44,21 @@ class Flag(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    class Meta:
+        abstract = True
+
+
+class Flag(AbstractFlag):
+    """A feature flag.
+
+    Flags are active (or not) on a per-request basis.
+
+    """
+    groups = models.ManyToManyField(Group, blank=True, help_text=(
+        'Activate this flag for these user groups.'))
+    users = models.ManyToManyField(User, blank=True, help_text=(
+        'Activate this flag for these users.'))
 
     def save(self, *args, **kwargs):
         self.modified = datetime.now()

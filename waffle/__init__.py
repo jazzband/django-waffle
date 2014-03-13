@@ -7,6 +7,7 @@ from django.core.cache import cache
 from django.db.models.signals import post_save, post_delete, m2m_changed
 
 from waffle.models import Flag, Sample, Switch
+from waffle.customsegment import check_custom_segment
 
 
 VERSION = (0, 9, 2)
@@ -107,6 +108,9 @@ def flag_is_active(request, flag_name):
     for group in flag_groups:
         if group in user_groups:
             return True
+
+    if check_custom_segment(flag, request):
+        return True
 
     if flag.percent > 0:
         if not hasattr(request, 'waffles'):

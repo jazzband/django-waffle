@@ -1,6 +1,7 @@
 from django.contrib import admin
 
 from waffle.models import Flag, Sample, Switch
+from waffle.forms import FlagForm
 
 
 def enable_for_all(ma, request, qs):
@@ -27,6 +28,7 @@ class FlagAdmin(admin.ModelAdmin):
     list_filter = ('everyone', 'superusers', 'staff', 'authenticated')
     raw_id_fields = ('users', 'groups')
     ordering = ('-id',)
+    form = FlagForm
 
 
 def enable_switches(ma, request, qs):

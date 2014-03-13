@@ -199,6 +199,14 @@ behavior.
     ever upgrade and change the shape of the objects (for example
     upgrading from <0.7.5 to >0.7.5) you'll want to set this to
     something other than ``'waffle:'``.
+``WAFFLE_CUSTOM_SEGMENT``:
+    String with python path to Django form class. In this form you can define
+    number of fields and form class method called ``flag_is_active``. In this
+    method you can implement any logic that puts user into a specific user
+    segment. ``flag_is_active`` will be called with ``flag``, ``request`` and
+    ``data`` arguments. ``flag`` is instance of ``Flag``, ``request`` is Django
+    request object and ``data`` is a dict specified in flag's
+    ``custom_segment`` field, all fields are validated with this form.
 
 
 .. _overriding-flags:

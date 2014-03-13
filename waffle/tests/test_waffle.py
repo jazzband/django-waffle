@@ -1,5 +1,6 @@
 import random
 
+from django import forms
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, Group, User
 from django.db import connection
@@ -13,6 +14,7 @@ import waffle
 from waffle.middleware import WaffleMiddleware
 from waffle.models import Flag, Sample, Switch
 from waffle.tests.base import TestCase
+from waffle.forms import FlagForm
 
 
 def get(**kw):
@@ -24,6 +26,14 @@ def get(**kw):
 def process_request(request, view):
     response = view(request)
     return WaffleMiddleware().process_response(request, response)
+
+
+class CustomSegmentForm(forms.Form):
+    even_numbers = forms.IntegerField(required=False)
+
+    def flag_is_active(self, flag, request, data):
+        even_numbers = data.get('even_numbers')
+        return even_numbers is not None and even_numbers % 2 == 0
 
 
 class WaffleTests(TestCase):
@@ -279,6 +289,64 @@ class WaffleTests(TestCase):
 
         response = self.client.get('/flag_in_view?dwft_myflag=1')
         eq_('on', response.content)
+
+    @mock.patch.object(settings._wrapped, 'WAFFLE_CUSTOM_SEGMENT',
+                       'waffle.tests.test_waffle.CustomSegmentForm')
+    def test_custom_segment(self):
+        Flag.objects.create(name='flag-1', custom_segment=(
+            '{"even_numbers": 1}'
+        ))
+        Flag.objects.create(name='flag-2', custom_segment=(
+            '{"even_numbers": 2}'
+        ))
+
+        request = get()
+        self.assertFalse(waffle.flag_is_active(request, 'flag-1'))
+        self.assertTrue(waffle.flag_is_active(request, 'flag-2'))
+
+    @mock.patch.object(settings._wrapped, 'WAFFLE_CUSTOM_SEGMENT',
+                       'waffle.tests.test_waffle.CustomSegmentForm')
+    def test_custom_segment_form(self):
+        flag = Flag.objects.create(name='flag-1')
+        data = {
+            'name': 'flag-2',
+            'created': flag.created,
+            'modified': flag.modified,
+            'custom_segment': ''
+        }
+        form = FlagForm(data)
+        self.assertTrue(form.is_valid())
+
+        form = FlagForm(dict(data, custom_segment=(
+            '{"unknown": "field"}'
+        )))
+        self.assertFalse(form.is_valid())
+
+        form = FlagForm(dict(data, custom_segment=(
+            '{"even_numbers": "not-number"}'
+        )))
+        self.assertFalse(form.is_valid())
+
+        form = FlagForm(dict(data, custom_segment=(
+            '{"even_numbers": "1"}'
+        )))
+        self.assertTrue(form.is_valid())
+
+    def test_custom_segment_no_form(self):
+        flag = Flag.objects.create(name='flag-1')
+        data = {
+            'name': 'flag-2',
+            'created': flag.created,
+            'modified': flag.modified,
+            'custom_segment': ''
+        }
+        form = FlagForm(data)
+        self.assertTrue(form.is_valid())
+
+        form = FlagForm(dict(data, custom_segment=(
+            '{"unknown": "field"}'
+        )))
+        self.assertFalse(form.is_valid())
 
 
 class SwitchTests(TestCase):

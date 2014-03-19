@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='django-waffle',
-    version='0.9.2',
+    version='0.10',
     description='A feature flipper for Django.',
     long_description=open('README.rst').read(),
     author='James Socol',

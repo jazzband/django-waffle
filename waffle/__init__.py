@@ -36,7 +36,7 @@ def flag_is_active(request, flag_name):
         except Flag.DoesNotExist:
             return settings.FLAG_DEFAULT
 
-    if getattr(settings, 'WAFFLE_OVERRIDE', False):
+    if settings.OVERRIDE:
         if flag_name in request.GET:
             return request.GET[flag_name] == '1'
 

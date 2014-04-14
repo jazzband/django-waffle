@@ -5,6 +5,4 @@ mock==1.0.1
 Jinja2>=2.7.1
 jingo==0.6.1
 South==0.8.3
--e git+git://github.com/jbalogh/test-utils.git@3c2214d193d#egg=test-utils
--e git+git://github.com/jbalogh/django-nose.git@e3942c2c9d91267#egg=django-nose
-
+django-discover-runner==1.0

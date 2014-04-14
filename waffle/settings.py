@@ -19,3 +19,7 @@ SWITCHES_ALL_CACHE_KEY = getattr(settings, 'WAFFLE_SWITCHES_ALL_CACHE_KEY', 'swi
 SWITCH_DEFAULT = getattr(settings, 'WAFFLE_SWITCH_DEFAULT', False)
 FLAG_DEFAULT = getattr(settings, 'WAFFLE_FLAG_DEFAULT', False)
 SAMPLE_DEFAULT = getattr(settings, 'WAFFLE_SAMPLE_DEFAULT', False)
+
+SECURE = getattr(settings, 'WAFFLE_SECURE', False)
+MAX_AGE = getattr(settings, 'WAFFLE_MAX_AGE', 2592000)  # 1 month
+OVERRIDE = getattr(settings, 'WAFFLE_OVERRIDE', False)

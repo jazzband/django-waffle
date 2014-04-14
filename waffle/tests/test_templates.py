@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AnonymousUser
 
-from test_utils import RequestFactory, TestCase
+from django.test.client import RequestFactory
+from django.test import TestCase
 
 from test_app import views
 from waffle.middleware import WaffleMiddleware

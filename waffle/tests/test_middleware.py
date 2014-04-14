@@ -1,7 +1,5 @@
 from django.http import HttpResponse
-
-from nose.tools import eq_
-from test_utils import RequestFactory
+from django.test.client import RequestFactory
 
 from waffle.middleware import WaffleMiddleware
 
@@ -19,8 +17,8 @@ def test_set_cookies():
     assert 'dwf_foo' in resp.cookies
     assert 'dwf_bar' in resp.cookies
 
-    eq_('True', resp.cookies['dwf_foo'].value)
-    eq_('False', resp.cookies['dwf_bar'].value)
+    assert 'True' == resp.cookies['dwf_foo'].value
+    assert 'False' == resp.cookies['dwf_bar'].value
 
 
 def test_rollout_cookies():
@@ -33,7 +31,7 @@ def test_rollout_cookies():
     for k in get.waffles:
         cookie = 'dwf_%s' % k
         assert cookie in resp.cookies
-        eq_(str(get.waffles[k][0]), resp.cookies[cookie].value)
+        assert str(get.waffles[k][0]) == resp.cookies[cookie].value
         if get.waffles[k][1]:
             assert bool(resp.cookies[cookie]['max-age']) == get.waffles[k][0]
         else:
@@ -47,5 +45,5 @@ def test_testing_cookies():
     resp = WaffleMiddleware().process_response(get, resp)
     for k in get.waffle_tests:
         cookie = 'dwft_%s' % k
-        eq_(str(get.waffle_tests[k]), resp.cookies[cookie].value)
+        assert str(get.waffle_tests[k]) == resp.cookies[cookie].value
         assert not resp.cookies[cookie]['max-age']

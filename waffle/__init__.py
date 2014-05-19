@@ -2,6 +2,7 @@ from decimal import Decimal
 import random
 
 from waffle.utils import get_setting, keyfmt
+from django.contrib.sites.models import Site
 
 
 VERSION = (0, 10, 1)
@@ -29,10 +30,15 @@ def flag_is_active(request, flag_name):
     flag = cache.get(keyfmt(get_setting('FLAG_CACHE_KEY'), flag_name))
     if flag is None:
         try:
-            flag = Flag.objects.get(name=flag_name)
+            current_site = Site.objects.get_current()
+            flag = Flag.objects.get(name=flag_name, site=current_site)
             cache_flag(instance=flag)
         except Flag.DoesNotExist:
-            return get_setting('FLAG_DEFAULT')
+            try:
+                flag = Flag.objects.get(name=flag_name, site__isnull=True)
+                cache_flag(instance=flag)
+            except Flag.DoesNotExist:
+                return get_setting('FLAG_DEFAULT')
 
     if get_setting('OVERRIDE'):
         if flag_name in request.GET:
@@ -116,12 +122,17 @@ def switch_is_active(switch_name):
     switch = cache.get(keyfmt(get_setting('SWITCH_CACHE_KEY'), switch_name))
     if switch is None:
         try:
-            switch = Switch.objects.get(name=switch_name)
+            current_site = Site.objects.get_current()
+            switch = Switch.objects.get(name=switch_name, site=current_site)
             cache_switch(instance=switch)
         except Switch.DoesNotExist:
-            switch = DoesNotExist()
-            switch.name = switch_name
-            cache_switch(instance=switch)
+            try:
+                switch = Switch.objects.get(name=switch_name, site__isnull=True)
+                cache_switch(instance=switch)
+            except Switch.DoesNotExist:
+                switch = DoesNotExist()
+                switch.name = switch_name
+                cache_switch(instance=switch)
     return switch.active
 
 
@@ -132,9 +143,14 @@ def sample_is_active(sample_name):
     sample = cache.get(keyfmt(get_setting('SAMPLE_CACHE_KEY'), sample_name))
     if sample is None:
         try:
-            sample = Sample.objects.get(name=sample_name)
+            current_site = Site.objects.get_current()
+            sample = Sample.objects.get(name=sample_name, site=current_site)
             cache_sample(instance=sample)
         except Sample.DoesNotExist:
-            return get_setting('SAMPLE_DEFAULT')
+            try:
+                sample = Sample.objects.get(name=sample_name, site__isnull=True)
+                cache_sample(instance=sample)
+            except Sample.DoesNotExist:
+                return get_setting('SAMPLE_DEFAULT')
 
     return Decimal(str(random.uniform(0, 100))) <= sample.percent

@@ -39,6 +39,9 @@ class Flag(models.Model):
         'Activate this flag for these user groups.'))
     users = models.ManyToManyField(User, blank=True, help_text=(
         'Activate this flag for these users.'))
+    custom_segment = models.TextField(blank=True, help_text=(
+        'Custom user segment using form specified in WAFFLE_CUSTOM_SEGMENT. '
+        'Set form values in JSON format.'))
     rollout = models.BooleanField(default=False, help_text=(
         'Activate roll-out mode?'))
     note = models.TextField(blank=True, help_text=(

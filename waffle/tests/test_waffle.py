@@ -17,6 +17,8 @@ from waffle import settings
 
 from django.test import TestCase
 
+from imp import reload
+
 
 def get(**kw):
     request = RequestFactory().get('/foo', data=kw)
@@ -37,7 +39,7 @@ class WaffleTests(TestCase):
         # Flag stays on.
         request.COOKIES['dwf_myflag'] = 'True'
         response = process_request(request, views.flag_in_view)
-        self.assertEqual('on', response.content)
+        self.assertTrue('on' in response.content)
         assert 'dwf_myflag' in response.cookies
         self.assertEqual('True', response.cookies['dwf_myflag'].value)
 

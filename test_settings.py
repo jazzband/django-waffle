@@ -8,7 +8,7 @@ path = lambda *a: os.path.join(ROOT, *a)
 DEBUG = True
 TEMPLATE_DEBUG = True
 
-if django.VERSION <= (1, 6):
+if django.VERSION < (1, 6):
     TEST_RUNNER = 'discover_runner.DiscoverRunner'
 else:
     TEST_RUNNER = 'django.test.runner.DiscoverRunner'

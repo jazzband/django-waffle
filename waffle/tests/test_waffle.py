@@ -59,7 +59,7 @@ class WaffleTests(TestCase):
         request = get()
         request.COOKIES['dwf_unused'] = 'True'
         response = process_request(request, views.flag_in_view)
-        assert not 'dwf_unused' in response.cookies
+        assert 'dwf_unused' not in response.cookies
 
     def test_superuser(self):
         """Test the superuser switch."""
@@ -67,20 +67,20 @@ class WaffleTests(TestCase):
         request = get()
         response = process_request(request, views.flag_in_view)
         self.assertEqual('off', response.content)
-        assert not 'dwf_myflag' in response.cookies
+        assert 'dwf_myflag' not in response.cookies
 
         superuser = User(username='foo', is_superuser=True)
         request.user = superuser
         response = process_request(request, views.flag_in_view)
         self.assertEqual('on', response.content)
-        assert not 'dwf_myflag' in response.cookies
+        assert 'dwf_myflag' not in response.cookies
 
         non_superuser = User(username='bar', is_superuser=False)
         non_superuser.save()
         request.user = non_superuser
         response = process_request(request, views.flag_in_view)
         self.assertEqual('off', response.content)
-        assert not 'dwf_myflag' in response.cookies
+        assert 'dwf_myflag' not in response.cookies
 
     def test_staff(self):
         """Test the staff switch."""
@@ -88,20 +88,20 @@ class WaffleTests(TestCase):
         request = get()
         response = process_request(request, views.flag_in_view)
         self.assertEqual('off', response.content)
-        assert not 'dwf_myflag' in response.cookies
+        assert 'dwf_myflag' not in response.cookies
 
         staff = User(username='foo', is_staff=True)
         request.user = staff
         response = process_request(request, views.flag_in_view)
         self.assertEqual('on', response.content)
-        assert not 'dwf_myflag' in response.cookies
+        assert 'dwf_myflag' not in response.cookies
 
         non_staff = User(username='foo', is_staff=False)
         non_staff.save()
         request.user = non_staff
         response = process_request(request, views.flag_in_view)
         self.assertEqual('off', response.content)
-        assert not 'dwf_myflag' in response.cookies
+        assert 'dwf_myflag' not in response.cookies
 
     def test_languages(self):
         Flag.objects.create(name='myflag', languages='en,fr')
@@ -127,12 +127,12 @@ class WaffleTests(TestCase):
         request.user = user
         response = process_request(request, views.flag_in_view)
         self.assertEqual('on', response.content)
-        assert not 'dwf_myflag' in response.cookies
+        assert 'dwf_myflag' not in response.cookies
 
         request.user = User.objects.create(username='someone_else')
         response = process_request(request, views.flag_in_view)
         self.assertEqual('off', response.content)
-        assert not 'dwf_myflag' in response.cookies
+        assert 'dwf_myflag' not in response.cookies
 
     def test_group(self):
         """Test the per-group switch."""
@@ -147,13 +147,13 @@ class WaffleTests(TestCase):
         request.user = user
         response = process_request(request, views.flag_in_view)
         self.assertEqual('on', response.content)
-        assert not 'dwf_myflag' in response.cookies
+        assert 'dwf_myflag' not in response.cookies
 
         request.user = User(username='someone_else')
         request.user.save()
         response = process_request(request, views.flag_in_view)
         self.assertEqual('off', response.content)
-        assert not 'dwf_myflag' in response.cookies
+        assert 'dwf_myflag' not in response.cookies
 
     def test_authenticated(self):
         """Test the authenticated/anonymous switch."""
@@ -162,13 +162,13 @@ class WaffleTests(TestCase):
         request = get()
         response = process_request(request, views.flag_in_view)
         self.assertEqual('off', response.content)
-        assert not 'dwf_myflag' in response.cookies
+        assert 'dwf_myflag' not in response.cookies
 
         request.user = User(username='foo')
         assert request.user.is_authenticated()
         response = process_request(request, views.flag_in_view)
         self.assertEqual('on', response.content)
-        assert not 'dwf_myflag' in response.cookies
+        assert 'dwf_myflag' not in response.cookies
 
     def test_everyone_on(self):
         """Test the 'everyone' switch on."""
@@ -178,13 +178,13 @@ class WaffleTests(TestCase):
         request.COOKIES['dwf_myflag'] = 'False'
         response = process_request(request, views.flag_in_view)
         self.assertEqual('on', response.content)
-        assert not 'dwf_myflag' in response.cookies
+        assert 'dwf_myflag' not in response.cookies
 
         request.user = User(username='foo')
         assert request.user.is_authenticated()
         response = process_request(request, views.flag_in_view)
         self.assertEqual('on', response.content)
-        assert not 'dwf_myflag' in response.cookies
+        assert 'dwf_myflag' not in response.cookies
 
     def test_everyone_off(self):
         """Test the 'everyone' switch off."""
@@ -195,13 +195,13 @@ class WaffleTests(TestCase):
         request.COOKIES['dwf_myflag'] = 'True'
         response = process_request(request, views.flag_in_view)
         self.assertEqual('off', response.content)
-        assert not 'dwf_myflag' in response.cookies
+        assert 'dwf_myflag' not in response.cookies
 
         request.user = User(username='foo')
         assert request.user.is_authenticated()
         response = process_request(request, views.flag_in_view)
         self.assertEqual('off', response.content)
-        assert not 'dwf_myflag' in response.cookies
+        assert 'dwf_myflag' not in response.cookies
 
     def test_percent(self):
         """If you have no cookie, you get a cookie!"""
@@ -330,11 +330,18 @@ class SwitchTests(TestCase):
     def test_no_query(self):
         """Do not make two queries for a non-existent switch."""
         assert not Switch.objects.filter(name='foo').exists()
+
         queries = len(connection.queries)
-        assert not waffle.switch_is_active('foo')
+
+        is_active = waffle.switch_is_active('foo')
+
+        assert not is_active
+
         assert len(connection.queries) > queries, 'We should make one query.'
         queries = len(connection.queries)
+
         assert not waffle.switch_is_active('foo')
+
         self.assertEqual(queries, len(connection.queries), 'We should only make one query.')
 
 

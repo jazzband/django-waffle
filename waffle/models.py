@@ -157,7 +157,10 @@ post_delete.connect(uncache_sample, sender=Sample,
 
 def cache_switch(**kwargs):
     switch = kwargs.get('instance')
-    cache.add(keyfmt(settings.SWITCH_CACHE_KEY, switch.name), switch)
+
+    cache_key = keyfmt(settings.SWITCH_CACHE_KEY, switch.name)
+
+    cache.add(cache_key, switch)
 
 
 def uncache_switch(**kwargs):

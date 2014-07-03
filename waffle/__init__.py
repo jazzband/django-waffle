@@ -13,15 +13,15 @@ VERSION = (0, 10)
 __version__ = '.'.join(map(str, VERSION))
 
 
-CACHE_PREFIX = getattr(settings, 'WAFFLE_CACHE_PREFIX', u'waffle:')
-FLAG_CACHE_KEY = u'flag:%s'
-FLAGS_ALL_CACHE_KEY = u'flags:all'
-FLAG_USERS_CACHE_KEY = u'flag:%s:users'
-FLAG_GROUPS_CACHE_KEY = u'flag:%s:groups'
-SAMPLE_CACHE_KEY = u'sample:%s'
-SAMPLES_ALL_CACHE_KEY = u'samples:all'
-SWITCH_CACHE_KEY = u'switch:%s'
-SWITCHES_ALL_CACHE_KEY = u'switches:all'
+CACHE_PREFIX = getattr(settings, 'WAFFLE_CACHE_PREFIX', 'waffle:')
+FLAG_CACHE_KEY = 'flag:%s'
+FLAGS_ALL_CACHE_KEY = 'flags:all'
+FLAG_USERS_CACHE_KEY = 'flag:%s:users'
+FLAG_GROUPS_CACHE_KEY = 'flag:%s:groups'
+SAMPLE_CACHE_KEY = 'sample:%s'
+SAMPLES_ALL_CACHE_KEY = 'samples:all'
+SWITCH_CACHE_KEY = 'switch:%s'
+SWITCHES_ALL_CACHE_KEY = 'switches:all'
 COOKIE_NAME = getattr(settings, 'WAFFLE_COOKIE', 'dwf_%s')
 TEST_COOKIE_NAME = getattr(settings, 'WAFFLE_TESTING_COOKIE', 'dwft_%s')
 

@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
@@ -23,9 +25,10 @@ class Command(BaseCommand):
         list_switch = options['list_switch']
 
         if list_switch:
-            print 'Switches:'
+            print('Switches:')
             for switch in Switch.objects.iterator():
-                print switch.name, 'on' if switch.active else 'off'
+                print('%s: %s', (switch.name,
+                                 'on' if switch.active else 'off'))
             return
 
         if not (switch_name and state):
@@ -38,7 +41,7 @@ class Command(BaseCommand):
         if options['create']:
             switch, created = Switch.objects.get_or_create(name=switch_name)
             if created:
-                print 'Creating switch: %s' % switch_name
+                print('Creating switch: %s' % switch_name)
         else:
             try:
                 switch = Switch.objects.get(name=switch_name)

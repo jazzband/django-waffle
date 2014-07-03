@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
@@ -24,9 +26,9 @@ class Command(BaseCommand):
         list_sample = options['list_sample']
 
         if list_sample:
-            print 'Samples:'
+            print('Samples:')
             for sample in Sample.objects.iterator():
-                print '%s: %s%%' % (sample.name, sample.percent)
+                print('%s: %s%%' % (sample.name, sample.percent))
             return
 
         if not (sample_name and percent):
@@ -44,12 +46,12 @@ class Command(BaseCommand):
             sample, created = Sample.objects.get_or_create(
                 name=sample_name, defaults={'percent': 0})
             if created:
-                print 'Creating sample: %s' % sample_name
+                print('Creating sample: %s' % sample_name)
         else:
             try:
                 sample = Sample.objects.get(name=sample_name)
             except Sample.DoesNotExist:
-                raise CommandError("This sample doesn't exist.")
+                raise CommandError('This sample does not exist.')
 
         sample.percent = percent
         sample.save()

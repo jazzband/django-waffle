@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
@@ -60,16 +62,16 @@ class Command(BaseCommand):
         list_flag = options['list_flag']
 
         if list_flag:
-            print "Flags:"
+            print('Flags:')
             for flag in Flag.objects.iterator():
-                print "\nNAME: %s" % (flag.name)
-                print "SUPERUSERS: %s" % (flag.superusers)
-                print "EVERYONE: %s" % (flag.everyone)
-                print "AUTHENTICATED: %s" % (flag.authenticated)
-                print "PERCENT: %s" % (flag.percent)
-                print "TESTING: %s" % (flag.testing)
-                print "ROLLOUT: %s" % (flag.rollout)
-                print "STAFF: %s" % (flag.staff)
+                print('\nNAME: %s' % flag.name)
+                print('SUPERUSERS: %s' % flag.superusers)
+                print('EVERYONE: %s' % flag.everyone)
+                print('AUTHENTICATED: %s' % flag.authenticated)
+                print('PERCENT: %s' % flag.percent)
+                print('TESTING: %s' % flag.testing)
+                print('ROLLOUT: %s' % flag.rollout)
+                print('STAFF: %s' % flag.staff)
             return
 
         if not flag_name:
@@ -78,7 +80,7 @@ class Command(BaseCommand):
         if options['create']:
             flag, created = Flag.objects.get_or_create(name=flag_name)
             if created:
-                print "Creating flag: %s" % flag_name
+                print('Creating flag: %s' % flag_name)
         else:
             try:
                 flag = Flag.objects.get(name=flag_name)
@@ -89,7 +91,7 @@ class Command(BaseCommand):
         # match (ie. don't want to try setting flag.verbosity)
         for option in options:
             if hasattr(flag, option):
-                print "Setting %s: %s" % (option, options[option])
+                print('Setting %s: %s' % (option, options[option]))
                 setattr(flag, option, options[option])
 
         flag.save()

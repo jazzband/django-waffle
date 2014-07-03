@@ -1,7 +1,7 @@
 from django.http import HttpResponse
+from django.test import RequestFactory
 
 from nose.tools import eq_
-from test_utils import RequestFactory
 
 from waffle.middleware import WaffleMiddleware
 

@@ -84,3 +84,26 @@ class InlineWaffleJSNode(template.Node):
 @register.tag
 def wafflejs(parser, token):
     return InlineWaffleJSNode()
+
+@register.filter(name="flag")
+def flag_filter(flag_name, request):
+    '''
+    Returns whether the flag is active on the request
+    '''
+    return flag_is_active(request, flag_name)
+
+@register.filter(name="switch")
+def switch_filter(switch_name, request=None):
+    '''
+    Returns whether the switch is active, takes an optional request,
+    which is unused, for consistency with flag_filter
+    '''
+    return switch_is_active(switch_name)
+
+@register.filter(name="sample")
+def sample_filter(sample_name, request=None):
+    '''
+    Returns whether the sample is active, takes an optional request,
+    which is unused, for consistency with flag_filter
+    '''
+    return sample_is_active(sample_name)

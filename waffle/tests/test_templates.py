@@ -31,14 +31,22 @@ class WaffleTemplateTests(TestCase):
         self.assertContains(response, 'flag_var off')
         self.assertContains(response, 'switch_var off')
         self.assertContains(response, 'sample_var')
+        self.assertContains(response, 'flag filter off')
+        self.assertContains(response, 'switch filter off')
+        self.assertContains(response, 'sample filter')
+        self.assertContains(response, 'flag_var filter off')
+        self.assertContains(response, 'switch_var filter off')
+        self.assertContains(response, 'sample_var filter')
         self.assertContains(response, 'window.waffle =')
 
     def test_no_request_context(self):
         """Switches and Samples shouldn't require a request context."""
         request = get()
         content = process_request(request, views.no_request_context)
-        assert 'switch off' in content
-        assert 'sample' in content
+        self.assertIn('switch off', content)
+        self.assertIn('sample', content)
+        self.assertIn('switch filter off', content)
+        self.assertIn('sample filter', content)
 
     @override_settings(TEMPLATE_LOADERS=(
         'jingo.Loader',

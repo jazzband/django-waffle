@@ -40,4 +40,40 @@
   sample_var off
 {% endsample %}
 
+{% if "flag"|flag:request %}
+  flag filter on
+{% else %}
+  flag filter off
+{% endif %}
+
+{% if "switch"|switch %}
+  switch filter on
+{% else %}
+  switch filter off
+{% endif %}
+
+{% if "sample"|sample %}
+  sample filter on
+{% else %}
+  sample filter off
+{% endif %}
+
+{% if flag_var|flag:request %}
+  flag_var filter on
+{% else %}
+  flag_var filter off
+{% endif %}
+
+{% if switch_var|switch %}
+  switch_var filter on
+{% else %}
+  switch_var filter off
+{% endif %}
+
+{% if sample_var|sample %}
+  sample_var filter on
+{% else %}
+  sample_var filter off
+{% endif %}
+
 {% wafflejs %}

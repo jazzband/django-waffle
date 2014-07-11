@@ -66,8 +66,8 @@ class SiteTests(TestCase):
         request = get()
 
         response = process_request(request, views.flag_in_view)
-        eq_('on', response.content)
+        eq_(b'on', response.content)
 
         with self.settings(SITE_ID=2):
             response = process_request(request, views.flag_in_view)
-            eq_('off', response.content)
+            eq_(b'off', response.content)

@@ -52,7 +52,7 @@ class SiteTests(TestCase):
 
     def test_sample_site_default(self):
         name = 'sample'
-        sample = Sample.objects.create(name=name, percent=100.0) # no site given
+        sample = Sample.objects.create(name=name, percent='100.0') # no site given
 
         self.assertTrue(waffle.sample_is_active(name))
 

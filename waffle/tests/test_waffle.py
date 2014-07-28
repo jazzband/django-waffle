@@ -4,7 +4,6 @@ from django.contrib.auth.models import AnonymousUser, Group, User
 from django.db import connection
 from django.test import RequestFactory
 from django.test.utils import override_settings
-from django.core.cache import cache
 
 import mock
 
@@ -330,8 +329,6 @@ class SwitchTests(TestCase):
     @override_settings(DEBUG=True)
     def test_no_query(self):
         """Do not make two queries for a non-existent switch."""
-        cache.clear()
-
         assert not Switch.objects.filter(name='foo').exists()
 
         queries = len(connection.queries)

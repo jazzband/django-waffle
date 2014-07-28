@@ -1,6 +1,6 @@
 from waffle.models import Flag, Switch
 
-from django.test import TestCase
+from .base import TestCase
 
 
 class DecoratorTests(TestCase):

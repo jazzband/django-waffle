@@ -1,6 +1,6 @@
 from django.core.urlresolvers import reverse
 
-from django.test import TestCase
+from .base import TestCase
 
 from waffle.models import Flag, Sample, Switch
 

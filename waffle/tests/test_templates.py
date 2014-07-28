@@ -1,11 +1,13 @@
 from django import template
 from django.contrib.auth.models import AnonymousUser
-from django.test import RequestFactory, TestCase
+from django.test import RequestFactory
 from django.test.utils import override_settings
 import mock
 
 from test_app import views
 from waffle.middleware import WaffleMiddleware
+
+from .base import TestCase
 
 
 def get():

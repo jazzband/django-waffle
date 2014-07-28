@@ -78,7 +78,7 @@ class Switch(models.Model):
         'Date when this Switch was last modified.'))
 
     def __unicode__(self):
-        return u'%s: %s' % (self.name, 'on' if self.active else 'off')
+        return self.name
 
     def save(self, *args, **kwargs):
         self.modified = datetime.now()

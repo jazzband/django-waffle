@@ -1,5 +1,5 @@
 # These are required to run the tests.
-Django==1.4.3
+Django
 
 # Everything else is in a Django-version-free version
 # for TravisCI.

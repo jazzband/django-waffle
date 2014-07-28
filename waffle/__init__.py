@@ -89,7 +89,7 @@ def flag_is_active(request, flag_name):
         if group in user_groups:
             return True
 
-    if flag.percent > 0:
+    if flag.percent and flag.percent > 0:
         if not hasattr(request, 'waffles'):
             request.waffles = {}
         elif flag_name in request.waffles:

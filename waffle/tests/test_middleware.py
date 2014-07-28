@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from django.test.client import RequestFactory
+from django.test import RequestFactory
 
 from waffle.middleware import WaffleMiddleware
 
@@ -10,8 +10,8 @@ get = RequestFactory().get('/foo')
 def test_set_cookies():
     get.waffles = {'foo': [True, False], 'bar': [False, False]}
     resp = HttpResponse()
-    assert not 'dwf_foo' in resp.cookies
-    assert not 'dwf_bar' in resp.cookies
+    assert 'dwf_foo' not in resp.cookies
+    assert 'dwf_bar' not in resp.cookies
 
     resp = WaffleMiddleware().process_response(get, resp)
     assert 'dwf_foo' in resp.cookies

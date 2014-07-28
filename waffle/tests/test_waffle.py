@@ -2,7 +2,7 @@ import random
 
 from django.contrib.auth.models import AnonymousUser, Group, User
 from django.db import connection
-from django.test.client import RequestFactory
+from django.test import RequestFactory
 from django.test.utils import override_settings
 
 import mock
@@ -39,7 +39,7 @@ class WaffleTests(TestCase):
         # Flag stays on.
         request.COOKIES['dwf_myflag'] = 'True'
         response = process_request(request, views.flag_in_view)
-        self.assertTrue('on' in response.content)
+        self.assertEqual(b'on', response.content)
         assert 'dwf_myflag' in response.cookies
         self.assertEqual('True', response.cookies['dwf_myflag'].value)
 
@@ -50,7 +50,7 @@ class WaffleTests(TestCase):
         # Flag stays off.
         request.COOKIES['dwf_myflag'] = 'False'
         response = process_request(request, views.flag_in_view)
-        self.assertEqual('off', response.content)
+        self.assertEqual(b'off', response.content)
         assert 'dwf_myflag' in response.cookies
         self.assertEqual('False', response.cookies['dwf_myflag'].value)
 
@@ -66,20 +66,20 @@ class WaffleTests(TestCase):
         Flag.objects.create(name='myflag', superusers=True)
         request = get()
         response = process_request(request, views.flag_in_view)
-        self.assertEqual('off', response.content)
+        self.assertEqual(b'off', response.content)
         assert 'dwf_myflag' not in response.cookies
 
         superuser = User(username='foo', is_superuser=True)
         request.user = superuser
         response = process_request(request, views.flag_in_view)
-        self.assertEqual('on', response.content)
+        self.assertEqual(b'on', response.content)
         assert 'dwf_myflag' not in response.cookies
 
         non_superuser = User(username='bar', is_superuser=False)
         non_superuser.save()
         request.user = non_superuser
         response = process_request(request, views.flag_in_view)
-        self.assertEqual('off', response.content)
+        self.assertEqual(b'off', response.content)
         assert 'dwf_myflag' not in response.cookies
 
     def test_staff(self):
@@ -87,35 +87,35 @@ class WaffleTests(TestCase):
         Flag.objects.create(name='myflag', staff=True)
         request = get()
         response = process_request(request, views.flag_in_view)
-        self.assertEqual('off', response.content)
+        self.assertEqual(b'off', response.content)
         assert 'dwf_myflag' not in response.cookies
 
         staff = User(username='foo', is_staff=True)
         request.user = staff
         response = process_request(request, views.flag_in_view)
-        self.assertEqual('on', response.content)
+        self.assertEqual(b'on', response.content)
         assert 'dwf_myflag' not in response.cookies
 
         non_staff = User(username='foo', is_staff=False)
         non_staff.save()
         request.user = non_staff
         response = process_request(request, views.flag_in_view)
-        self.assertEqual('off', response.content)
+        self.assertEqual(b'off', response.content)
         assert 'dwf_myflag' not in response.cookies
 
     def test_languages(self):
         Flag.objects.create(name='myflag', languages='en,fr')
         request = get()
         response = process_request(request, views.flag_in_view)
-        self.assertEqual('off', response.content)
+        self.assertEqual(b'off', response.content)
 
         request.LANGUAGE_CODE = 'en'
         response = process_request(request, views.flag_in_view)
-        self.assertEqual('on', response.content)
+        self.assertEqual(b'on', response.content)
 
         request.LANGUAGE_CODE = 'de'
         response = process_request(request, views.flag_in_view)
-        self.assertEqual('off', response.content)
+        self.assertEqual(b'off', response.content)
 
     def test_user(self):
         """Test the per-user switch."""
@@ -126,12 +126,12 @@ class WaffleTests(TestCase):
         request = get()
         request.user = user
         response = process_request(request, views.flag_in_view)
-        self.assertEqual('on', response.content)
+        self.assertEqual(b'on', response.content)
         assert 'dwf_myflag' not in response.cookies
 
         request.user = User.objects.create(username='someone_else')
         response = process_request(request, views.flag_in_view)
-        self.assertEqual('off', response.content)
+        self.assertEqual(b'off', response.content)
         assert 'dwf_myflag' not in response.cookies
 
     def test_group(self):
@@ -146,13 +146,13 @@ class WaffleTests(TestCase):
         request = get()
         request.user = user
         response = process_request(request, views.flag_in_view)
-        self.assertEqual('on', response.content)
+        self.assertEqual(b'on', response.content)
         assert 'dwf_myflag' not in response.cookies
 
         request.user = User(username='someone_else')
         request.user.save()
         response = process_request(request, views.flag_in_view)
-        self.assertEqual('off', response.content)
+        self.assertEqual(b'off', response.content)
         assert 'dwf_myflag' not in response.cookies
 
     def test_authenticated(self):
@@ -161,13 +161,13 @@ class WaffleTests(TestCase):
 
         request = get()
         response = process_request(request, views.flag_in_view)
-        self.assertEqual('off', response.content)
+        self.assertEqual(b'off', response.content)
         assert 'dwf_myflag' not in response.cookies
 
         request.user = User(username='foo')
         assert request.user.is_authenticated()
         response = process_request(request, views.flag_in_view)
-        self.assertEqual('on', response.content)
+        self.assertEqual(b'on', response.content)
         assert 'dwf_myflag' not in response.cookies
 
     def test_everyone_on(self):
@@ -177,13 +177,13 @@ class WaffleTests(TestCase):
         request = get()
         request.COOKIES['dwf_myflag'] = 'False'
         response = process_request(request, views.flag_in_view)
-        self.assertEqual('on', response.content)
+        self.assertEqual(b'on', response.content)
         assert 'dwf_myflag' not in response.cookies
 
         request.user = User(username='foo')
         assert request.user.is_authenticated()
         response = process_request(request, views.flag_in_view)
-        self.assertEqual('on', response.content)
+        self.assertEqual(b'on', response.content)
         assert 'dwf_myflag' not in response.cookies
 
     def test_everyone_off(self):
@@ -194,13 +194,13 @@ class WaffleTests(TestCase):
         request = get()
         request.COOKIES['dwf_myflag'] = 'True'
         response = process_request(request, views.flag_in_view)
-        self.assertEqual('off', response.content)
+        self.assertEqual(b'off', response.content)
         assert 'dwf_myflag' not in response.cookies
 
         request.user = User(username='foo')
         assert request.user.is_authenticated()
         response = process_request(request, views.flag_in_view)
-        self.assertEqual('off', response.content)
+        self.assertEqual(b'off', response.content)
         assert 'dwf_myflag' not in response.cookies
 
     def test_percent(self):
@@ -275,19 +275,19 @@ class WaffleTests(TestCase):
     def test_set_then_unset_testing_flag(self):
         Flag.objects.create(name='myflag', testing=True)
         response = self.client.get('/flag_in_view?dwft_myflag=1')
-        self.assertEqual('on', response.content)
+        self.assertEqual(b'on', response.content)
 
         response = self.client.get('/flag_in_view')
-        self.assertEqual('on', response.content)
+        self.assertEqual(b'on', response.content)
 
         response = self.client.get('/flag_in_view?dwft_myflag=0')
-        self.assertEqual('off', response.content)
+        self.assertEqual(b'off', response.content)
 
         response = self.client.get('/flag_in_view')
-        self.assertEqual('off', response.content)
+        self.assertEqual(b'off', response.content)
 
         response = self.client.get('/flag_in_view?dwft_myflag=1')
-        self.assertEqual('on', response.content)
+        self.assertEqual(b'on', response.content)
 
 
 class SwitchTests(TestCase):

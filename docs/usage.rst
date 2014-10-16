@@ -234,8 +234,8 @@ If you turn on the ``WAFFLE_OVERRIDE`` setting, you can guarantee a
 flag will be active for a request by putting it in the query string.
 
 For example, if I use the flag ``example`` in a view that serves the
-URL ``/search``, then I can turn on the flag by adding ``?example=1``
-to the query string, or turn it off by adding ``?example=0``.
+URL ``/search``, then I can turn on the flag by adding ``?dwft_example=1``
+to the query string, or turn it off by adding ``?dwft_example=0``.
 
 By default, ``WAFFLE_OVERRIDE`` is off. It may be useful for testing,
 automated testing in particular.

@@ -8,9 +8,11 @@ from django.db import models
 from django.db.models.signals import post_save, post_delete, m2m_changed
 from django.core.cache import cache
 
-from .compat import User
 from .utils import keyfmt
 from . import settings
+
+
+AUTH_USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
 
 
 class Flag(models.Model):
@@ -41,7 +43,7 @@ class Flag(models.Model):
         'separated list)'))
     groups = models.ManyToManyField(Group, blank=True, help_text=(
         'Activate this flag for these user groups.'))
-    users = models.ManyToManyField(User, blank=True, help_text=(
+    users = models.ManyToManyField(AUTH_USER_MODEL, blank=True, help_text=(
         'Activate this flag for these users.'))
     rollout = models.BooleanField(default=False, help_text=(
         'Activate roll-out mode?'))

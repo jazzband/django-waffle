@@ -29,7 +29,14 @@ want it *below* any middleware that tweaks cookies before sending them
 out.
 
 If you're using South_, you can run ``manage.py migrate`` to create the
-necessary tables. If not, you'll need to create and run the schema
+necessary tables, you'll need to customize the ``SOUTH_MIGRATION_MODULES``
+setting: ::
+
+    SOUTH_MIGRATION_MODULES = {
+        'waffle': 'waffle.south_migrations',
+    }
+
+If you are not using south, you'll need to create and run the schema
 migrations however you handle that.
 
 .. _South: http://south.aeracode.org/

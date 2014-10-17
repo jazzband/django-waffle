@@ -1,9 +1,7 @@
 # These are the requirements for Travis, e.g. we don't specify Django
 # versions.
-nose==1.3.0
 mock==1.0.1
 Jinja2>=2.7.1
 jingo==0.7
 South==0.8.3
--e git+git://github.com/jbalogh/django-nose.git@4ffb4fab18957d7c913d7f132dcd27b50a30f447#egg=django-nose
 django-discover-runner==1.0

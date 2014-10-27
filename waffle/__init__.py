@@ -3,11 +3,10 @@ import random
 import hashlib
 
 from django.conf import settings
-from django.core.cache import cache
 from django.db.models.signals import post_save, post_delete, m2m_changed
 
 from waffle.models import Flag, Sample, Switch
-
+from waffle.compat import cache
 
 VERSION = (0, 10)
 __version__ = '.'.join(map(str, VERSION))

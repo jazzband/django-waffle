@@ -68,3 +68,7 @@ WAFFLE_FLAG_DEFAULT = False
 WAFFLE_SWITCH_DEFAULT = False
 WAFFLE_SAMPLE_DEFAULT = False
 WAFFLE_OVERRIDE = False
+
+SOUTH_MIGRATION_MODULES = {
+    'waffle': 'waffle.south_migrations',
+}

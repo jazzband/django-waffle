@@ -1,11 +1,10 @@
 from decimal import Decimal
 import random
 
-from django.core.cache import cache
+from waffle.compat import cache
 
 from . import settings
 from .utils import keyfmt
-
 
 VERSION = (0, 10)
 __version__ = '.'.join(map(str, VERSION))

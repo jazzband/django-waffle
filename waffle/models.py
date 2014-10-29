@@ -27,9 +27,10 @@ class Flag(models.Model):
         'Flip this flag on (Yes) or off (No) for everyone, overriding all '
         'other settings. Leave as Unknown to use normally.'))
     percent = models.DecimalField(max_digits=3, decimal_places=1, null=True,
-                                  blank=True, help_text=(
-                                      'A number between 0.0 and 99.9 to indicate a percentage of users for '
-                                      'whom this flag will be active.'))
+                                  blank=True,
+                                  help_text=('A number between 0.0 and 99.9 to '
+                                             'indicate a percentage of users for '
+                                             'whom this flag will be active.'))
     testing = models.BooleanField(default=False, help_text=(
         'Allow this flag to be set for a session for user testing.'))
     superusers = models.BooleanField(default=True, help_text=(

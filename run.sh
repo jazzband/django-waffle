@@ -18,6 +18,8 @@ case "$1" in
         django-admin.py shell ;;
     "schema" )
         django-admin.py schemamigration waffle --auto ;;
+    "makemigrations" )
+        django-admin.py makemigrations waffle ;;
     * )
         usage ;;
 esac

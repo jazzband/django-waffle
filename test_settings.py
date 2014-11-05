@@ -32,7 +32,6 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
-    'south',
     'waffle',
     'test_app',
 )
@@ -66,3 +65,10 @@ WAFFLE_FLAG_DEFAULT = False
 WAFFLE_SWITCH_DEFAULT = False
 WAFFLE_SAMPLE_DEFAULT = False
 WAFFLE_OVERRIDE = False
+
+if django.VERSION < (1, 7):
+    INSTALLED_APPS += ('south', )
+
+    SOUTH_MIGRATION_MODULES = {
+        'waffle': 'waffle.south_migrations'
+    }

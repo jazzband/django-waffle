@@ -6,8 +6,8 @@ except ImportError:
 from django.contrib.auth.models import Group
 from django.db import models
 from django.db.models.signals import post_save, post_delete, m2m_changed
-from django.core.cache import cache
 
+from .compat import cache
 from .utils import keyfmt
 from . import settings
 

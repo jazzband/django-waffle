@@ -1,9 +1,21 @@
 # encoding: utf-8
 import datetime
+import django
+
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
-from waffle.compat import get_user_model
+
+
+# Django 1.5+ compatibility
+if django.VERSION >= (1, 5):
+    from django.contrib.auth import get_user_model
+else:
+    from django.contrib.auth.models import User
+
+    def get_user_model():
+        return User
+
 
 class Migration(SchemaMigration):
 

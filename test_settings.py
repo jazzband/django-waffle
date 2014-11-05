@@ -1,4 +1,5 @@
 import os
+import django
 
 # Make filepaths relative to settings.
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -7,7 +8,10 @@ path = lambda *a: os.path.join(ROOT, *a)
 DEBUG = True
 TEMPLATE_DEBUG = True
 
-TEST_RUNNER = 'django_nose.runner.NoseTestSuiteRunner'
+if django.VERSION < (1, 6):
+    TEST_RUNNER = 'discover_runner.DiscoverRunner'
+else:
+    TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 JINJA_CONFIG = {}
 
@@ -28,11 +32,12 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
-    'django_nose',
-    'south',
     'waffle',
     'test_app',
 )
+
+if django.VERSION <= (1, 7):
+    INSTALLED_APPS += ('south', )
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
@@ -63,3 +68,7 @@ WAFFLE_FLAG_DEFAULT = False
 WAFFLE_SWITCH_DEFAULT = False
 WAFFLE_SAMPLE_DEFAULT = False
 WAFFLE_OVERRIDE = False
+
+SOUTH_MIGRATION_MODULES = {
+    'waffle': 'waffle.south_migrations',
+}

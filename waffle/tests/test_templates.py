@@ -6,7 +6,8 @@ import mock
 
 from test_app import views
 from waffle.middleware import WaffleMiddleware
-from waffle.tests.base import TestCase
+
+from .base import TestCase
 
 
 def get():

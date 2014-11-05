@@ -1,9 +1,9 @@
 import random
 
-from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, Group, User
 from django.db import connection
 from django.test import RequestFactory
+from django.conf import settings as djsettings
 
 import mock
 
@@ -12,6 +12,7 @@ import waffle
 from waffle.middleware import WaffleMiddleware
 from waffle.models import Flag, Sample, Switch
 from waffle.tests.base import TestCase
+from waffle import settings
 
 
 def get(**kw):
@@ -226,13 +227,13 @@ class WaffleTests(TestCase):
         request = get()
         assert not waffle.flag_is_active(request, 'foo')
 
-    @mock.patch.object(settings._wrapped, 'WAFFLE_FLAG_DEFAULT', True)
+    @mock.patch.object(settings, 'FLAG_DEFAULT', True)
     def test_undefined_default(self):
         """WAFFLE_FLAG_DEFAULT controls undefined flags."""
         request = get()
         assert waffle.flag_is_active(request, 'foo')
 
-    @mock.patch.object(settings._wrapped, 'WAFFLE_OVERRIDE', True)
+    @mock.patch.object(settings, 'OVERRIDE', True)
     def test_override(self):
         request = get(foo='1')
         Flag.objects.create(name='foo')  # Off for everyone.
@@ -310,11 +311,11 @@ class SwitchTests(TestCase):
     def test_undefined(self):
         assert not waffle.switch_is_active('foo')
 
-    @mock.patch.object(settings._wrapped, 'WAFFLE_SWITCH_DEFAULT', True)
+    @mock.patch.object(settings, 'SWITCH_DEFAULT', True)
     def test_undefined_default(self):
         assert waffle.switch_is_active('foo')
 
-    @mock.patch.object(settings._wrapped, 'DEBUG', True)
+    @mock.patch.object(djsettings._wrapped, 'DEBUG', True)
     def test_no_query(self):
         """Do not make two queries for a non-existent switch."""
         assert not Switch.objects.filter(name='foo').exists()
@@ -338,6 +339,6 @@ class SampleTests(TestCase):
     def test_undefined(self):
         assert not waffle.sample_is_active('foo')
 
-    @mock.patch.object(settings._wrapped, 'WAFFLE_SAMPLE_DEFAULT', True)
+    @mock.patch.object(settings, 'SAMPLE_DEFAULT', True)
     def test_undefined_default(self):
         assert waffle.sample_is_active('foo')

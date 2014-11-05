@@ -6,7 +6,7 @@ except ImportError:
 from django.contrib.auth.models import Group
 from django.db import models
 
-from waffle.compat import User
+from waffle.compat import AUTH_USER_MODEL
 
 
 class Flag(models.Model):
@@ -37,7 +37,7 @@ class Flag(models.Model):
         'separated list)'))
     groups = models.ManyToManyField(Group, blank=True, help_text=(
         'Activate this flag for these user groups.'))
-    users = models.ManyToManyField(User, blank=True, help_text=(
+    users = models.ManyToManyField(AUTH_USER_MODEL, blank=True, help_text=(
         'Activate this flag for these users.'))
     rollout = models.BooleanField(default=False, help_text=(
         'Activate roll-out mode?'))

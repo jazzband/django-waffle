@@ -1,18 +1,7 @@
 import django
 from django.conf import settings
 
-__all__ = ['User', 'get_user_model']
-
-# Django 1.5+ compatibility
-if django.VERSION >= (1, 5):
-    from django.contrib.auth import get_user_model
-    User = settings.AUTH_USER_MODEL if hasattr(settings, 'AUTH_USER_MODEL') else 'auth.User'
-
-else:
-    from django.contrib.auth.models import User
-
-    def get_user_model():
-        return User
+__all__ = ['cache']
 
 if hasattr(settings, 'WAFFLE_CACHE_NAME'):
     cache_name = settings.WAFFLE_CACHE_NAME
@@ -24,3 +13,5 @@ if hasattr(settings, 'WAFFLE_CACHE_NAME'):
         cache = get_cache(cache_name)
 else:
     from django.core.cache import cache
+
+AUTH_USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')

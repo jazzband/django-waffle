@@ -32,7 +32,7 @@ Create the Flag
 The simplest option is to create the Flag with some deterministic
 options, for example::
 
-    from waffle import Flag
+    from waffle.models import Flag
     Flag.objects.create(name='foo', everyone=True)
 
 Because the ``Flag.everyone`` property makes the Flag predictable, you

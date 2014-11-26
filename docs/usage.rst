@@ -59,13 +59,13 @@ To use a *flag* in vanilla Django templates, you can use the ``flag``
 tag::
 
     {% load waffle_tags %}
-    {% flag flag_name %}
+    {% flag "flag_name" %}
       Content if flag is active
     {% endflag %}
 
 The ``{% flag %}`` tag also supports an ``{% else %}`` section::
 
-    {% flag flag_name %}
+    {% flag "flag_name" %}
       Flag is active!
     {% else %}
       Flag is inactive!
@@ -75,13 +75,13 @@ To use a *switch* in vanilla Django templates, you can use the
 ``switch`` tag::
 
     {% load waffle_tags %}
-    {% switch switch_name %}
+    {% switch "switch_name" %}
       Content if switch is active
     {% endswitch %}
 
 The ``{% switch %}`` tag also supports an ``{% else %}`` section::
 
-    {% switch switch_name %}
+    {% switch "switch_name" %}
       Switch is active!
     {% else %}
       Switch is inactive!
@@ -90,7 +90,7 @@ The ``{% switch %}`` tag also supports an ``{% else %}`` section::
 
 To use a *sample*, just use the ``sample`` tag::
 
-    {% sample sample_name %}
+    {% sample "sample_name" %}
       Sample is active!
     {% else %} {# Optional `else` section #}
       Sample is inactive!

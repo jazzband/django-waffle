@@ -20,67 +20,30 @@ can equally apply to Switches or Samples.
 Unit tests
 ==========
 
-Flags may be non-deterministic by nature. Who is making the request?
-Is the Flag defined? Is it a dice-roll or a roll-out? These make
-testing difficult.  There are a few strategies for making Flags behave
-deterministically.
+Waffle provides three context managers (that can also be used as
+decorators) in ``waffle.testutils`` that make testing easier.
 
+- ``override_flag``
+- ``override_sample``
+- ``override_switch``
 
-Create the Flag
----------------
+All three are used the same way::
 
-The simplest option is to create the Flag with some deterministic
-options, for example::
+    with override_flag('flag_name', active=True):
+        # Only 'flag_name' is affected, other flags behave normally.
+        assert waffle.flag_is_active(request, 'flag_name')
 
-    from waffle.models import Flag
-    Flag.objects.create(name='foo', everyone=True)
+Or::
 
-Because the ``Flag.everyone`` property makes the Flag predictable, you
-can use it in tests to guarantee one code-path or the other is hit.
+    @override_sample('sample_name', active=True)
+    def test_with_sample():
+        # Only 'sample_name' is affected, and will always be True. Other
+        # samples behave normally.
+        assert waffle.sample_is_active('sample_name')
 
-
-Mocking ``flag_is_active``
---------------------------
-
-Creating the flag may not always be possible or the best option. You
-can also use a library like Mock_ or Fudge_ to mock other parts of the
-chain. For example::
-
-    # tests.py
-    from module import views  # Imports waffle
-    import mock
-
-    @mock.patch.object(views.waffle, 'flag_is_active')
-    def test_something(flag_is_active):
-        flag_is_active.return_value = True
-        views.some_view()  # Will behave as if *every* Flag is True.
-
-The downside of mocking methods like ``flag_is_active`` is that
-*every* Flag will come back with the same value. That might be fine
-for some situations.
-
-
-Mocking Template Helpers
-------------------------
-
-Waffle's template helpers for Django or Jinja require some special
-mocking. For Jinja::
-
-    import mock
-    import waffle.helpers
-
-    @mock.patch.object(waffle.helpers, 'flag_is_active')
-    def test_something(flag_is_active):
-        flag_is_active.return_value = True
-
-Or for Django::
-
-    import mock
-    from waffle.templatetags import waffle_tags
-
-    @mock.patch.object(waffle_tags, 'flag_is_active')
-    def test_something(flag_is_active):
-        flag_is_active.return_value = True
+All three will restore the relevant flag, sample, or switch to its
+previous state: they will restore the old values and will delete objects
+that did not exist.
 
 
 External test suites
@@ -93,6 +56,8 @@ For tests that make HTTP requests to the system-under-test (e.g. with
 Selenium_ or PhantomJS_) the ``WAFFLE_OVERRIDE`` :ref:`setting
 <starting-configuring>` makes it possible to control the value of any
 *Flag* via the querystring.
+
+.. highlight:: http
 
 For example, for a flag named ``foo``, we can ensure that it is "on" for
 a request::

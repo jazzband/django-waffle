@@ -8,6 +8,7 @@ v0.10.2
 
 - Overhaul documentation.
 - Move CLI commands to waffle_(flag|sample|switch) to be more polite.
+- Add override_(flag|sample|switch) testing tools.
 
 
 v0.10.1

@@ -238,13 +238,13 @@ class WaffleTests(TestCase):
         Flag.objects.create(name='myflag1', everyone=True)
         request = get()
         flags = waffle.all_flags(request)
-        assert ('myflag1', True) in flags
+        assert flags['myflag1'] == True
 
         Flag.objects.create(name='myflag2', everyone=True)
 
         request = get()
         flags = waffle.all_flags(request)
-        assert ('myflag2', True) in flags
+        assert flags['myflag2'] == True
 
     def test_all_switches(self):
         """Test the 'SWITCHES_ALL' list gets invalidated correctly."""

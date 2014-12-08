@@ -154,7 +154,7 @@ def all_flags(request):
     if flags is None:
         flags = Flag.objects.values_list('name', flat=True)
         cache.add(keyfmt(settings.FLAGS_ALL_CACHE_KEY), flags)
-    flag_values = [(f, flag_is_active(request, f)) for f in flags]
+    flag_values = dict((f, flag_is_active(request, f)) for f in flags)
 
     return flag_values
 

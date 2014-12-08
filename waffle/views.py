@@ -15,7 +15,7 @@ def wafflejs(request):
 
 
 def _generate_waffle_js(request):
-    flag_values = all_flags(request)
+    flag_values = list(all_flags(request).items())
     switches = all_switches()
     sample_values = all_samples()
 

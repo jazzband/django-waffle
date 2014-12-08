@@ -233,6 +233,41 @@ class WaffleTests(TestCase):
         request = get()
         assert waffle.flag_is_active(request, 'foo')
 
+    def test_all_flags(self):
+        """Test the 'FLAGS_ALL' list gets invalidated correctly."""
+        Flag.objects.create(name='myflag1', everyone=True)
+        request = get()
+        flags = waffle.all_flags(request)
+        assert flags['myflag1'] == True
+
+        Flag.objects.create(name='myflag2', everyone=True)
+
+        request = get()
+        flags = waffle.all_flags(request)
+        assert flags['myflag2'] == True
+
+    def test_all_switches(self):
+        """Test the 'SWITCHES_ALL' list gets invalidated correctly."""
+        switch = Switch.objects.create(name='myswitch', active=True)
+        switches = waffle.all_switches()
+        assert ('myswitch', True) in switches
+
+        switch.active = False
+        switch.save()
+        switches = waffle.all_switches()
+        assert ('myswitch', False) in switches
+
+    def test_all_samples(self):
+        """Test the 'SAMPLES_ALL' list gets invalidated correctly."""
+        Sample.objects.create(name='sample1', percent='100.0')
+        samples = waffle.all_samples()
+        assert ('sample1', True) in samples
+
+        Sample.objects.create(name='sample2', percent='100.0')
+
+        samples = waffle.all_samples()
+        assert ('sample2', True) in samples
+
     @mock.patch.object(settings, 'OVERRIDE', True)
     def test_override(self):
         request = get(foo='1')

@@ -2,7 +2,8 @@ from django.http import HttpResponse
 from django.template import loader
 from django.views.decorators.cache import never_cache
 
-from . import (keyfmt, flag_is_active, sample_is_active, settings)
+from . import (keyfmt, flag_is_active, sample_is_active, settings,
+               all_flags, all_switches, all_samples)
 from .models import Flag, Sample, Switch
 from .compat import cache
 
@@ -14,22 +15,9 @@ def wafflejs(request):
 
 
 def _generate_waffle_js(request):
-    flags = cache.get(keyfmt(settings.FLAGS_ALL_CACHE_KEY))
-    if flags is None:
-        flags = Flag.objects.values_list('name', flat=True)
-        cache.add(keyfmt(settings.FLAGS_ALL_CACHE_KEY), flags)
-    flag_values = [(f, flag_is_active(request, f)) for f in flags]
-
-    switches = cache.get(keyfmt(settings.SWITCHES_ALL_CACHE_KEY))
-    if switches is None:
-        switches = Switch.objects.values_list('name', 'active')
-        cache.add(keyfmt(settings.SWITCHES_ALL_CACHE_KEY), switches)
-
-    samples = cache.get(keyfmt(settings.SAMPLES_ALL_CACHE_KEY))
-    if samples is None:
-        samples = Sample.objects.values_list('name', flat=True)
-        cache.add(keyfmt(settings.SAMPLES_ALL_CACHE_KEY), samples)
-    sample_values = [(s, sample_is_active(s)) for s in samples]
+    flag_values = all_flags(request)
+    switches = all_switches()
+    sample_values = all_samples()
 
     flag_default = getattr(settings, 'WAFFLE_FLAG_DEFAULT', False)
     switch_default = getattr(settings, 'WAFFLE_SWITCH_DEFAULT', False)

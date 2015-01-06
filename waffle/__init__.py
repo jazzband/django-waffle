@@ -115,6 +115,10 @@ def flag_is_active(request, flag_name):
     return False
 
 
+def flags_are_active(flags, request):
+    return [(f, flag_is_active(request, f)) for f in flags]
+
+
 def switch_is_active(switch_name):
     from .models import cache_switch, Switch
     from .compat import cache

@@ -2,7 +2,7 @@ from django.http import HttpResponse
 from django.template import loader
 from django.views.decorators.cache import never_cache
 
-from . import (keyfmt, flag_is_active, sample_is_active, settings)
+from . import (keyfmt, flags_are_active, sample_is_active, settings)
 from .models import Flag, Sample, Switch
 from .compat import cache
 
@@ -18,7 +18,7 @@ def _generate_waffle_js(request):
     if flags is None:
         flags = Flag.objects.values_list('name', flat=True)
         cache.add(keyfmt(settings.FLAGS_ALL_CACHE_KEY), flags)
-    flag_values = [(f, flag_is_active(request, f)) for f in flags]
+    flag_values = flags_are_active(flags, request)
 
     switches = cache.get(keyfmt(settings.SWITCHES_ALL_CACHE_KEY))
     if switches is None:

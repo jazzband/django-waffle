@@ -30,14 +30,23 @@ def set_flag(request, flag_name, active=True, session_only=False):
     request.waffles[flag_name] = [active, session_only]
 
 
-def flags_are_active(request, flag_names):
+def get_flags(flag_names):
     from .compat import cache
+    from .models import cache_flag, Flag
 
     flag_keys = [keyfmt(settings.FLAG_CACHE_KEY, f) for f in flag_names]
-    print flag_keys
-    cached_flags = set(cache.get_many(flag_keys))
-    missing_flags = set(flag_names).difference(cached_flags)
-    print "Cached: {}\nMissing: {}".format(cached_flags, missing_flags)
+    cached_flags = cache.get_many(flag_keys)
+    cached_flag_names = set([f.name for f in cached_flags])
+    missing_flag_names = set(flag_names).difference(cached_flag_names)
+    print list(missing_flag_names)
+    uncached_flags = Flag.objects.filter(name__in=missing_flag_names)
+    # TODO: Cache uncached flags
+    print cached_flags, uncached_flags
+    return list(cached_flags) + list(uncached_flags)
+
+
+def flags_are_active(request, flag_names):
+    full_flags = get_flags(flag_names)
     flags = [(f, flag_is_active_wrapped(request, f)) for f in flag_names]
     return flags
 

@@ -30,11 +30,30 @@ def set_flag(request, flag_name, active=True, session_only=False):
     request.waffles[flag_name] = [active, session_only]
 
 
+def flags_are_active(request, flag_names):
+    from .compat import cache
+
+    flag_keys = [keyfmt(settings.FLAG_CACHE_KEY, f) for f in flag_names]
+    print flag_keys
+    cached_flags = set(cache.get_many(flag_keys))
+    missing_flags = set(flag_names).difference(cached_flags)
+    print "Cached: {}\nMissing: {}".format(cached_flags, missing_flags)
+    flags = [(f, flag_is_active_wrapped(request, f)) for f in flag_names]
+    return flags
+
+
 def flag_is_active(request, flag_name):
+    flag_names = [flag_name, ]
+    flags = flags_are_active(request, flag_names)
+    return flags[0][1]
+
+
+def flag_is_active_wrapped(request, flag_name):
     from .models import cache_flag, Flag
     from .compat import cache
 
     flag = cache.get(keyfmt(settings.FLAG_CACHE_KEY, flag_name))
+    # print flag
     if flag is None:
         try:
             flag = Flag.objects.get(name=flag_name)
@@ -113,10 +132,6 @@ def flag_is_active(request, flag_name):
         set_flag(request, flag_name, False, flag.rollout)
 
     return False
-
-
-def flags_are_active(flags, request):
-    return [(f, flag_is_active(request, f)) for f in flags]
 
 
 def switch_is_active(switch_name):

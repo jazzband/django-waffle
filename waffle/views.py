@@ -18,7 +18,7 @@ def _generate_waffle_js(request):
     if flags is None:
         flags = Flag.objects.values_list('name', flat=True)
         cache.add(keyfmt(settings.FLAGS_ALL_CACHE_KEY), flags)
-    flag_values = flags_are_active(flags, request)
+    flag_values = flags_are_active(request, flags)
 
     switches = cache.get(keyfmt(settings.SWITCHES_ALL_CACHE_KEY))
     if switches is None:

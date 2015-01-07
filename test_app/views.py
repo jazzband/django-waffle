@@ -12,6 +12,11 @@ def flag_in_view(request):
         return HttpResponse('on')
     return HttpResponse('off')
 
+def flag_in_session(request):
+    if flag_is_active(request, 'version1'):
+        return HttpResponse('on')
+    return HttpResponse('off')
+
 
 def flag_in_jingo(request):
     return render(request, 'jingo/jingo.html')

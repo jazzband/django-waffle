@@ -59,9 +59,9 @@ def flag_is_active(request, flag_name):
 
 
 def _full_flag_is_active(request, flag):
-    from .compat import cache
+    from .compat import cache, is_string
 
-    if isinstance(flag, basestring):
+    if is_string(flag):
         return settings.FLAG_DEFAULT
 
     if settings.OVERRIDE:

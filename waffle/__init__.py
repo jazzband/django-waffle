@@ -1,3 +1,4 @@
+from collections import defaultdict
 from decimal import Decimal
 import random
 import hashlib
@@ -48,13 +49,21 @@ def get_flags(flag_names):
 
 
 def flags_are_active(request, flag_names):
+    from .compat import cache
+
     full_flags, missing_flags = get_flags(flag_names)
+
+    flag_user_keys = [keyfmt(settings.FLAG_USERS_CACHE_KEY, f.name) for f in full_flags]
+    flag_users = defaultdict(list, cache.get_many(flag_user_keys))
+    flag_group_keys = [keyfmt(settings.FLAG_GROUPS_CACHE_KEY, f.name) for f in full_flags]
+    flag_groups = defaultdict(list, cache.get_many(flag_group_keys))
+
     try:
         user_groups = request.user.groups.all()
     except ValueError:
         user_groups = None
 
-    flags = [(f, _full_flag_is_active(request, f, user_groups)) for f in full_flags + missing_flags]
+    flags = [(f, _full_flag_is_active(request, f, flag_users[keyfmt(settings.FLAG_USERS_CACHE_KEY, f.name)], flag_groups[keyfmt(settings.FLAG_GROUPS_CACHE_KEY, f.name)], user_groups)) for f in full_flags + missing_flags]
     return flags
 
 
@@ -64,9 +73,7 @@ def flag_is_active(request, flag_name):
     return flags[0][1]
 
 
-def _full_flag_is_active(request, flag, user_groups):
-    from .compat import cache
-
+def _full_flag_is_active(request, flag, flag_users, flag_groups, user_groups):
     if settings.OVERRIDE:
         if flag.name in request.GET:
             return request.GET[flag.name] == '1'
@@ -104,11 +111,9 @@ def _full_flag_is_active(request, flag, user_groups):
                 request.LANGUAGE_CODE in languages):
             return True
 
-    flag_users = cache.get(keyfmt(settings.FLAG_USERS_CACHE_KEY, flag.name))
     if user in flag_users:
         return True
 
-    flag_groups = cache.get(keyfmt(settings.FLAG_GROUPS_CACHE_KEY, flag.name))
     for group in flag_groups:
         if group in user_groups:
             return True

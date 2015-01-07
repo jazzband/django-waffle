@@ -8,6 +8,7 @@ usage() {
     echo "  test - run the waffle tests"
     echo "  shell - open the Django shell"
     echo "  schema - create a schema migration for any model changes"
+    echo "  makemigrations - create a schema migration for any model changes in django > 1.7 "
     exit 1
 }
 

@@ -51,7 +51,7 @@ class WaffleViewTests(TestCase):
         self.assertEqual(200, response.status_code)
         assert ('sample2', True) in response.context['samples']
 
-    def test_queries(self):
+    def test_db_queries_constant(self):
         Flag.objects.create(name='1', everyone=True)
 
         with self.assertNumQueries(6):

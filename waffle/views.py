@@ -36,7 +36,7 @@ def _generate_waffle_js(request):
     sample_default = getattr(settings, 'WAFFLE_SAMPLE_DEFAULT', False)
 
     return loader.render_to_string('waffle/waffle.js', {
-        'flags': flag_values,
+        'flags': [(f[0].name, f[1]) for f in flag_values],
         'switches': switches,
         'samples': sample_values,
         'flag_default': flag_default,

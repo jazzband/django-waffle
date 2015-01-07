@@ -32,22 +32,23 @@ def set_flag(request, flag_name, active=True, session_only=False):
 
 def get_flags(flag_names):
     from .compat import cache
-    from .models import cache_flag, Flag
+    from .models import Flag
 
     flag_keys = [keyfmt(settings.FLAG_CACHE_KEY, f) for f in flag_names]
     cached_flags = cache.get_many(flag_keys)
     cached_flag_names = set([f.name for f in cached_flags])
     missing_flag_names = set(flag_names).difference(cached_flag_names)
-    print list(missing_flag_names)
     uncached_flags = Flag.objects.filter(name__in=missing_flag_names)
+    uncached_flag_names = set([f.name for f in uncached_flags])
+    missing_flag_names = missing_flag_names.difference(uncached_flag_names)
     # TODO: Cache uncached flags
-    print cached_flags, uncached_flags
-    return list(cached_flags) + list(uncached_flags)
+    return list(cached_flags) + list(uncached_flags) + list(missing_flag_names)
 
 
 def flags_are_active(request, flag_names):
     full_flags = get_flags(flag_names)
-    flags = [(f, flag_is_active_wrapped(request, f)) for f in flag_names]
+    # flags = [(f, flag_is_active_wrapped(request, f)) for f in flag_names]
+    flags = [(f, full_flag_is_active(request, f)) for f in full_flags]
     return flags
 
 
@@ -57,22 +58,16 @@ def flag_is_active(request, flag_name):
     return flags[0][1]
 
 
-def flag_is_active_wrapped(request, flag_name):
-    from .models import cache_flag, Flag
+def full_flag_is_active(request, flag):
     from .compat import cache
+    from .models import cache_flag
 
-    flag = cache.get(keyfmt(settings.FLAG_CACHE_KEY, flag_name))
-    # print flag
-    if flag is None:
-        try:
-            flag = Flag.objects.get(name=flag_name)
-            cache_flag(instance=flag)
-        except Flag.DoesNotExist:
-            return settings.FLAG_DEFAULT
+    if isinstance(flag, basestring):
+        return settings.FLAG_DEFAULT
 
     if settings.OVERRIDE:
-        if flag_name in request.GET:
-            return request.GET[flag_name] == '1'
+        if flag.name in request.GET:
+            return request.GET[flag.name] == '1'
 
     if flag.everyone:
         return True
@@ -80,12 +75,12 @@ def flag_is_active_wrapped(request, flag_name):
         return False
 
     if flag.testing:  # Testing mode is on.
-        tc = settings.TEST_COOKIE_NAME % flag_name
+        tc = settings.TEST_COOKIE_NAME % flag.name
         if tc in request.GET:
             on = request.GET[tc] == '1'
             if not hasattr(request, 'waffle_tests'):
                 request.waffle_tests = {}
-            request.waffle_tests[flag_name] = on
+            request.waffle_tests[flag.name] = on
             return on
         if tc in request.COOKIES:
             return request.COOKIES[tc] == 'True'
@@ -126,19 +121,19 @@ def flag_is_active_wrapped(request, flag_name):
     if flag.percent and flag.percent > 0:
         if not hasattr(request, 'waffles'):
             request.waffles = {}
-        elif flag_name in request.waffles:
-            return request.waffles[flag_name][0]
+        elif flag.name in request.waffles:
+            return request.waffles[flag.name][0]
 
-        cookie = settings.COOKIE_NAME % flag_name
+        cookie = settings.COOKIE_NAME % flag.name
         if cookie in request.COOKIES:
             flag_active = (request.COOKIES[cookie] == 'True')
-            set_flag(request, flag_name, flag_active, flag.rollout)
+            set_flag(request, flag.name, flag_active, flag.rollout)
             return flag_active
 
         if Decimal(str(random.uniform(0, 100))) <= flag.percent:
-            set_flag(request, flag_name, True, flag.rollout)
+            set_flag(request, flag.name, True, flag.rollout)
             return True
-        set_flag(request, flag_name, False, flag.rollout)
+        set_flag(request, flag.name, False, flag.rollout)
 
     return False
 

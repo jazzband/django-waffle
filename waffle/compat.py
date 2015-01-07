@@ -15,18 +15,3 @@ else:
     from django.core.cache import cache
 
 AUTH_USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
-
-
-def is_string(obj):
-    try:
-        # Python 2
-        if isinstance(obj, basestring):
-            return True
-        else:
-            return False
-    except NameError:
-        # Python 3
-        if isinstance(obj, str):
-            return True
-        else:
-            return False

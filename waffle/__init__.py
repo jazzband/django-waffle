@@ -42,13 +42,14 @@ def get_flags(flag_names):
     cache_flags(instances=uncached_flags)
     uncached_flag_names = set([f.name for f in uncached_flags])
     missing_flag_names = missing_flag_names.difference(uncached_flag_names)
+    missing_flags = [Flag(name=f_name, everyone=settings.FLAG_DEFAULT) for f_name in missing_flag_names]
 
-    return list(cached_flags) + list(uncached_flags) + list(missing_flag_names)
+    return list(cached_flags) + list(uncached_flags), missing_flags
 
 
 def flags_are_active(request, flag_names):
-    full_flags = get_flags(flag_names)
-    flags = [(f, _full_flag_is_active(request, f)) for f in full_flags]
+    full_flags, missing_flags = get_flags(flag_names)
+    flags = [(f, _full_flag_is_active(request, f)) for f in full_flags + missing_flags]
     return flags
 
 
@@ -59,10 +60,7 @@ def flag_is_active(request, flag_name):
 
 
 def _full_flag_is_active(request, flag):
-    from .compat import cache, is_string
-
-    if is_string(flag):
-        return settings.FLAG_DEFAULT
+    from .compat import cache
 
     if settings.OVERRIDE:
         if flag.name in request.GET:

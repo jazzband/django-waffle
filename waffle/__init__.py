@@ -49,7 +49,12 @@ def get_flags(flag_names):
 
 def flags_are_active(request, flag_names):
     full_flags, missing_flags = get_flags(flag_names)
-    flags = [(f, _full_flag_is_active(request, f)) for f in full_flags + missing_flags]
+    try:
+        user_groups = request.user.groups.all()
+    except ValueError:
+        user_groups = None
+
+    flags = [(f, _full_flag_is_active(request, f, user_groups)) for f in full_flags + missing_flags]
     return flags
 
 
@@ -59,7 +64,7 @@ def flag_is_active(request, flag_name):
     return flags[0][1]
 
 
-def _full_flag_is_active(request, flag):
+def _full_flag_is_active(request, flag, user_groups):
     from .compat import cache
 
     if settings.OVERRIDE:
@@ -104,7 +109,6 @@ def _full_flag_is_active(request, flag):
         return True
 
     flag_groups = cache.get(keyfmt(settings.FLAG_GROUPS_CACHE_KEY, flag.name))
-    user_groups = user.groups.all()
     for group in flag_groups:
         if group in user_groups:
             return True

@@ -48,7 +48,7 @@ def get_flags(flag_names):
 
 def flags_are_active(request, flag_names):
     full_flags = get_flags(flag_names)
-    flags = [(f, full_flag_is_active(request, f)) for f in full_flags]
+    flags = [(f, _full_flag_is_active(request, f)) for f in full_flags]
     return flags
 
 
@@ -58,9 +58,8 @@ def flag_is_active(request, flag_name):
     return flags[0][1]
 
 
-def full_flag_is_active(request, flag):
+def _full_flag_is_active(request, flag):
     from .compat import cache
-    from .models import cache_flag
 
     if isinstance(flag, basestring):
         return settings.FLAG_DEFAULT
@@ -103,16 +102,10 @@ def full_flag_is_active(request, flag):
             return True
 
     flag_users = cache.get(keyfmt(settings.FLAG_USERS_CACHE_KEY, flag.name))
-    if flag_users is None:
-        flag_users = flag.users.all()
-        cache_flag(instance=flag)
     if user in flag_users:
         return True
 
     flag_groups = cache.get(keyfmt(settings.FLAG_GROUPS_CACHE_KEY, flag.name))
-    if flag_groups is None:
-        flag_groups = flag.groups.all()
-        cache_flag(instance=flag)
     user_groups = user.groups.all()
     for group in flag_groups:
         if group in user_groups:

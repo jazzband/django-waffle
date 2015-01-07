@@ -50,6 +50,9 @@ class Flag(models.Model):
     modified = models.DateTimeField(default=datetime.now, help_text=(
         'Date when this Flag was last modified.'))
 
+    sessions = models.BooleanField(default=False, help_text=(
+        'Flag is active for session with the required key value'))
+
     def __unicode__(self):
         return self.name
 

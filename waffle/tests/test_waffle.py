@@ -14,6 +14,8 @@ from waffle.models import Flag, Sample, Switch
 from waffle.tests.base import TestCase
 from waffle import settings
 
+from django.contrib.sessions.backends.db import SessionStore
+
 
 def get(**kw):
     request = RequestFactory().get('/foo', data=kw)
@@ -181,6 +183,12 @@ class WaffleTests(TestCase):
         self.assertEqual(b'on', response.content)
         assert 'dwf_myflag' not in response.cookies
 
+        # test any user the flag is active
+        request = RequestFactory().get('/foo')
+        response = process_request(request, views.flag_in_view)
+        self.assertEqual(b'on', response.content)
+
+
     def test_everyone_off(self):
         """Test the 'everyone' switch off."""
         Flag.objects.create(name='myflag', everyone=False,
@@ -279,6 +287,40 @@ class WaffleTests(TestCase):
 
         response = self.client.get('/flag_in_view?dwft_myflag=1')
         self.assertEqual(b'on', response.content)
+
+    def test_session(self):
+        """
+        Test the flag is on if session key and session value are in request session
+        """
+
+        s = SessionStore()
+        s['feature'] = 'version1'
+        # create a flag with session (key and value)
+        Flag.objects.create(name='version1', sessions=True)
+        request = RequestFactory().get('/foo')
+
+        request.session = s
+        response = process_request(request, views.flag_in_session)
+        # a request with session that is in Flag should be active
+        self.assertEqual(b'on', response.content)
+
+        # request with wrong value the flag should be off
+        request.session['feature'] = 'version0'
+        response = process_request(request, views.flag_in_session)
+        self.assertEqual(b'off', response.content)
+
+        # request with no session data
+        del request.session['feature']
+        response = process_request(request, views.flag_in_session)
+        self.assertEqual(b'off', response.content)
+
+        request = RequestFactory().get('/foo')
+        request.session = s
+        flag = Flag.objects.get(name='version1')
+        flag.sessions = True
+        flag.save()
+        response = process_request(request, views.flag_in_session)
+        self.assertEqual(b'off', response.content)
 
 
 class SwitchTests(TestCase):

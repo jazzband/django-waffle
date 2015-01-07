@@ -38,10 +38,12 @@ def get_flags(flag_names):
     flag_keys = [keyfmt(settings.FLAG_CACHE_KEY, f) for f in flag_names]
     cached_flags = cache.get_many(flag_keys).values()
     cached_flag_names = set([f.name for f in cached_flags])
+
     missing_flag_names = set(flag_names).difference(cached_flag_names)
     uncached_flags = Flag.objects.filter(name__in=missing_flag_names)
     cache_flags(instances=uncached_flags)
     uncached_flag_names = set([f.name for f in uncached_flags])
+
     missing_flag_names = missing_flag_names.difference(uncached_flag_names)
     missing_flags = [Flag(name=f_name, everyone=settings.FLAG_DEFAULT) for f_name in missing_flag_names]
 

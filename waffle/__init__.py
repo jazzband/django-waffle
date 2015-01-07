@@ -40,7 +40,7 @@ def get_flags(flag_names):
     cached_flag_names = set([f.name for f in cached_flags])
 
     missing_flag_names = set(flag_names).difference(cached_flag_names)
-    uncached_flags = Flag.objects.filter(name__in=missing_flag_names)
+    uncached_flags = Flag.objects.filter(name__in=missing_flag_names).prefetch_related('users', 'groups')
     cache_flags(instances=uncached_flags)
     uncached_flag_names = set([f.name for f in uncached_flags])
 

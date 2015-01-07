@@ -30,9 +30,17 @@ def set_flag(request, flag_name, active=True, session_only=False):
     request.waffles[flag_name] = [active, session_only]
 
 
-def flag_is_active(request, flag_name):
+def flag_is_active(request, flag_name, session_key="feature"):
     from .models import cache_flag, Flag
     from .compat import cache
+
+    if hasattr(request, 'session'):
+        try:
+            flag = Flag.objects.get(name=flag_name)
+            if request.session.get(session_key) == flag.name:
+                return True
+        except Flag.DoesNotExist:
+            pass
 
     flag = cache.get(keyfmt(settings.FLAG_CACHE_KEY, flag_name))
     if flag is None:
@@ -62,37 +70,38 @@ def flag_is_active(request, flag_name):
         if tc in request.COOKIES:
             return request.COOKIES[tc] == 'True'
 
-    user = request.user
+    if hasattr(request, 'user'):
+        user = request.user
 
-    if flag.authenticated and user.is_authenticated():
-        return True
+        if flag.authenticated and user.is_authenticated():
+            return True
 
-    if flag.staff and user.is_staff:
-        return True
+        if flag.staff and user.is_staff:
+            return True
 
-    if flag.superusers and user.is_superuser:
-        return True
+        if flag.superusers and user.is_superuser:
+            return True
+
+        flag_users = cache.get(keyfmt(settings.FLAG_USERS_CACHE_KEY, flag.name))
+        if flag_users is None:
+            flag_users = flag.users.all()
+            cache_flag(instance=flag)
+        if user in flag_users:
+            return True
+
+        flag_groups = cache.get(keyfmt(settings.FLAG_GROUPS_CACHE_KEY, flag.name))
+        if flag_groups is None:
+            flag_groups = flag.groups.all()
+            cache_flag(instance=flag)
+        user_groups = user.groups.all()
+        for group in flag_groups:
+            if group in user_groups:
+                return True
 
     if flag.languages:
         languages = flag.languages.split(',')
         if (hasattr(request, 'LANGUAGE_CODE') and
                 request.LANGUAGE_CODE in languages):
-            return True
-
-    flag_users = cache.get(keyfmt(settings.FLAG_USERS_CACHE_KEY, flag.name))
-    if flag_users is None:
-        flag_users = flag.users.all()
-        cache_flag(instance=flag)
-    if user in flag_users:
-        return True
-
-    flag_groups = cache.get(keyfmt(settings.FLAG_GROUPS_CACHE_KEY, flag.name))
-    if flag_groups is None:
-        flag_groups = flag.groups.all()
-        cache_flag(instance=flag)
-    user_groups = user.groups.all()
-    for group in flag_groups:
-        if group in user_groups:
             return True
 
     if flag.percent and flag.percent > 0:

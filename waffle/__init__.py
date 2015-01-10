@@ -1,3 +1,4 @@
+from collections import defaultdict
 from decimal import Decimal
 import random
 import hashlib
@@ -30,21 +31,54 @@ def set_flag(request, flag_name, active=True, session_only=False):
     request.waffles[flag_name] = [active, session_only]
 
 
-def flag_is_active(request, flag_name):
-    from .models import cache_flag, Flag
+def get_flags(flag_names):
+    from .compat import cache
+    from .models import Flag, cache_flags
+
+    flag_keys = [keyfmt(settings.FLAG_CACHE_KEY, f) for f in flag_names]
+    cached_flags = cache.get_many(flag_keys).values()
+    cached_flag_names = set([f.name for f in cached_flags])
+
+    missing_flag_names = set(flag_names).difference(cached_flag_names)
+    uncached_flags = Flag.objects.filter(name__in=missing_flag_names).prefetch_related('users', 'groups')
+    cache_flags(instances=uncached_flags)
+    uncached_flag_names = set([f.name for f in uncached_flags])
+
+    missing_flag_names = missing_flag_names.difference(uncached_flag_names)
+    missing_flags = [Flag(name=f_name, everyone=settings.FLAG_DEFAULT) for f_name in missing_flag_names]
+
+    return list(cached_flags) + list(uncached_flags), missing_flags
+
+
+def flags_are_active(request, flag_names):
     from .compat import cache
 
-    flag = cache.get(keyfmt(settings.FLAG_CACHE_KEY, flag_name))
-    if flag is None:
-        try:
-            flag = Flag.objects.get(name=flag_name)
-            cache_flag(instance=flag)
-        except Flag.DoesNotExist:
-            return settings.FLAG_DEFAULT
+    full_flags, missing_flags = get_flags(flag_names)
 
+    flag_user_keys = [keyfmt(settings.FLAG_USERS_CACHE_KEY, f.name) for f in full_flags]
+    flag_users = defaultdict(list, cache.get_many(flag_user_keys))
+    flag_group_keys = [keyfmt(settings.FLAG_GROUPS_CACHE_KEY, f.name) for f in full_flags]
+    flag_groups = defaultdict(list, cache.get_many(flag_group_keys))
+
+    try:
+        user_groups = request.user.groups.all()
+    except ValueError:
+        user_groups = None
+
+    flags = [(f, _full_flag_is_active(request, f, flag_users[keyfmt(settings.FLAG_USERS_CACHE_KEY, f.name)], flag_groups[keyfmt(settings.FLAG_GROUPS_CACHE_KEY, f.name)], user_groups)) for f in full_flags + missing_flags]
+    return flags
+
+
+def flag_is_active(request, flag_name):
+    flag_names = [flag_name, ]
+    flags = flags_are_active(request, flag_names)
+    return flags[0][1]
+
+
+def _full_flag_is_active(request, flag, flag_users, flag_groups, user_groups):
     if settings.OVERRIDE:
-        if flag_name in request.GET:
-            return request.GET[flag_name] == '1'
+        if flag.name in request.GET:
+            return request.GET[flag.name] == '1'
 
     if flag.everyone:
         return True
@@ -52,12 +86,12 @@ def flag_is_active(request, flag_name):
         return False
 
     if flag.testing:  # Testing mode is on.
-        tc = settings.TEST_COOKIE_NAME % flag_name
+        tc = settings.TEST_COOKIE_NAME % flag.name
         if tc in request.GET:
             on = request.GET[tc] == '1'
             if not hasattr(request, 'waffle_tests'):
                 request.waffle_tests = {}
-            request.waffle_tests[flag_name] = on
+            request.waffle_tests[flag.name] = on
             return on
         if tc in request.COOKIES:
             return request.COOKIES[tc] == 'True'
@@ -79,18 +113,9 @@ def flag_is_active(request, flag_name):
                 request.LANGUAGE_CODE in languages):
             return True
 
-    flag_users = cache.get(keyfmt(settings.FLAG_USERS_CACHE_KEY, flag.name))
-    if flag_users is None:
-        flag_users = flag.users.all()
-        cache_flag(instance=flag)
     if user in flag_users:
         return True
 
-    flag_groups = cache.get(keyfmt(settings.FLAG_GROUPS_CACHE_KEY, flag.name))
-    if flag_groups is None:
-        flag_groups = flag.groups.all()
-        cache_flag(instance=flag)
-    user_groups = user.groups.all()
     for group in flag_groups:
         if group in user_groups:
             return True
@@ -98,19 +123,19 @@ def flag_is_active(request, flag_name):
     if flag.percent and flag.percent > 0:
         if not hasattr(request, 'waffles'):
             request.waffles = {}
-        elif flag_name in request.waffles:
-            return request.waffles[flag_name][0]
+        elif flag.name in request.waffles:
+            return request.waffles[flag.name][0]
 
-        cookie = settings.COOKIE_NAME % flag_name
+        cookie = settings.COOKIE_NAME % flag.name
         if cookie in request.COOKIES:
             flag_active = (request.COOKIES[cookie] == 'True')
-            set_flag(request, flag_name, flag_active, flag.rollout)
+            set_flag(request, flag.name, flag_active, flag.rollout)
             return flag_active
 
         if Decimal(str(random.uniform(0, 100))) <= flag.percent:
-            set_flag(request, flag_name, True, flag.rollout)
+            set_flag(request, flag.name, True, flag.rollout)
             return True
-        set_flag(request, flag_name, False, flag.rollout)
+        set_flag(request, flag.name, False, flag.rollout)
 
     return False
 

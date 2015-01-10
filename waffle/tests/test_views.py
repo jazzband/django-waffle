@@ -1,3 +1,4 @@
+from django.core import cache
 from django.core.urlresolvers import reverse
 
 from waffle.models import Flag, Sample, Switch
@@ -49,3 +50,18 @@ class WaffleViewTests(TestCase):
         response = self.client.get(reverse('wafflejs'))
         self.assertEqual(200, response.status_code)
         assert ('sample2', True) in response.context['samples']
+
+    def test_db_queries_constant(self):
+        Flag.objects.create(name='1', everyone=True)
+
+        with self.assertNumQueries(6):
+            response = self.client.get(reverse('wafflejs'))
+            self.assertEqual(200, response.status_code)
+
+        cache.cache.clear()
+
+        Flag.objects.create(name='2', everyone=True)
+
+        with self.assertNumQueries(6):
+            response = self.client.get(reverse('wafflejs'))
+            self.assertEqual(200, response.status_code)

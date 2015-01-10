@@ -120,6 +120,18 @@ def cache_flag(**kwargs):
         cache.add(keyfmt(settings.FLAG_GROUPS_CACHE_KEY, f.name), f.groups.all())
 
 
+def cache_flags(**kwargs):
+    cache_dict = {}
+    flags = kwargs.get('instances')
+
+    for f in flags:
+        cache_dict[keyfmt(settings.FLAG_CACHE_KEY, f.name)] = f
+        cache_dict[keyfmt(settings.FLAG_USERS_CACHE_KEY, f.name)] = f.users.all()
+        cache_dict[keyfmt(settings.FLAG_GROUPS_CACHE_KEY, f.name)] = f.groups.all()
+
+    cache.set_many(cache_dict)
+
+
 def uncache_flag(**kwargs):
     flag = kwargs.get('instance')
     data = {

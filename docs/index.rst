@@ -1,12 +1,11 @@
-.. _project-details:
+.. _index:
 
-======
-Waffle
-======
+=============
+Django Waffle
+=============
 
-Waffle is (yet another) feature flipper for Django. You can define the
-conditions for which a flag should be active, and use it in a number of
-ways.
+Waffle is feature flipper for Django. You can define the conditions for
+which a flag should be active, and use it in a number of ways.
 
 :Version:       |release|
 :Code:          https://github.com/jsocol/django-waffle
@@ -16,14 +15,16 @@ ways.
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :titlesonly:
 
-   installation
-   types
-   commandline
-   usage
-   testing-waffles
-   contributing
+   about/why-waffle
+   starting/index
+   types/index
+   usage/index
+   testing/index
+   about/contributing
+   about/goals
+   about/roadmap
 
 
 Indices and tables

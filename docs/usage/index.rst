@@ -1,0 +1,19 @@
+.. _usage-index:
+
+============
+Using Waffle
+============
+
+Waffle provides a simple API to check the state of :ref:`flags
+<types-flag>`, :ref:`switches <types-switch>`, and :ref:`samples
+<types-samples>` in views and templates, and even on the client in
+JavaScript.
+
+.. toctree::
+   :titlesonly:
+   
+   views
+   decorators
+   templates
+   javascript
+   cli

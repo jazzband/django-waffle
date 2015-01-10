@@ -1,8 +1,8 @@
-.. _testing-chapter:
+.. _testing-automated:
 
-===================
-Testing with Waffle
-===================
+=============================
+Automated testing with Waffle
+=============================
 
 Feature flags present a new challenge for writing tests. The test
 database may not have Flags, Switches, or Samples defined, or they may
@@ -17,8 +17,8 @@ while using feature flags. I'll talk specifically about Flags but this
 can equally apply to Switches or Samples.
 
 
-Mocking Flags
-=============
+Unit tests
+==========
 
 Flags may be non-deterministic by nature. Who is making the request?
 Is the Flag defined? Is it a dice-roll or a roll-out? These make
@@ -83,5 +83,28 @@ Or for Django::
         flag_is_active.return_value = True
 
 
-.. _mock: http://code.google.com/mock/
+External test suites
+====================
+
+Tests that run in a separate process, such as Selenium tests, may not
+have access to the test database or the ability to mock Waffle values.
+
+For tests that make HTTP requests to the system-under-test (e.g. with
+Selenium_ or PhantomJS_) the ``WAFFLE_OVERRIDE`` :ref:`setting
+<starting-configuring>` makes it possible to control the value of any
+*Flag* via the querystring.
+
+For example, for a flag named ``foo``, we can ensure that it is "on" for
+a request::
+
+    GET /testpage?foo=1 HTTP/1.1
+
+or that it is "off"::
+
+    GET /testpage?foo=0 HTTP/1.1
+
+
+.. _mock: http://pypi.python.org/pypi/mock/
 .. _fudge: http://farmdev.com/projects/fudge/
+.. _Selenium: http://www.seleniumhq.org/
+.. _PhantomJS: http://phantomjs.org/

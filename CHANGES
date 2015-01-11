@@ -3,6 +3,22 @@ Waffle Changelog
 ================
 
 
+v0.10.2
+=======
+
+- Overhaul documentation.
+- Move CLI commands to waffle_(flag|sample|switch) to be more polite.
+
+
+v0.10.1
+=======
+
+- Support Python 3.
+- Support Django 1.7.
+- Add WAFFLE_CACHE_NAME.
+- Fix caching for empty lists.
+
+
 v0.10.0
 =======
 

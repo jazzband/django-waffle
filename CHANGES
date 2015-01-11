@@ -9,6 +9,7 @@ v0.10.2
 - Overhaul documentation.
 - Move CLI commands to waffle_(flag|sample|switch) to be more polite.
 - Add override_(flag|sample|switch) testing tools.
+- Changed the default of WAFFLE_SECURE to True.
 
 
 v0.10.1

@@ -35,8 +35,7 @@ behavior.
     e.g. Selenium to control their behavior). Defaults to ``False``.
 
 ``WAFFLE_SECURE``
-    Whether to set the ``secure`` flag on cookies. Defaults to
-    ``False``.
+    Whether to set the ``secure`` flag on cookies. Defaults to ``True``.
 
 ``WAFFLE_CACHE_PREFIX``
     Waffle tries to store objects in cache pretty aggressively. If you

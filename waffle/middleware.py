@@ -1,16 +1,16 @@
 from django.utils.encoding import smart_str
 
-from . import settings
+from waffle.utils import get_setting
 
 
 class WaffleMiddleware(object):
     def process_response(self, request, response):
-        secure = settings.SECURE
-        max_age = settings.MAX_AGE
+        secure = get_setting('SECURE')
+        max_age = get_setting('MAX_AGE')
 
         if hasattr(request, 'waffles'):
             for k in request.waffles:
-                name = smart_str(settings.COOKIE_NAME % k)
+                name = smart_str(get_setting('COOKIE') % k)
                 active, rollout = request.waffles[k]
                 if rollout and not active:
                     # "Inactive" is a session cookie during rollout mode.
@@ -21,7 +21,7 @@ class WaffleMiddleware(object):
                                     secure=secure)
         if hasattr(request, 'waffle_tests'):
             for k in request.waffle_tests:
-                name = smart_str(settings.TEST_COOKIE_NAME % k)
+                name = smart_str(get_setting('TEST_COOKIE') % k)
                 value = request.waffle_tests[k]
                 response.set_cookie(name, value=value)
 

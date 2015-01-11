@@ -7,8 +7,8 @@ from django.contrib.auth.models import Group
 from django.db import models
 from django.db.models.signals import post_save, post_delete, m2m_changed
 
-from .compat import AUTH_USER_MODEL, cache
-from . import keyfmt, settings
+from waffle.compat import AUTH_USER_MODEL, cache
+from waffle.utils import get_setting, keyfmt
 
 
 class Flag(models.Model):
@@ -115,18 +115,20 @@ def cache_flag(**kwargs):
     # action is included for m2m_changed signal. Only cache on the post_*.
     if not action or action in ['post_add', 'post_remove', 'post_clear']:
         f = kwargs.get('instance')
-        cache.add(keyfmt(settings.FLAG_CACHE_KEY, f.name), f)
-        cache.add(keyfmt(settings.FLAG_USERS_CACHE_KEY, f.name), f.users.all())
-        cache.add(keyfmt(settings.FLAG_GROUPS_CACHE_KEY, f.name), f.groups.all())
+        cache.add(keyfmt(get_setting('FLAG_CACHE_KEY'), f.name), f)
+        cache.add(keyfmt(get_setting('FLAG_USERS_CACHE_KEY'), f.name),
+                  f.users.all())
+        cache.add(keyfmt(get_setting('FLAG_GROUPS_CACHE_KEY'), f.name),
+                  f.groups.all())
 
 
 def uncache_flag(**kwargs):
     flag = kwargs.get('instance')
     data = {
-        keyfmt(settings.FLAG_CACHE_KEY, flag.name): None,
-        keyfmt(settings.FLAG_USERS_CACHE_KEY, flag.name): None,
-        keyfmt(settings.FLAG_GROUPS_CACHE_KEY, flag.name): None,
-        keyfmt(settings.FLAGS_ALL_CACHE_KEY): None
+        keyfmt(get_setting('FLAG_CACHE_KEY'), flag.name): None,
+        keyfmt(get_setting('FLAG_USERS_CACHE_KEY'), flag.name): None,
+        keyfmt(get_setting('FLAG_GROUPS_CACHE_KEY'), flag.name): None,
+        keyfmt(get_setting('ALL_FLAGS_CACHE_KEY')): None
     }
     cache.set_many(data, 5)
 
@@ -140,13 +142,13 @@ m2m_changed.connect(uncache_flag, sender=Flag.groups.through,
 
 def cache_sample(**kwargs):
     sample = kwargs.get('instance')
-    cache.add(keyfmt(settings.SAMPLE_CACHE_KEY, sample.name), sample)
+    cache.add(keyfmt(get_setting('SAMPLE_CACHE_KEY'), sample.name), sample)
 
 
 def uncache_sample(**kwargs):
     sample = kwargs.get('instance')
-    cache.set(keyfmt(settings.SAMPLE_CACHE_KEY, sample.name), None, 5)
-    cache.set(keyfmt(settings.SAMPLES_ALL_CACHE_KEY), None, 5)
+    cache.set(keyfmt(get_setting('SAMPLE_CACHE_KEY'), sample.name), None, 5)
+    cache.set(keyfmt(get_setting('ALL_SAMPLES_CACHE_KEY')), None, 5)
 
 post_save.connect(uncache_sample, sender=Sample, dispatch_uid='save_sample')
 post_delete.connect(uncache_sample, sender=Sample,
@@ -155,13 +157,13 @@ post_delete.connect(uncache_sample, sender=Sample,
 
 def cache_switch(**kwargs):
     switch = kwargs.get('instance')
-    cache.add(keyfmt(settings.SWITCH_CACHE_KEY, switch.name), switch)
+    cache.add(keyfmt(get_setting('SWITCH_CACHE_KEY'), switch.name), switch)
 
 
 def uncache_switch(**kwargs):
     switch = kwargs.get('instance')
-    cache.set(keyfmt(settings.SWITCH_CACHE_KEY, switch.name), None, 5)
-    cache.set(keyfmt(settings.SWITCHES_ALL_CACHE_KEY), None, 5)
+    cache.set(keyfmt(get_setting('SWITCH_CACHE_KEY'), switch.name), None, 5)
+    cache.set(keyfmt(get_setting('ALL_SWITCHES_CACHE_KEY')), None, 5)
 
 post_delete.connect(uncache_switch, sender=Switch,
                     dispatch_uid='delete_switch')

@@ -1,26 +1,18 @@
 from decimal import Decimal
 import random
-import hashlib
 
-
-from . import settings
+from waffle.utils import get_setting, keyfmt
 
 
 VERSION = (0, 10, 1)
 __version__ = '.'.join(map(str, VERSION))
 
 
-def keyfmt(k, v=None):
-    if v is None:
-        return settings.CACHE_PREFIX + k
-    return settings.CACHE_PREFIX + hashlib.md5((k % v).encode('utf-8')).hexdigest()
-
-
 class DoesNotExist(object):
     """The record does not exist."""
     @property
     def active(self):
-        return settings.SWITCH_DEFAULT
+        return get_setting('SWITCH_DEFAULT')
 
 
 def set_flag(request, flag_name, active=True, session_only=False):
@@ -34,15 +26,15 @@ def flag_is_active(request, flag_name):
     from .models import cache_flag, Flag
     from .compat import cache
 
-    flag = cache.get(keyfmt(settings.FLAG_CACHE_KEY, flag_name))
+    flag = cache.get(keyfmt(get_setting('FLAG_CACHE_KEY'), flag_name))
     if flag is None:
         try:
             flag = Flag.objects.get(name=flag_name)
             cache_flag(instance=flag)
         except Flag.DoesNotExist:
-            return settings.FLAG_DEFAULT
+            return get_setting('FLAG_DEFAULT')
 
-    if settings.OVERRIDE:
+    if get_setting('OVERRIDE'):
         if flag_name in request.GET:
             return request.GET[flag_name] == '1'
 
@@ -52,7 +44,7 @@ def flag_is_active(request, flag_name):
         return False
 
     if flag.testing:  # Testing mode is on.
-        tc = settings.TEST_COOKIE_NAME % flag_name
+        tc = get_setting('TEST_COOKIE') % flag_name
         if tc in request.GET:
             on = request.GET[tc] == '1'
             if not hasattr(request, 'waffle_tests'):
@@ -79,14 +71,16 @@ def flag_is_active(request, flag_name):
                 request.LANGUAGE_CODE in languages):
             return True
 
-    flag_users = cache.get(keyfmt(settings.FLAG_USERS_CACHE_KEY, flag.name))
+    flag_users = cache.get(keyfmt(get_setting('FLAG_USERS_CACHE_KEY'),
+                                              flag.name))
     if flag_users is None:
         flag_users = flag.users.all()
         cache_flag(instance=flag)
     if user in flag_users:
         return True
 
-    flag_groups = cache.get(keyfmt(settings.FLAG_GROUPS_CACHE_KEY, flag.name))
+    flag_groups = cache.get(keyfmt(get_setting('FLAG_GROUPS_CACHE_KEY'),
+                                   flag.name))
     if flag_groups is None:
         flag_groups = flag.groups.all()
         cache_flag(instance=flag)
@@ -101,7 +95,7 @@ def flag_is_active(request, flag_name):
         elif flag_name in request.waffles:
             return request.waffles[flag_name][0]
 
-        cookie = settings.COOKIE_NAME % flag_name
+        cookie = get_setting('COOKIE') % flag_name
         if cookie in request.COOKIES:
             flag_active = (request.COOKIES[cookie] == 'True')
             set_flag(request, flag_name, flag_active, flag.rollout)
@@ -119,7 +113,7 @@ def switch_is_active(switch_name):
     from .models import cache_switch, Switch
     from .compat import cache
 
-    switch = cache.get(keyfmt(settings.SWITCH_CACHE_KEY, switch_name))
+    switch = cache.get(keyfmt(get_setting('SWITCH_CACHE_KEY'), switch_name))
     if switch is None:
         try:
             switch = Switch.objects.get(name=switch_name)
@@ -135,12 +129,12 @@ def sample_is_active(sample_name):
     from .models import cache_sample, Sample
     from .compat import cache
 
-    sample = cache.get(keyfmt(settings.SAMPLE_CACHE_KEY, sample_name))
+    sample = cache.get(keyfmt(get_setting('SAMPLE_CACHE_KEY'), sample_name))
     if sample is None:
         try:
             sample = Sample.objects.get(name=sample_name)
             cache_sample(instance=sample)
         except Sample.DoesNotExist:
-            return settings.SAMPLE_DEFAULT
+            return get_setting('SAMPLE_DEFAULT')
 
     return Decimal(str(random.uniform(0, 100))) <= sample.percent

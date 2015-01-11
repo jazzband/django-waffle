@@ -1,8 +1,9 @@
-.. _cli-chapter:
+.. _usage-cli:
+.. highlight:: shell
 
-=======================
-Command line management
-=======================
+==========================================
+Managing Waffle data from the command line
+==========================================
 
 Aside the Django admin interface, you can use the command line tools to
 manage all your waffle objects.

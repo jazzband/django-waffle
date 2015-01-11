@@ -14,6 +14,8 @@ usage() {
 case "$1" in
     "test" )
         django-admin.py test waffle ;;
+    "lint" )
+        flake8 waffle ;;
     "shell" )
         django-admin.py shell ;;
     "schema" )

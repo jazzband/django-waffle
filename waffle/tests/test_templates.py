@@ -1,5 +1,7 @@
 from django import template
 from django.contrib.auth.models import AnonymousUser
+from django.template import Template
+from django.template.base import VariableNode
 from django.test import RequestFactory
 from django.test.utils import override_settings
 import mock
@@ -32,6 +34,12 @@ class WaffleTemplateTests(TestCase):
         self.assertContains(response, 'switch_var off')
         self.assertContains(response, 'sample_var')
         self.assertContains(response, 'window.waffle =')
+
+    def test_get_nodes_by_type(self):
+        """WaffleNode.get_nodes_by_type() should correctly find all child nodes"""
+        test_template = Template('{% load waffle_tags %}{% switch "x" %}{{ a }}{% else %}{{ b }}{% endswitch %}')
+        children = test_template.nodelist.get_nodes_by_type(VariableNode)
+        self.assertEqual(len(children), 2)
 
     def test_no_request_context(self):
         """Switches and Samples shouldn't require a request context."""

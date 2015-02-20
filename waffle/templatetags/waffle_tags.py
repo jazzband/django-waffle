@@ -9,6 +9,8 @@ register = template.Library()
 
 
 class WaffleNode(template.Node):
+    child_nodelists = ('nodelist_true', 'nodelist_false')
+
     def __init__(self, nodelist_true, nodelist_false, condition, name,
                  compiled_name):
         self.nodelist_true = nodelist_true

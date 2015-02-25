@@ -2,6 +2,7 @@ from decimal import Decimal
 import random
 
 from waffle.utils import get_setting, keyfmt
+from waffle.signals import flag_set
 
 
 VERSION = (0, 10, 1)
@@ -17,9 +18,11 @@ class DoesNotExist(object):
 
 def set_flag(request, flag_name, active=True, session_only=False):
     """Set a flag value on a request object."""
+    from .models import Flag
     if not hasattr(request, 'waffles'):
         request.waffles = {}
     request.waffles[flag_name] = [active, session_only]
+    flag_set.send(sender=Flag, request=request, flag_name=flag_name, active=active)
 
 
 def flag_is_active(request, flag_name):

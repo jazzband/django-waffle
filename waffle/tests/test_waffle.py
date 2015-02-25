@@ -12,6 +12,7 @@ from test_app import views
 from waffle.middleware import WaffleMiddleware
 from waffle.models import Flag, Sample, Switch
 from waffle.tests.base import TestCase
+from waffle.signals import flag_set
 
 
 def get(**kw):
@@ -278,6 +279,17 @@ class WaffleTests(TestCase):
 
         response = self.client.get('/flag_in_view?dwft_myflag=1')
         self.assertEqual(b'on', response.content)
+
+    def test_signals(self):
+        flag_set_callback = mock.Mock()
+        flag_set.connect(flag_set_callback)
+        Flag.objects.create(name='myflag', percent='50.0')
+        request = get()
+        response = process_request(request, views.flag_in_view)
+        assert 'dwf_myflag' in response.cookies
+        active = 'dwf_myflag=True' in response.cookies['dwf_myflag']
+        flag_set_callback.assert_called_once_with(signal=flag_set, sender=Flag, request=request,
+                                                  active=active, flag_name='myflag')
 
 
 class SwitchTests(TestCase):

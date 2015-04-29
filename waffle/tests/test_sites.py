@@ -6,7 +6,6 @@ import waffle
 from waffle.models import Flag, Sample, Switch
 from waffle.tests.base import TestCase
 
-from nose.tools import eq_
 from test_app import views
 
 from waffle.tests.test_waffle import get, process_request
@@ -66,8 +65,8 @@ class SiteTests(TestCase):
         request = get()
 
         response = process_request(request, views.flag_in_view)
-        eq_(b'on', response.content)
+        self.assertContains(response, b'on')
 
         with self.settings(SITE_ID=2):
             response = process_request(request, views.flag_in_view)
-            eq_(b'off', response.content)
+            self.assertContains(response, b'off')

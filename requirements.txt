@@ -1,5 +1,5 @@
 # These are required to run the tests.
-Django
+Django==1.6.10
 flake8
 
 # Everything else is in a Django-version-free version

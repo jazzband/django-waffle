@@ -119,8 +119,10 @@ def switch_is_active(switch_name):
     from .models import cache_switch, Switch
     from .compat import cache
 
+    print keyfmt(get_setting('SWITCH_CACHE_KEY'), switch_name)
     switch = cache.get(keyfmt(get_setting('SWITCH_CACHE_KEY'), switch_name))
     if switch is None:
+        print "Cache miss"
         try:
             current_site = Site.objects.get_current()
             switch = Switch.objects.get(name=switch_name, site=current_site)

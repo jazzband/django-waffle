@@ -9,13 +9,6 @@ VERSION = (0, 10, 1)
 __version__ = '.'.join(map(str, VERSION))
 
 
-class DoesNotExist(object):
-    """The record does not exist."""
-    @property
-    def active(self):
-        return get_setting('SWITCH_DEFAULT')
-
-
 def set_flag(request, flag_name, active=True, session_only=False):
     """Set a flag value on a request object."""
     if not hasattr(request, 'waffles'):
@@ -27,10 +20,10 @@ def flag_is_active(request, flag_name):
     from .models import cache_flag, Flag
     from .compat import cache
 
-    flag = cache.get(keyfmt(get_setting('FLAG_CACHE_KEY'), flag_name))
+    current_site = Site.objects.get_current()
+    flag = cache.get(keyfmt(get_setting('FLAG_CACHE_KEY'), flag_name, current_site))
     if flag is None:
         try:
-            current_site = Site.objects.get_current()
             flag = Flag.objects.get(name=flag_name, site=current_site)
             cache_flag(instance=flag)
         except Flag.DoesNotExist:
@@ -78,7 +71,7 @@ def flag_is_active(request, flag_name):
             return True
 
     flag_users = cache.get(keyfmt(get_setting('FLAG_USERS_CACHE_KEY'),
-                                              flag.name))
+                                              flag.name, current_site))
     if flag_users is None:
         flag_users = flag.users.all()
         cache_flag(instance=flag)
@@ -86,7 +79,7 @@ def flag_is_active(request, flag_name):
         return True
 
     flag_groups = cache.get(keyfmt(get_setting('FLAG_GROUPS_CACHE_KEY'),
-                                   flag.name))
+                                   flag.name, current_site))
     if flag_groups is None:
         flag_groups = flag.groups.all()
         cache_flag(instance=flag)
@@ -119,10 +112,10 @@ def switch_is_active(switch_name):
     from .models import cache_switch, Switch
     from .compat import cache
 
-    switch = cache.get(keyfmt(get_setting('SWITCH_CACHE_KEY'), switch_name))
+    current_site = Site.objects.get_current()
+    switch = cache.get(keyfmt(get_setting('SWITCH_CACHE_KEY'), switch_name, current_site))
     if switch is None:
         try:
-            current_site = Site.objects.get_current()
             switch = Switch.objects.get(name=switch_name, site=current_site)
             cache_switch(instance=switch)
         except Switch.DoesNotExist:
@@ -130,9 +123,7 @@ def switch_is_active(switch_name):
                 switch = Switch.objects.get(name=switch_name, site__isnull=True)
                 cache_switch(instance=switch)
             except Switch.DoesNotExist:
-                switch = DoesNotExist()
-                switch.name = switch_name
-                cache_switch(instance=switch)
+                return get_setting('SWITCH_DEFAULT')
     return switch.active
 
 
@@ -140,10 +131,10 @@ def sample_is_active(sample_name):
     from .models import cache_sample, Sample
     from .compat import cache
 
-    sample = cache.get(keyfmt(get_setting('SAMPLE_CACHE_KEY'), sample_name))
+    current_site = Site.objects.get_current()
+    sample = cache.get(keyfmt(get_setting('SAMPLE_CACHE_KEY'), sample_name, current_site))
     if sample is None:
         try:
-            current_site = Site.objects.get_current()
             sample = Sample.objects.get(name=sample_name, site=current_site)
             cache_sample(instance=sample)
         except Sample.DoesNotExist:

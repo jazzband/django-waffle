@@ -127,19 +127,19 @@ def cache_flag(**kwargs):
     # action is included for m2m_changed signal. Only cache on the post_*.
     if not action or action in ['post_add', 'post_remove', 'post_clear']:
         f = kwargs.get('instance')
-        cache.add(keyfmt(get_setting('FLAG_CACHE_KEY'), f.name), f)
-        cache.add(keyfmt(get_setting('FLAG_USERS_CACHE_KEY'), f.name),
+        cache.add(keyfmt(get_setting('FLAG_CACHE_KEY'), f.name, f.site), f)
+        cache.add(keyfmt(get_setting('FLAG_USERS_CACHE_KEY'), f.name, f.site),
                   f.users.all())
-        cache.add(keyfmt(get_setting('FLAG_GROUPS_CACHE_KEY'), f.name),
+        cache.add(keyfmt(get_setting('FLAG_GROUPS_CACHE_KEY'), f.name, f.site),
                   f.groups.all())
 
 
 def uncache_flag(**kwargs):
     flag = kwargs.get('instance')
     data = [
-        keyfmt(get_setting('FLAG_CACHE_KEY'), flag.name),
-        keyfmt(get_setting('FLAG_USERS_CACHE_KEY'), flag.name),
-        keyfmt(get_setting('FLAG_GROUPS_CACHE_KEY'), flag.name),
+        keyfmt(get_setting('FLAG_CACHE_KEY'), flag.name, flag.site),
+        keyfmt(get_setting('FLAG_USERS_CACHE_KEY'), flag.name, flag.site),
+        keyfmt(get_setting('FLAG_GROUPS_CACHE_KEY'), flag.name, flag.site),
         keyfmt(get_setting('ALL_FLAGS_CACHE_KEY'))
     ]
     cache.delete_many(data)
@@ -154,12 +154,12 @@ m2m_changed.connect(uncache_flag, sender=Flag.groups.through,
 
 def cache_sample(**kwargs):
     sample = kwargs.get('instance')
-    cache.add(keyfmt(get_setting('SAMPLE_CACHE_KEY'), sample.name), sample)
+    cache.add(keyfmt(get_setting('SAMPLE_CACHE_KEY'), sample.name, sample.site), sample)
 
 
 def uncache_sample(**kwargs):
     sample = kwargs.get('instance')
-    cache.set(keyfmt(get_setting('SAMPLE_CACHE_KEY'), sample.name), None, 5)
+    cache.set(keyfmt(get_setting('SAMPLE_CACHE_KEY'), sample.name, sample.site), None, 5)
     cache.delete(keyfmt(get_setting('ALL_SAMPLES_CACHE_KEY')))
 
 post_save.connect(uncache_sample, sender=Sample, dispatch_uid='save_sample')
@@ -169,12 +169,12 @@ post_delete.connect(uncache_sample, sender=Sample,
 
 def cache_switch(**kwargs):
     switch = kwargs.get('instance')
-    cache.add(keyfmt(get_setting('SWITCH_CACHE_KEY'), switch.name), switch)
+    cache.add(keyfmt(get_setting('SWITCH_CACHE_KEY'), switch.name, switch.site), switch)
 
 
 def uncache_switch(**kwargs):
     switch = kwargs.get('instance')
-    cache.delete(keyfmt(get_setting('SWITCH_CACHE_KEY'), switch.name))
+    cache.delete(keyfmt(get_setting('SWITCH_CACHE_KEY'), switch.name, switch.site))
     cache.delete(keyfmt(get_setting('ALL_SWITCHES_CACHE_KEY')))
 
 post_delete.connect(uncache_switch, sender=Switch,

@@ -39,7 +39,7 @@ commands and tasks.
 Sample Attributes
 =================
 
-Switches can be administered through the Django `admin site`_ or the
+Samples can be administered through the Django `admin site`_ or the
 :ref:`command line <usage-cli>`. They have the following attributes:
 
 :Name:

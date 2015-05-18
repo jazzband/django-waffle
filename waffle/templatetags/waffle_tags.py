@@ -1,6 +1,6 @@
 from django import template
 from django.template.base import VariableDoesNotExist
-
+from django.conf import settings
 from waffle import flag_is_active, sample_is_active, switch_is_active
 from waffle.views import _generate_waffle_js
 
@@ -60,22 +60,22 @@ class WaffleNode(template.Node):
         return cls(nodelist_true, nodelist_false, condition,
                    name, compiled_name)
 
-
-@register.tag
+flag_tag = getattr(settings, 'WAFFLE_FLAG_TAG_NAME', 'flag')
+@register.tag(name=flag_tag)
 def flag(parser, token):
-    return WaffleNode.handle_token(parser, token, 'flag', flag_is_active)
+    return WaffleNode.handle_token(parser, token, flag_tag, flag_is_active)
 
-
-@register.tag
+switch_tag = getattr(settings, 'WAFFLE_SWITCH_TAG_NAME', 'switch')
+@register.tag(name=switch_tag)
 def switch(parser, token):
     condition = lambda request, name: switch_is_active(name)
-    return WaffleNode.handle_token(parser, token, 'switch', condition)
+    return WaffleNode.handle_token(parser, token, switch_tag, condition)
 
-
-@register.tag
+sample_tag = getattr(settings, 'WAFFLE_SAMPLE_TAG_NAME', 'sample')
+@register.tag(name=sample_tag)
 def sample(parser, token):
     condition = lambda request, name: sample_is_active(name)
-    return WaffleNode.handle_token(parser, token, 'sample', condition)
+    return WaffleNode.handle_token(parser, token, sample_tag, condition)
 
 
 class InlineWaffleJSNode(template.Node):

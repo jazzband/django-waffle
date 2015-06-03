@@ -8,10 +8,11 @@ Using Waffle in templates
 Waffle makes it easy to test :ref:`flags <types-flag>`, :ref:`switches
 <types-switch>`, and :ref:`samples <types-sample>` in templates to flip
 features on the front-end. It includes support for both Django's
-built-in templates and for Jinja2_ via jingo_.
+built-in templates and for Jinja2_ via jingo_ (for Django < 1.8) or
+django_jinja_ (for Django >= 1.8).
 
 .. warning::
-    
+
     Before using samples in templates, see the warning in the
     :ref:`Sample chapter <types-sample>`.
 
@@ -68,10 +69,10 @@ Samples
 Jinja Templates
 ===============
 
-When used with jingo_, Waffle provides a ``waffle`` object in the Jinja
-template context that can be used with normal ``if`` statements. Because
-these are normal ``if`` statements, you can use ``else`` or ``if not``
-as normal.
+When used with jingo_ or django_jinja_, Waffle provides a ``waffle``
+object in the Jinja template context that can be used with normal
+``if`` statements. Because these are normal ``if`` statements, you
+can use ``else`` or ``if not`` as normal.
 
 
 Flags
@@ -88,7 +89,7 @@ Switches
 --------
 
 ::
-    
+
     {% if waffle.switch('switch_name') %}
         switch_name is active!
     {% endif %}
@@ -106,3 +107,4 @@ Samples
 
 .. _Jinja2: http://jinja.pocoo.org/
 .. _jingo: http://github.com/jbalogh/jingo
+.. _django_jinja: http://niwinz.github.io/django-jinja/

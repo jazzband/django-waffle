@@ -185,3 +185,33 @@ class OverrideSampleTests(TestCase):
             assert not waffle.sample_is_active('foo')
 
         assert not Sample.objects.filter(name='foo').exists()
+
+
+@override_switch('foo', active=False)
+class OverrideSwitchOnClassTests(TestCase):
+    def setUp(self):
+        assert not Switch.objects.filter(name='foo').exists()
+        Switch.objects.create(name='foo', active=True)
+
+    def test_undecorated_method_is_set_properly_for_switch(self):
+        self.assertFalse(waffle.switch_is_active('foo'))
+
+
+@override_flag('foo', active=False)
+class OverrideFlagOnClassTests(TestCase):
+    def setUp(self):
+        assert not Flag.objects.filter(name='foo').exists()
+        Flag.objects.create(name='foo', everyone=True)
+
+    def test_undecorated_method_is_set_properly_for_flag(self):
+        self.assertFalse(waffle.flag_is_active(req(), 'foo'))
+
+
+@override_sample('foo', active=False)
+class OverrideSampleOnClassTests(TestCase):
+    def setUp(self):
+        assert not Sample.objects.filter(name='foo').exists()
+        Sample.objects.create(name='foo', percent='100.0')
+
+    def test_undecorated_method_is_set_properly_for_sample(self):
+        self.assertFalse(waffle.sample_is_active('foo'))

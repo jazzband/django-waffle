@@ -1,5 +1,6 @@
 from functools import wraps
 
+from waffle.compat import CLASS_TYPES
 from waffle.models import Flag, Switch, Sample
 
 
@@ -12,10 +13,35 @@ class _overrider(object):
         self.active = active
 
     def __call__(self, func):
+        if isinstance(func, CLASS_TYPES):
+            return self.for_class(func)
+        else:
+            return self.for_callable(func)
+
+    def for_class(self, obj):
+        """Wraps a class's test methods in the decorator"""
+        for attr in dir(obj):
+            if not attr.startswith('test_'):
+                # Ignore non-test functions
+                continue
+
+            attr_value = getattr(obj, attr)
+
+            if not callable(attr_value):
+                # Ignore non-functions
+                continue
+
+            setattr(obj, attr, self.for_callable(attr_value))
+
+        return obj
+
+    def for_callable(self, func):
+        """Wraps a method in the decorator"""
         @wraps(func)
         def _wrapped(*args, **kwargs):
             with self:
                 return func(*args, **kwargs)
+
         return _wrapped
 
     def get(self):

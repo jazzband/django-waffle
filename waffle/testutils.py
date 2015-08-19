@@ -7,9 +7,10 @@ __all__ = ['override_flag', 'override_sample', 'override_switch']
 
 
 class _overrider(object):
-    def __init__(self, name, active):
+    def __init__(self, name, active, site=None):
         self.name = name
         self.active = active
+        self.site = site
 
     def __call__(self, func):
         @wraps(func)
@@ -67,6 +68,8 @@ class override_switch(_overrider):
     def update(self, active):
         #self.cls.objects.filter(pk=self.obj.pk).update(active=active)
         self.obj.active = active
+        if self.site:
+            self.obj.site = self.site
         self.obj.save()
 
     def get_value(self):

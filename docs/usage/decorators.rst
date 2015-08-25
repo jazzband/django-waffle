@@ -10,7 +10,7 @@ always-random nature, no decorator is provided for :ref:`samples
 <types-sample>`.)
 
 When the flag or switch is active, the view executes normally. When it
-is inactive, the view returns a 404.
+is inactive, the view returns a 404. Optionally, you can provide a view or URL name where the decorator can redirect to if you don't want to show a 404 page when the flag or switch is inactive.
 
 
 Flags
@@ -23,7 +23,10 @@ Flags
     @waffle_flag('flag_name')
     def myview(request):
         pass
-
+    
+    @waffle_flag('flag_name', 'url_name_to_redirect_to')
+    def myotherview(request):
+        pass
 
 Switches
 ========
@@ -36,6 +39,9 @@ Switches
     def myview(request):
         pass
 
+    @waffle_switch('switch_name', 'url_name_to_redirect_to')
+    def myotherview(request):
+        pass
 
 Inverting Decorators
 ====================

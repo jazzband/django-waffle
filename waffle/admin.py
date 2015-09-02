@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from waffle.models import Flag, Sample, Switch
+from waffle.models import Flag, Sample, Switch, SessionKV
 
 
 def enable_for_all(ma, request, qs):
@@ -22,11 +22,20 @@ disable_for_all.short_description = 'Disable selected flags for everyone.'
 class FlagAdmin(admin.ModelAdmin):
     actions = [enable_for_all, disable_for_all]
     date_hierarchy = 'created'
-    list_display = ('name', 'note', 'everyone', 'percent', 'superusers',
-                    'staff', 'authenticated', 'languages')
+    list_display = ('name', 'note', 'everyone', 'percent', 'get_session',
+                    'superusers', 'staff', 'authenticated', 'languages')
     list_filter = ('everyone', 'superusers', 'staff', 'authenticated')
     raw_id_fields = ('users', 'groups')
     ordering = ('-id',)
+
+    def get_session(self, obj):
+        return "[{0}/{1}]".format(obj.session.count(), len(obj.session.model.objects.all()))
+    get_session.short_description = 'session'
+
+
+class SessionKVAdmin(admin.ModelAdmin):
+    list_filter = ('flag__name',)
+    ordering = ('key',)
 
 
 def enable_switches(ma, request, qs):
@@ -60,3 +69,4 @@ class SampleAdmin(admin.ModelAdmin):
 admin.site.register(Flag, FlagAdmin)
 admin.site.register(Sample, SampleAdmin)
 admin.site.register(Switch, SwitchAdmin)
+admin.site.register(SessionKV, SessionKVAdmin)

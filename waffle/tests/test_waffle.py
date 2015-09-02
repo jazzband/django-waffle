@@ -1,3 +1,4 @@
+import pdb
 import random
 
 from django.contrib.auth.models import AnonymousUser, Group, User
@@ -10,13 +11,14 @@ import mock
 import waffle
 from test_app import views
 from waffle.middleware import WaffleMiddleware
-from waffle.models import Flag, Sample, Switch
+from waffle.models import Flag, Sample, Switch, SessionKV
 from waffle.tests.base import TestCase
 
 
 def get(**kw):
     request = RequestFactory().get('/foo', data=kw)
     request.user = AnonymousUser()
+    request.session = {}
     return request
 
 
@@ -54,6 +56,29 @@ class WaffleTests(TestCase):
         request.COOKIES['dwf_unused'] = 'True'
         response = process_request(request, views.flag_in_view)
         assert 'dwf_unused' not in response.cookies
+
+    def test_session_kv(self):
+        key = 'test_session'
+        skv = SessionKV.objects.create(key=key, value='1')
+        fl = Flag.objects.create(name='myflag', percent='99.9')
+        fl.session.add(skv)
+        fl.save()
+        request = get()
+        request.session[key] = '1'
+        response = process_request(request, views.flag_in_view)
+        self.assertEqual(b'on', response.content)
+        assert response.cookies['dwf_myflag'].value is 'True'
+
+    def test_missing_session_kv(self):
+        key = 'test_session'
+        skv = SessionKV.objects.create(key=key, value='1')
+        fl = Flag.objects.create(name='myflag', percent='99.9')
+        fl.session.add(skv)
+        fl.save()
+        request = get()
+        response = process_request(request, views.flag_in_view)
+        self.assertEqual(b'off', response.content)
+        assert response.cookies['dwf_myflag'].value is 'False'
 
     def test_superuser(self):
         """Test the superuser switch."""

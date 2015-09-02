@@ -54,6 +54,9 @@ Flags can be administered through the Django `admin site`_ or the
 :Percent:
     A percentage of users for whom the flag will be active, if no other
     criteria applies to them.
+:Session:
+    The flag will only have the percentage chance to be active if
+    these Key/Value pairs match in the request's session.
 :Superusers:
     Is this flag always active for superusers?
 :Staff:
@@ -78,6 +81,8 @@ Flag is active for superusers, a specific group, and 12% of visitors,
 then it will be active if the current user is a superuser *or* if they
 are in the group *or* if they are in the 12%.
 
+If using the session key/value pairs critiera then they must be present
+*in addition* to the percentage criteria triggering for the flag to be active.
 
 .. note::
 

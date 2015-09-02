@@ -102,6 +102,12 @@ def flag_is_active(request, flag_name):
             return flag_active
 
         if Decimal(str(random.uniform(0, 100))) <= flag.percent:
+            # Need to ensure the session key/value pairs selected match in order to activate.
+            for skv in flag.session.all():
+                if request.session.get(skv.key) != skv.value:
+                    set_flag(request, flag_name, False, flag.rollout)
+                    return False
+
             set_flag(request, flag_name, True, flag.rollout)
             return True
         set_flag(request, flag_name, False, flag.rollout)

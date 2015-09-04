@@ -16,12 +16,19 @@ def set_flag(request, flag_name, active=True, session_only=False):
     request.waffles[flag_name] = [active, session_only]
 
 
-def flag_is_active(request, flag_name, current_site=None):
+def flag_is_active(request, flag_name, current_site=None, site_is_none=False):
+    """If current_site is not given, then use Site.objects.get_current(),
+    unless site_is_none is True, then look for a flag with no site.
+
+    """
     from .models import cache_flag, Flag
     from .compat import cache
 
     if current_site is None:
-        current_site = Site.objects.get_current()
+        if site_is_none:
+            current_site = None
+        else:
+            current_site = Site.objects.get_current()
     flag = cache.get(keyfmt(get_setting('FLAG_CACHE_KEY'), flag_name, current_site))
     if flag is None:
         try:
@@ -109,12 +116,19 @@ def flag_is_active(request, flag_name, current_site=None):
     return False
 
 
-def switch_is_active(switch_name, current_site=None):
+def switch_is_active(switch_name, current_site=None, site_is_none=False):
+    """If current_site is not given, then use Site.objects.get_current(),
+    unless site_is_none is True, then look for a switch with no site.
+
+    """
     from .models import cache_switch, Switch
     from .compat import cache
 
     if current_site is None:
-        current_site = Site.objects.get_current()
+        if site_is_none:
+            current_site = None
+        else:
+            current_site = Site.objects.get_current()
     switch = cache.get(keyfmt(get_setting('SWITCH_CACHE_KEY'), switch_name, current_site))
     if switch is None:
         try:
@@ -129,12 +143,19 @@ def switch_is_active(switch_name, current_site=None):
     return switch.active
 
 
-def sample_is_active(sample_name, current_site=None):
+def sample_is_active(sample_name, current_site=None, site_is_none=None):
+    """If current_site is not given, then use Site.objects.get_current(),
+    unless site_is_none is True, then look for a sample with no site.
+
+    """
     from .models import cache_sample, Sample
     from .compat import cache
 
     if current_site is None:
-        current_site = Site.objects.get_current()
+        if site_is_none:
+            current_site = None
+        else:
+            current_site = Site.objects.get_current()
     sample = cache.get(keyfmt(get_setting('SAMPLE_CACHE_KEY'), sample_name, current_site))
     if sample is None:
         try:

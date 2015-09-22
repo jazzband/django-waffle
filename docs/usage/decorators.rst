@@ -10,7 +10,9 @@ always-random nature, no decorator is provided for :ref:`samples
 <types-sample>`.)
 
 When the flag or switch is active, the view executes normally. When it
-is inactive, the view returns a 404. Optionally, you can provide a view or URL name where the decorator can redirect to if you don't want to show a 404 page when the flag or switch is inactive.
+is inactive, the view returns a 404. Optionally, you can provide a
+view or URL name where the decorator can redirect to if you don't want
+to show a 404 page when the flag or switch is inactive.
 
 
 Flags

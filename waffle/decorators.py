@@ -2,11 +2,13 @@ from functools import wraps
 
 from django.http import Http404
 from django.utils.decorators import available_attrs
+from django.core.urlresolvers import reverse, NoReverseMatch
+from django.shortcuts import redirect
 
 from waffle import flag_is_active, switch_is_active
 
 
-def waffle_flag(flag_name):
+def waffle_flag(flag_name, redirect_to=None):
     def decorator(view):
         @wraps(view, assigned=available_attrs(view))
         def _wrapped_view(request, *args, **kwargs):
@@ -16,13 +18,18 @@ def waffle_flag(flag_name):
                 active = flag_is_active(request, flag_name)
 
             if not active:
-                raise Http404
+                response_to_redirect_to = get_response_to_redirect(redirect_to)
+                if response_to_redirect_to:
+                    return response_to_redirect_to
+                else:
+                    raise Http404
+
             return view(request, *args, **kwargs)
         return _wrapped_view
     return decorator
 
 
-def waffle_switch(switch_name):
+def waffle_switch(switch_name, redirect_to=None):
     def decorator(view):
         @wraps(view, assigned=available_attrs(view))
         def _wrapped_view(request, *args, **kwargs):
@@ -32,7 +39,20 @@ def waffle_switch(switch_name):
                 active = switch_is_active(switch_name)
 
             if not active:
-                raise Http404
+                response_to_redirect_to = get_response_to_redirect(redirect_to)
+                if response_to_redirect_to:
+                    return response_to_redirect_to
+                else:
+                    raise Http404
+
             return view(request, *args, **kwargs)
         return _wrapped_view
     return decorator
+
+
+def get_response_to_redirect(view):
+    try:
+        return redirect(reverse(view)) if view else None
+    except NoReverseMatch:
+        return None
+

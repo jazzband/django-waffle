@@ -19,7 +19,7 @@ class SessionKV(models.Model):
     value = models.CharField(max_length=255)
 
     def __unicode__(self):
-        return "{}={}".format(self.key, self.value)
+        return u"{}={}".format(self.key, self.value)
 
     class Meta:
         verbose_name = "Session KV"

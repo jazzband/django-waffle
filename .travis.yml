@@ -12,6 +12,8 @@ env:
  - DJANGO_VERSION=1.8
 install:
  - pip install -q "Django>=${DJANGO_VERSION},<${DJANGO_VERSION}.99" -r travis.txt
+ - if [ "$DJANGO_VERSION" == "1.7" -o "$DJANGO_VERSION" == "1.8" ]; then pip install -q "jingo>=0.8"; fi
+ - if [ "$DJANGO_VERSION" != "1.7" -a "$DJANGO_VERSION" != "1.8" ]; then pip install -q "jingo<0.8"; fi
 script: ./run.sh test
 matrix:
   exclude:

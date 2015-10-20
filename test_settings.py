@@ -51,7 +51,7 @@ _CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',
 )
 
-if django.VERSION <= (1, 7):
+if django.VERSION < (1, 8):
     TEMPLATE_CONTEXT_PROCESSORS = _CONTEXT_PROCESSORS
 
     TEMPLATE_LOADERS = (

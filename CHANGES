@@ -2,6 +2,16 @@
 Waffle Changelog
 ================
 
+v0.11
+=====
+
+- Support Django 1.8.
+- Move from jingo-specific to generic Jinja2 template support.
+- Added tools for integration testing.
+- Drop Django 1.5 support.
+- Fix several code and documentation bugs.
+- Add optional redirect parameter to view decorators.
+
 
 v0.10.2
 =======

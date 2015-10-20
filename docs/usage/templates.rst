@@ -16,6 +16,8 @@ built-in templates and for Jinja2_ via jingo_.
     :ref:`Sample chapter <types-sample>`.
 
 
+.. _templates-django:
+
 Django Templates
 ================
 
@@ -64,6 +66,8 @@ Samples
         sample_name is inactive
     {% endsample %}
 
+
+.. _templates-jinja:
 
 Jinja Templates
 ===============

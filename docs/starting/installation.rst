@@ -26,6 +26,8 @@ stable, but use caution depending on unreleased versions.
 .. _on GitHub: https://github.com/jsocol/django-waffle
 
 
+.. _installation-settings:
+
 Settings
 ========
 
@@ -43,6 +45,52 @@ Add ``waffle`` to the ``INSTALLED_APPS`` setting, and
         'waffle.middleware.WaffleMiddleware',
         # ...
     )
+
+
+.. _installation-settings-templates:
+
+Jinja Templates
+---------------
+
+.. versionchanged:: 0.11
+
+If you're using Jinja2 templates, Waffle provides a Jinja2 extension
+(``waffle.jinja.WaffleExtension``) to :ref:`use Waffle directly from
+templates <templates-jinja>`. How you install this depends on which
+adapter you're using.
+
+With django-jinja_, add the extension to the ``extensions`` list::
+
+    TEMPLATES = [
+        {
+            'BACKEND': 'django_jinja.backend.Jinja2',
+            'OPTIONS': {
+                'extensions': [
+                    # ...
+                    'waffle.jinja.WaffleExtension',
+                ],
+                # ...
+            },
+            # ...
+        },
+        # ...
+    ]
+
+With jingo_, add it to the ``JINJA_CONFIG['extensions']`` list::
+
+    JINJA_CONFIG = {
+        'extensions': [
+            # ...
+            'waffle.jinja.WaffleExtension',
+        ],
+        # ...
+    }
+
+
+.. _installation-settings-south:
+
+South Migrations
+----------------
 
 If you're using South_ for database migrations, you'll need to add
 Waffle to the ``SOUTH_MIGRATION_MODULES`` setting, as well::
@@ -71,3 +119,5 @@ If you're using a version of Django without migrations, you can run
 
 .. _South: http://south.aeracode.org/
 .. _Django migrations: https://docs.djangoproject.com/en/dev/topics/migrations/
+.. _django-jinja: https://pypi.python.org/pypi/django-jinja/
+.. _jingo: http://jingo.readthedocs.org/

@@ -11,17 +11,20 @@ usage() {
     exit 1
 }
 
-case "$1" in
+CMD="$1"
+shift
+
+case "$CMD" in
     "test" )
-        django-admin.py test waffle ;;
+        django-admin.py test waffle $@ ;;
     "lint" )
-        flake8 waffle ;;
+        flake8 waffle $@ ;;
     "shell" )
-        django-admin.py shell ;;
+        django-admin.py shell $@ ;;
     "schema" )
-        django-admin.py schemamigration waffle --auto ;;
+        django-admin.py schemamigration waffle --auto $@ ;;
     "makemigrations" )
-        django-admin.py makemigrations waffle ;;
+        django-admin.py makemigrations waffle $@ ;;
     * )
         usage ;;
 esac

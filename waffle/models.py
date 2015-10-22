@@ -11,6 +11,20 @@ from waffle.compat import AUTH_USER_MODEL, cache
 from waffle.utils import get_setting, keyfmt
 
 
+class SessionKV(models.Model):
+    """
+    A session key-value pair to match to activate a flag.
+    """
+    key = models.CharField(max_length=255, unique=True)
+    value = models.CharField(max_length=255)
+
+    def __unicode__(self):
+        return u"{}={}".format(self.key, self.value)
+
+    class Meta:
+        verbose_name = "Session KV"
+
+
 class Flag(models.Model):
     """A feature flag.
 
@@ -26,6 +40,8 @@ class Flag(models.Model):
                                   blank=True, help_text=(
         'A number between 0.0 and 99.9 to indicate a percentage of users for '
         'whom this flag will be active.'))
+    session = models.ManyToManyField(SessionKV, blank=True, help_text=(
+        'Activate this flag for the selected Session Key/Value pair.'))
     testing = models.BooleanField(default=False, help_text=(
         'Allow this flag to be set for a session for user testing.'))
     superusers = models.BooleanField(default=True, help_text=(

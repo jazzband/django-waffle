@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 import jinja2
 from jinja2.ext import Extension
 

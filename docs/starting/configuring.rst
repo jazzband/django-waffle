@@ -9,7 +9,7 @@ behavior.
 
 ``WAFFLE_COOKIE``
     The format for the cookies Waffle sets. Must contain ``%s``.
-    Defaults to ``dwf_%s``.
+    Defaults to ``dwft_%s``.
 
 ``WAFFLE_FLAG_DEFAULT``
     When a Flag is undefined in the database, Waffle considers it

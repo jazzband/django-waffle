@@ -27,7 +27,7 @@ parameter (like ``WAFFLE_OVERRIDE``) but is unique for two reasons:
   cookies.
 
 If the flag we're testing is called ``foo``, then we can enable testing
-mode, and send users to ``oursite.com/testpage?dwtf_foo=1`` (or ``=0``)
+mode, and send users to ``oursite.com/testpage?dwft_foo=1`` (or ``=0``)
 and the flag will be on (or off) for them for the remainder of their
 session.
 

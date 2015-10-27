@@ -2,17 +2,11 @@ from decimal import Decimal
 import random
 
 from waffle.utils import get_setting, keyfmt
+from django.contrib.sites.models import Site
 
 
 VERSION = (0, 11)
 __version__ = '.'.join(map(str, VERSION))
-
-
-class DoesNotExist(object):
-    """The record does not exist."""
-    @property
-    def active(self):
-        return get_setting('SWITCH_DEFAULT')
 
 
 def set_flag(request, flag_name, active=True, session_only=False):
@@ -22,17 +16,30 @@ def set_flag(request, flag_name, active=True, session_only=False):
     request.waffles[flag_name] = [active, session_only]
 
 
-def flag_is_active(request, flag_name):
+def flag_is_active(request, flag_name, current_site=None, site_is_none=False):
+    """If current_site is not given, then use Site.objects.get_current(),
+    unless site_is_none is True, then look for a flag with no site.
+
+    """
     from .models import cache_flag, Flag
     from .compat import cache
 
-    flag = cache.get(keyfmt(get_setting('FLAG_CACHE_KEY'), flag_name))
+    if current_site is None:
+        if site_is_none:
+            current_site = None
+        else:
+            current_site = Site.objects.get_current()
+    flag = cache.get(keyfmt(get_setting('FLAG_CACHE_KEY'), flag_name, current_site))
     if flag is None:
         try:
-            flag = Flag.objects.get(name=flag_name)
+            flag = Flag.objects.get(name=flag_name, site=current_site)
             cache_flag(instance=flag)
         except Flag.DoesNotExist:
-            return get_setting('FLAG_DEFAULT')
+            try:
+                flag = Flag.objects.get(name=flag_name, site__isnull=True)
+                cache_flag(instance=flag)
+            except Flag.DoesNotExist:
+                return get_setting('FLAG_DEFAULT')
 
     if get_setting('OVERRIDE'):
         if flag_name in request.GET:
@@ -72,7 +79,7 @@ def flag_is_active(request, flag_name):
             return True
 
     flag_users = cache.get(keyfmt(get_setting('FLAG_USERS_CACHE_KEY'),
-                                              flag.name))
+                                              flag.name, current_site))
     if flag_users is None:
         flag_users = flag.users.all()
         cache_flag(instance=flag)
@@ -80,7 +87,7 @@ def flag_is_active(request, flag_name):
         return True
 
     flag_groups = cache.get(keyfmt(get_setting('FLAG_GROUPS_CACHE_KEY'),
-                                   flag.name))
+                                   flag.name, current_site))
     if flag_groups is None:
         flag_groups = flag.groups.all()
         cache_flag(instance=flag)
@@ -109,32 +116,56 @@ def flag_is_active(request, flag_name):
     return False
 
 
-def switch_is_active(switch_name):
+def switch_is_active(switch_name, current_site=None, site_is_none=False):
+    """If current_site is not given, then use Site.objects.get_current(),
+    unless site_is_none is True, then look for a switch with no site.
+
+    """
     from .models import cache_switch, Switch
     from .compat import cache
 
-    switch = cache.get(keyfmt(get_setting('SWITCH_CACHE_KEY'), switch_name))
+    if current_site is None:
+        if site_is_none:
+            current_site = None
+        else:
+            current_site = Site.objects.get_current()
+    switch = cache.get(keyfmt(get_setting('SWITCH_CACHE_KEY'), switch_name, current_site))
     if switch is None:
         try:
-            switch = Switch.objects.get(name=switch_name)
+            switch = Switch.objects.get(name=switch_name, site=current_site)
             cache_switch(instance=switch)
         except Switch.DoesNotExist:
-            switch = DoesNotExist()
-            switch.name = switch_name
-            cache_switch(instance=switch)
+            try:
+                switch = Switch.objects.get(name=switch_name, site__isnull=True)
+                cache_switch(instance=switch)
+            except Switch.DoesNotExist:
+                return get_setting('SWITCH_DEFAULT')
     return switch.active
 
 
-def sample_is_active(sample_name):
+def sample_is_active(sample_name, current_site=None, site_is_none=None):
+    """If current_site is not given, then use Site.objects.get_current(),
+    unless site_is_none is True, then look for a sample with no site.
+
+    """
     from .models import cache_sample, Sample
     from .compat import cache
 
-    sample = cache.get(keyfmt(get_setting('SAMPLE_CACHE_KEY'), sample_name))
+    if current_site is None:
+        if site_is_none:
+            current_site = None
+        else:
+            current_site = Site.objects.get_current()
+    sample = cache.get(keyfmt(get_setting('SAMPLE_CACHE_KEY'), sample_name, current_site))
     if sample is None:
         try:
-            sample = Sample.objects.get(name=sample_name)
+            sample = Sample.objects.get(name=sample_name, site=current_site)
             cache_sample(instance=sample)
         except Sample.DoesNotExist:
-            return get_setting('SAMPLE_DEFAULT')
+            try:
+                sample = Sample.objects.get(name=sample_name, site__isnull=True)
+                cache_sample(instance=sample)
+            except Sample.DoesNotExist:
+                return get_setting('SAMPLE_DEFAULT')
 
     return Decimal(str(random.uniform(0, 100))) <= sample.percent

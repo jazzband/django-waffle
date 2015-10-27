@@ -314,17 +314,6 @@ class SwitchTests(TestCase):
     def test_undefined_default(self):
         assert waffle.switch_is_active('foo')
 
-    @override_settings(DEBUG=True)
-    def test_no_query(self):
-        """Do not make two queries for a non-existent switch."""
-        assert not Switch.objects.filter(name='foo').exists()
-        queries = len(connection.queries)
-        assert not waffle.switch_is_active('foo')
-        assert len(connection.queries) > queries, 'We should make one query.'
-        queries = len(connection.queries)
-        assert not waffle.switch_is_active('foo')
-        self.assertEqual(queries, len(connection.queries), 'We should only make one query.')
-
 
 class SampleTests(TestCase):
     def test_sample_100(self):

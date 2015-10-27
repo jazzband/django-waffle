@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 from django.utils.encoding import smart_str
 
 from waffle.utils import get_setting

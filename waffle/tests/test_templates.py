@@ -1,10 +1,9 @@
-from django import template
+from __future__ import unicode_literals
+
 from django.contrib.auth.models import AnonymousUser
 from django.template import Template
 from django.template.base import VariableNode
 from django.test import RequestFactory
-from django.test.utils import override_settings
-import mock
 
 from test_app import views
 from waffle.middleware import WaffleMiddleware

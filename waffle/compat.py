@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 import django
 import sys
 import types

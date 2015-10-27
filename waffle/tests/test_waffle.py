@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 import random
 
 from django.contrib.auth.models import AnonymousUser, Group, User

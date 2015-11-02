@@ -6,6 +6,7 @@ from django.contrib.auth.models import AnonymousUser, Group, User
 from django.db import connection
 from django.test import RequestFactory
 from django.test.utils import override_settings
+from django.utils import translation
 
 import mock
 
@@ -105,11 +106,11 @@ class WaffleTests(TestCase):
         response = process_request(request, views.flag_in_view)
         self.assertEqual(b'off', response.content)
 
-        request.LANGUAGE_CODE = 'en'
+        translation.activate('en')
         response = process_request(request, views.flag_in_view)
         self.assertEqual(b'on', response.content)
 
-        request.LANGUAGE_CODE = 'de'
+        translation.activate('de')
         response = process_request(request, views.flag_in_view)
         self.assertEqual(b'off', response.content)
 

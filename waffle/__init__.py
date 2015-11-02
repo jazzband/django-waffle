@@ -3,6 +3,8 @@ from __future__ import unicode_literals
 from decimal import Decimal
 import random
 
+from django.utils import translation
+
 from waffle.utils import get_setting, keyfmt
 
 
@@ -69,8 +71,7 @@ def flag_is_active(request, flag_name):
 
     if flag.languages:
         languages = flag.languages.split(',')
-        if (hasattr(request, 'LANGUAGE_CODE') and
-                request.LANGUAGE_CODE in languages):
+        if translation.get_language() in languages:
             return True
 
     flag_users = cache.get(keyfmt(get_setting('FLAG_USERS_CACHE_KEY'),

@@ -85,7 +85,7 @@ def flag_is_active(request, flag_name):
 
 def flag_is_active_for_user(user, flag_name):
     """
-        Returns True if the given :flag_name: is active for the given :user:, False otherwise
+        Returns True if the given flag_name is active for the given user, False otherwise
     """
     from .models import cache_flag, Flag
     from .compat import cache

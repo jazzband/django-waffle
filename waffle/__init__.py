@@ -56,39 +56,10 @@ def flag_is_active(request, flag_name):
         if tc in request.COOKIES:
             return request.COOKIES[tc] == 'True'
 
-    user = request.user
-
-    if flag.authenticated and user.is_authenticated():
-        return True
-
-    if flag.staff and user.is_staff:
-        return True
-
-    if flag.superusers and user.is_superuser:
-        return True
-
     if flag.languages:
         languages = flag.languages.split(',')
         if (hasattr(request, 'LANGUAGE_CODE') and
                 request.LANGUAGE_CODE in languages):
-            return True
-
-    flag_users = cache.get(keyfmt(get_setting('FLAG_USERS_CACHE_KEY'),
-                                              flag.name))
-    if flag_users is None:
-        flag_users = flag.users.all()
-        cache_flag(instance=flag)
-    if user in flag_users:
-        return True
-
-    flag_groups = cache.get(keyfmt(get_setting('FLAG_GROUPS_CACHE_KEY'),
-                                   flag.name))
-    if flag_groups is None:
-        flag_groups = flag.groups.all()
-        cache_flag(instance=flag)
-    user_groups = user.groups.all()
-    for group in flag_groups:
-        if group in user_groups:
             return True
 
     if flag.percent and flag.percent > 0:
@@ -108,8 +79,55 @@ def flag_is_active(request, flag_name):
             return True
         set_flag(request, flag_name, False, flag.rollout)
 
-    return False
 
+    return flag_is_active_for_user(request.user, flag_name)
+
+
+def flag_is_active_for_user(user, flag_name):
+    """
+        Returns True if the given :flag_name: is active for the given :user:, False otherwise
+    """
+    from .models import cache_flag, Flag
+    from .compat import cache
+
+    flag = cache.get(keyfmt(get_setting('FLAG_CACHE_KEY'), flag_name))
+    if flag is None:
+        try:
+            flag = Flag.objects.get(name=flag_name)
+            cache_flag(instance=flag)
+        except Flag.DoesNotExist:
+            return get_setting('FLAG_DEFAULT')
+
+    if flag.authenticated and user.is_authenticated():
+        return True
+
+    if flag.staff and user.is_staff:
+        return True
+
+    if flag.superusers and user.is_superuser:
+        return True
+
+    flag_users = cache.get(keyfmt(get_setting('FLAG_USERS_CACHE_KEY'),
+                                              flag.name))
+    if flag_users is None:
+        flag_users = flag.users.all()
+        cache_flag(instance=flag)
+
+    if user in flag_users:
+        return True
+
+    flag_groups = cache.get(keyfmt(get_setting('FLAG_GROUPS_CACHE_KEY'),
+                                   flag.name))
+    if flag_groups is None:
+        flag_groups = flag.groups.all()
+        cache_flag(instance=flag)
+
+    user_groups = user.groups.all()
+    for group in flag_groups:
+        if group in user_groups:
+            return True
+
+    return False
 
 def switch_is_active(switch_name):
     from .models import cache_switch, Switch

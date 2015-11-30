@@ -2,12 +2,44 @@ from __future__ import unicode_literals
 
 from decimal import Decimal
 import random
+import os
 
 from waffle.utils import get_setting, keyfmt
 
 
 VERSION = (0, 11)
 __version__ = '.'.join(map(str, VERSION))
+
+
+def parse_env_vars(var_name):
+    """
+    Takes the name of an environment variable that should be expressed as a
+    comma separated list of items. Returns the equivalent Python data
+    structure.
+    """
+    value = os.getenv(var_name, '')
+    if value:
+        return [x for x in value.split(',') if x]
+    return []
+
+"""
+We default the settings derived from environment vars so the app can't break
+when it's started because we've forgotton to configure something. Rather, it'll
+just assume an 'all flags off' policy.
+
+There are three arbitrary buckets: ALPHA, BETA and ALL. ALPHA and BETA have
+named users associated with them and flags set for each bucket will only be
+active for those users. ALL related flags apply to all users.
+"""
+USE_ENV_VARS = os.getenv('WAFFLE_USE_ENV_VARS', False)
+if USE_ENV_VARS:
+    ALPHA_USERS = parse_env_vars('WAFFLE_ALPHA_USERS')
+    BETA_USERS = parse_env_vars('WAFFLE_BETA_USERS')
+    ALPHA_FLAGS = parse_env_vars('WAFFLE_ALPHA_FLAGS')
+    BETA_FLAGS = parse_env_vars('WAFFLE_BETA_FLAGS')
+    ALL_FLAGS = parse_env_vars('WAFFLE_ALL_FLAGS')
+    SWITCHES = parse_env_vars('WAFFLE_SWITCHES')
+    SAMPLES = parse_env_vars('WAFFLE_SAMPLES')
 
 
 class DoesNotExist(object):
@@ -25,6 +57,56 @@ def set_flag(request, flag_name, active=True, session_only=False):
 
 
 def flag_is_active(request, flag_name):
+    """
+    Given the context of the request, indicate if the flag identified by the
+    flag_name is active.
+
+    This wraps two functions that use either the "normal" database method or
+    one based upon environment variables.
+    """
+    if USE_ENV_VARS:
+        return flag_is_active_from_env(request, flag_name)
+    return flag_is_active_from_database(request, flag_name)
+
+
+def flag_is_active_from_env(request, flag_name):
+    """
+    A flag_name indicates that a referenced feature is active. The boolean
+    response depends on several things:
+
+    * The flag group the flag_name is found in.
+    * The membership of associated user buckets for the requesting user.
+
+    There are three flag groups: ALPHA, BETA and ALL. The ALPHA and BETA flag
+    groups refer to associated user buckets. ALL flags are applied to all
+    users.
+
+    Ergo, flags are explicitly set for ALPHA and BETA but flags set in ALL are
+    universal. For example, a flag called 'foo' set in the ALPHA_FLAGS group
+    will only be seen by members of the ALPHA_USERS bucket. However, if a flag
+    'bar' is set in the ALL_FLAGS group ALL users will see it.
+    """
+    # Check there are flags set via the environment variables.
+    if not (ALPHA_FLAGS or BETA_FLAGS or ALL_FLAGS):
+        return False
+    # If the flag is an ALL flag, it's on for everyone!
+    if ALL_FLAGS and flag_name in ALL_FLAGS:
+        return True
+    # User may not be logged in.
+    if hasattr(request, 'user'):
+        username = request.user.username
+        # Arbitrary decision that ALPHA takes precedence.
+        if ALPHA_FLAGS and flag_name in ALPHA_FLAGS:
+            return username in ALPHA_USERS
+        elif BETA_FLAGS and flag_name in BETA_FLAGS:
+            return username in BETA_USERS
+    return False
+
+
+def flag_is_active_from_database(request, flag_name):
+    """
+    A regular waffle.
+    """
     from .models import cache_flag, Flag
     from .compat import cache
 

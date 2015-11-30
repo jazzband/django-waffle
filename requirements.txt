@@ -1,5 +1,6 @@
 # These are required to run the tests.
 Django
+django_jinja
 flake8
 
 # Everything else is in a Django-version-free version

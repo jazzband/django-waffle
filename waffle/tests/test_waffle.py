@@ -282,6 +282,141 @@ class WaffleTests(TestCase):
         self.assertEqual(b'on', response.content)
 
 
+class EnvVarTests(TestCase):
+    """
+    Tests related to configuration derived from environment variables.
+    """
+
+    def setUp(cls):
+        setattr(waffle, 'USE_ENV_VARS', True)
+        setattr(waffle, 'ALPHA_USERS', [])
+        setattr(waffle, 'BETA_USERS', [])
+        setattr(waffle, 'ALPHA_FLAGS', [])
+        setattr(waffle, 'BETA_FLAGS', [])
+        setattr(waffle, 'ALL_FLAGS', [])
+
+    @classmethod
+    def tearDownClass(cls):
+        setattr(waffle, 'USE_ENV_VARS', False)
+
+    def test_parse_env_vars(self):
+        """
+        A comma-separated list of items is turned into a ordered list.
+        """
+        with mock.patch('os.getenv', return_value='foo,bar,baz') as patch:
+            actual = waffle.parse_env_vars('foo')
+            expected = ['foo', 'bar', 'baz']
+            assert expected == actual
+
+    def test_parse_env_vars_malformed(self):
+        """
+        A malformed comma-separated list is "mended" appropriately (empty
+        entries are ignored).
+        """
+        with mock.patch('os.getenv', return_value='foo,,baz') as patch:
+            actual = waffle.parse_env_vars('foo')
+            expected = ['foo', 'baz']
+            assert expected == actual
+
+    def test_parse_env_vars_nonexistent(self):
+        """
+        A none-existent environment variable will return an empty list.
+        """
+        with mock.patch('os.getenv', return_value=None) as patch:
+            actual = waffle.parse_env_vars('foo')
+            expected = []
+            assert expected == actual
+
+    def test_use_env_vars_code_branch(self):
+        """
+        Ensure the expected code branch is used when USE_ENV_VARS is truthy.
+        """
+        with mock.patch('waffle.flag_is_active_from_env',
+                        return_value=False) as patch:
+            request = get()
+            assert not waffle.flag_is_active(request, 'foo')
+            patch.assert_called_once_with(request, 'foo')
+
+    def test_no_flags_set(self):
+        """
+        ALPHA, BETA and ALL are empty. Must return False
+        """
+        setattr(waffle, 'ALPHA_FLAGS', [])
+        setattr(waffle, 'BETA_FLAGS', [])
+        setattr(waffle, 'ALL_FLAGS', [])
+        request = get()
+        assert not waffle.flag_is_active(request, 'foo')
+
+    def test_all_flags_matched(self):
+        """
+        The flag has been found in ALL_FLAGS. Must return True.
+        """
+        setattr(waffle, 'ALL_FLAGS', ['foo', ])
+        request = get()
+        assert waffle.flag_is_active(request, 'foo')
+
+    def test_flag_in_alpha_not_alpha_user(self):
+        """
+        The referenced flag is in the ALPHA bucket but the requesting user
+        isn't an ALPHA_USER. Must return False.
+        """
+        setattr(waffle, 'ALPHA_FLAGS', ['foo', ])
+        request = get()
+        assert not waffle.flag_is_active(request, 'foo')
+
+    def test_flag_in_alpha_with_alpha_user(self):
+        """
+        The referenced flag is in the ALPHA bucket AND the requesting user is
+        an ALPHA_USER. Must return True.
+        """
+        setattr(waffle, 'ALPHA_FLAGS', ['foo', ])
+        setattr(waffle, 'ALPHA_USERS', ['bar', ])
+        request = get()
+        request.user.username = 'bar'
+        assert waffle.flag_is_active(request, 'foo')
+
+    def test_flag_in_beta_not_beta_user(self):
+        """
+        The referenced flag is in the BETA bucket but the requesting user
+        isn't a BETA_USER. Must return False.
+        """
+        setattr(waffle, 'BETA_FLAGS', ['foo', ])
+        request = get()
+        assert not waffle.flag_is_active(request, 'foo')
+
+    def test_flag_in_beta_with_beta_user(self):
+        """
+        The referenced flag is in the BETA bucket AND the requesting user is
+        a BETA_USER. Must return True.
+        """
+        setattr(waffle, 'BETA_FLAGS', ['foo', ])
+        setattr(waffle, 'BETA_USERS', ['bar', ])
+        request = get()
+        request.user.username = 'bar'
+        assert waffle.flag_is_active(request, 'foo')
+
+    def test_flag_does_not_match_existing_flags(self):
+        """
+        There are flags in all the *_FLAGS buckets but the referenced flag does
+        not match. Must return False.
+        """
+        setattr(waffle, 'ALL_FLAGS', ['foo', ])
+        setattr(waffle, 'ALPHA_FLAGS', ['bar', ])
+        setattr(waffle, 'BETA_FLAGS', ['baz', ])
+        request = get()
+        assert not waffle.flag_is_active(request, 'qux')
+
+    def test_flag_no_user(self):
+        """
+        If there is no user to match into the ALPHA and BETA buckets then
+        return False.
+        """
+        setattr(waffle, 'ALPHA_FLAGS', ['foo', ])
+        request = get()
+        delattr(request, 'user')
+        assert not waffle.flag_is_active(request, 'foo')
+
+
 class SwitchTests(TestCase):
     def test_switch_active(self):
         switch = Switch.objects.create(name='myswitch', active=True)

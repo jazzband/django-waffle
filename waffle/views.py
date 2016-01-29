@@ -19,18 +19,18 @@ def wafflejs(request):
 def _generate_waffle_js(request):
     flags = cache.get(keyfmt(get_setting('ALL_FLAGS_CACHE_KEY')))
     if flags is None:
-        flags = Flag.objects.values_list('name', flat=True)
+        flags = list(Flag.objects.values_list('name', flat=True))
         cache.add(keyfmt(get_setting('ALL_FLAGS_CACHE_KEY')), flags)
     flag_values = [(f, flag_is_active(request, f)) for f in flags]
 
     switches = cache.get(keyfmt(get_setting('ALL_SWITCHES_CACHE_KEY')))
     if switches is None:
-        switches = Switch.objects.values_list('name', 'active')
+        switches = list(Switch.objects.values_list('name', 'active'))
         cache.add(keyfmt(get_setting('ALL_SWITCHES_CACHE_KEY')), switches)
 
     samples = cache.get(keyfmt(get_setting('ALL_SAMPLES_CACHE_KEY')))
     if samples is None:
-        samples = Sample.objects.values_list('name', flat=True)
+        samples = list(Sample.objects.values_list('name', flat=True))
         cache.add(keyfmt(get_setting('ALL_SAMPLES_CACHE_KEY')), samples)
     sample_values = [(s, sample_is_active(s)) for s in samples]
 

@@ -11,7 +11,9 @@ class WaffleViewTests(TestCase):
         response = self.client.get(reverse('wafflejs'))
         self.assertEqual(200, response.status_code)
         self.assertEqual('application/x-javascript', response['content-type'])
-        self.assertEqual('max-age=0', response['cache-control'])
+        cache_control = [control.strip()
+                         for control in response['cache-control'].split(',')]
+        self.assertIn('max-age=0', cache_control)
 
     def test_flush_all_flags(self):
         """Test the 'FLAGS_ALL' list gets invalidated correctly."""

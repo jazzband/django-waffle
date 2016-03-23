@@ -65,8 +65,12 @@ Flags can be administered through the Django `admin site`_ or the
     (Comma-separated values.)
 :Groups:
     A list of group IDs for which this flag will always be active.
-:Users:
-    A list of user IDs for which this flag will always be active.
+:Active For Cookie:
+    Can this flag be activated by the presence of a cookie?
+:Active Cookie Name:
+    What is the name of that cookie?
+:Active Cookie Value:
+    A specific value of the named cookie.
 :Rollout:
     Activate Rollout mode? :ref:`See below <types-flag-rollout>`.
 :Note:

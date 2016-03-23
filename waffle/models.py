@@ -45,6 +45,19 @@ class Flag(models.Model):
         'Activate this flag for these user groups.'))
     users = models.ManyToManyField(AUTH_USER_MODEL, blank=True, help_text=(
         'Activate this flag for these users.'))
+
+    active_for_cookie = models.BooleanField(default=False, help_text=(
+        'Activate this flag if the user has a cookie set with the specified'
+        ' name and value.'))
+    active_cookie_name = models.CharField(
+        max_length=256, blank=True, null=True,
+        help_text='The name of the cookie to look for if active_for_cookie is'
+        ' set.')
+    active_cookie_value = models.CharField(
+        max_length=256, blank=True, null=True,
+        help_text='The value of the specified cookie - true for all values'
+        ' if left blank.')
+
     rollout = models.BooleanField(default=False, help_text=(
         'Activate roll-out mode?'))
     note = models.TextField(blank=True, help_text=(
@@ -60,6 +73,10 @@ class Flag(models.Model):
     def save(self, *args, **kwargs):
         self.modified = datetime.now()
         super(Flag, self).save(*args, **kwargs)
+
+    @property
+    def has_valid_cookie_requirements(self):
+        return self.active_for_cookie and self.active_cookie_name
 
 
 @python_2_unicode_compatible

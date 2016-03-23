@@ -67,6 +67,9 @@ def flag_is_active(request, flag_name):
     if flag.superusers and user.is_superuser:
         return True
 
+    if activate_from_cookie(flag, request):
+        return True
+
     if flag.languages:
         languages = flag.languages.split(',')
         if (hasattr(request, 'LANGUAGE_CODE') and
@@ -109,6 +112,27 @@ def flag_is_active(request, flag_name):
         set_flag(request, flag_name, False, flag.rollout)
 
     return False
+
+
+def activate_from_cookie(flag, request):
+    # Override condition
+    if not flag.has_valid_cookie_requirements:
+        return False
+
+    # See if required cookie exists
+    request_cookie = request.COOKIES.get(flag.active_cookie_name, None)
+
+    # No cookie with this name -> return False
+    if request_cookie is None:
+        return False
+
+    # Cookie exists, and there are no value conditions -> return True
+    elif not flag.active_cookie_value:
+        return True
+
+    # Cookie exists, but need to also check the value
+    else:
+        return request_cookie == flag.active_cookie_value
 
 
 def switch_is_active(switch_name):

@@ -199,6 +199,62 @@ class WaffleTests(TestCase):
         self.assertEqual(b'off', response.content)
         assert 'dwf_myflag' not in response.cookies
 
+    def test_cookie_switch_all_values(self):
+        """Test the cookie switch."""
+        TEST_COOKIE_NAME = 'test_activate_by_cookie'
+
+        flag = Flag.objects.create(
+            name='myflag',
+            active_for_cookie=True,
+            active_cookie_name=TEST_COOKIE_NAME,
+            active_cookie_value='',  # All values accepted if not specified
+        )
+
+        # Start with no valid cookie set
+        request = get()
+
+        self.assertFalse(
+            waffle.activate_from_cookie(flag, request)
+        )
+
+        # Set a valid cookie to activate this flag
+        request.COOKIES[TEST_COOKIE_NAME] = 'foo'
+
+        self.assertTrue(
+            waffle.activate_from_cookie(flag, request)
+        )
+
+    def test_cookie_switch_with_value(self):
+        """Test the cookie switch."""
+        TEST_COOKIE_NAME = 'test_activate_by_cookie'
+
+        flag = Flag.objects.create(
+            name='myflag',
+            active_for_cookie=True,
+            active_cookie_name=TEST_COOKIE_NAME,
+            active_cookie_value='accept_this_value',
+        )
+
+        # Start with no valid cookie set
+        request = get()
+
+        self.assertFalse(
+            waffle.activate_from_cookie(flag, request)
+        )
+
+        # Set a cookie with invalid value
+        request.COOKIES[TEST_COOKIE_NAME] = 'not_this_value'
+        self.assertFalse(
+            waffle.activate_from_cookie(flag, request)
+        )
+
+        # Set a valid cookie to activate this flag
+        request.COOKIES[TEST_COOKIE_NAME] = 'accept_this_value'
+
+        self.assertTrue(
+            waffle.activate_from_cookie(flag, request)
+        )
+
     def test_percent(self):
         """If you have no cookie, you get a cookie!"""
         Flag.objects.create(name='myflag', percent='50.0')

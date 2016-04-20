@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from django.contrib import admin
 
 from waffle.models import Flag, Sample, Switch
+from waffle.compat import ORGANIZATION_MODEL
 
 
 def enable_for_all(ma, request, qs):
@@ -27,7 +28,11 @@ class FlagAdmin(admin.ModelAdmin):
     list_display = ('name', 'note', 'everyone', 'percent', 'superusers',
                     'staff', 'authenticated', 'languages')
     list_filter = ('everyone', 'superusers', 'staff', 'authenticated')
-    raw_id_fields = ('users', 'groups')
+
+    if ORGANIZATION_MODEL:
+        raw_id_fields = ('users', 'groups', 'organizations')
+    else:
+        raw_id_fields = ('users', 'groups')
     ordering = ('-id',)
 
 

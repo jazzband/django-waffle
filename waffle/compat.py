@@ -20,6 +20,8 @@ else:
     from django.core.cache import cache
 
 AUTH_USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
+ORGANIZATION_MODEL = getattr(settings, 'WAFFLE_ORG_MODEL', None)
+USER_TO_ORGANIZATION_FK_FIELD = getattr(settings, 'WAFFLE_USER_TO_ORG_FK_FIELD', None)
 
 CLASS_TYPES = (type,)
 if not PY3:

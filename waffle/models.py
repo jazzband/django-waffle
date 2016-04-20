@@ -10,7 +10,7 @@ from django.db import models
 from django.db.models.signals import post_save, post_delete, m2m_changed
 from django.utils.encoding import python_2_unicode_compatible
 
-from waffle.compat import AUTH_USER_MODEL, cache
+from waffle.compat import AUTH_USER_MODEL, cache, ORGANIZATION_MODEL
 from waffle.utils import get_setting, keyfmt
 
 
@@ -45,6 +45,9 @@ class Flag(models.Model):
         'Activate this flag for these user groups.'))
     users = models.ManyToManyField(AUTH_USER_MODEL, blank=True, help_text=(
         'Activate this flag for these users.'))
+    if ORGANIZATION_MODEL:
+        organizations = models.ManyToManyField(ORGANIZATION_MODEL, blank=True, help_text=(
+            'Activate this flag for these organizations.'))
     rollout = models.BooleanField(default=False, help_text=(
         'Activate roll-out mode?'))
     note = models.TextField(blank=True, help_text=(
@@ -126,6 +129,9 @@ def cache_flag(**kwargs):
                   f.users.all())
         cache.add(keyfmt(get_setting('FLAG_GROUPS_CACHE_KEY'), f.name),
                   f.groups.all())
+        if ORGANIZATION_MODEL:
+            cache.add(keyfmt(get_setting('FLAG_ORGS_CACHE_KEY'), f.name),
+                      f.organizations.all())
 
 
 def uncache_flag(**kwargs):
@@ -134,6 +140,7 @@ def uncache_flag(**kwargs):
         keyfmt(get_setting('FLAG_CACHE_KEY'), flag.name): None,
         keyfmt(get_setting('FLAG_USERS_CACHE_KEY'), flag.name): None,
         keyfmt(get_setting('FLAG_GROUPS_CACHE_KEY'), flag.name): None,
+        keyfmt(get_setting('FLAG_ORGS_CACHE_KEY'), flag.name): None,
         keyfmt(get_setting('ALL_FLAGS_CACHE_KEY')): None
     }
     cache.set_many(data, 5)

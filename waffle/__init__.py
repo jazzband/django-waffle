@@ -4,6 +4,7 @@ from decimal import Decimal
 import random
 
 from waffle.utils import get_setting, keyfmt
+from waffle.compat import ORGANIZATION_MODEL, USER_TO_ORGANIZATION_FK_FIELD
 
 
 VERSION = (0, 11)
@@ -90,6 +91,17 @@ def flag_is_active(request, flag_name):
     for group in flag_groups:
         if group in user_groups:
             return True
+
+    if ORGANIZATION_MODEL and USER_TO_ORGANIZATION_FK_FIELD:
+        flag_orgs = cache.get(keyfmt(get_setting('FLAG_ORGS_CACHE_KEY'),
+                                     flag.name))
+        if flag_orgs is None:
+            flag_orgs = flag.organizations.all()
+            cache_flag(instance=flag)
+        user_org = getattr(user, USER_TO_ORGANIZATION_FK_FIELD, None)
+        if user_org:
+            if user_org in flag_orgs:
+                return True
 
     if flag.percent and flag.percent > 0:
         if not hasattr(request, 'waffles'):

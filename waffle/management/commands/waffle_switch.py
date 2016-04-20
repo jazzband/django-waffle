@@ -8,7 +8,7 @@ from waffle.models import Switch
 
 
 class Command(BaseCommand):
-    option_list = BaseCommand.option_list + (
+    option_list = getattr(BaseCommand, 'option_list', ()) + (
         make_option('-l', '--list',
             action='store_true', dest='list_switch', default=False,
             help='List existing switchs.'),

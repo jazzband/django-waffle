@@ -56,20 +56,15 @@ from my experience with these sorts of tests.
 Client-side metrics
 -------------------
 
-Google Analytics—and I imagine similar products—has the ability so
-segment by page or session variables. If you want to A/B test a
+Google Analytics—and I imagine similar products—has the ability to
+segment by page or `session variables`_. If you want to A/B test a
 conversion rate or funnel, or otherwise measure the impact on some
 client-side metric, using these variables is a solid way to go. For
 example, in GA, you might do the following to A/B test a landing page:
 
 .. code-block:: django
 
-    _gaq.push(['_setCustomVar',
-        1,
-        'Landing Page Version'
-        {% flag "new_landing_page" %}2{% else %}1{% endif %},
-        3
-    ]);
+    ga('set', 'dimension1', 'Landing Page Version {% flag "new_landing_page" %}2{% else %}1{% endif %}');
 
 Similarly you might set session or visitor variables for funnel tests.
 
@@ -135,5 +130,6 @@ Wow, good work!
 You can use similar methods to derive the impact on other factors.
 
 
+.. _session variables: https://developers.google.com/analytics/devguides/collection/upgrade/reference/gajs-analyticsjs#custom-vars
 .. _#80: https://github.com/jsocol/django-waffle/issues/80
 .. _StatsD: https://github.com/etsy/statsd

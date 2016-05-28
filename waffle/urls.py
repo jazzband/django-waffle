@@ -1,9 +1,9 @@
 from __future__ import unicode_literals
 
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
 from waffle.views import wafflejs
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^wafflejs$', wafflejs, name='wafflejs'),
-)
+]

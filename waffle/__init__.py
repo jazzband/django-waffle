@@ -25,19 +25,10 @@ def flag_is_active(request, flag_name):
 
 
 def switch_is_active(switch_name):
-    from .models import cache_switch, Switch
-    cache = get_cache()
+    from .models import Switch
 
-    switch = cache.get(keyfmt(get_setting('SWITCH_CACHE_KEY'), switch_name))
-    if switch is None:
-        try:
-            switch = Switch.objects.get(name=switch_name)
-            cache_switch(instance=switch)
-        except Switch.DoesNotExist:
-            switch = DoesNotExist()
-            switch.name = switch_name
-            cache_switch(instance=switch)
-    return switch.active
+    switch = Switch.get(switch_name)
+    return switch.is_active()
 
 
 def sample_is_active(sample_name):

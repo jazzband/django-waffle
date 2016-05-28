@@ -172,7 +172,7 @@ class Flag(models.Model):
             if Decimal(str(random.uniform(0, 100))) <= self.percent:
                 set_flag(request, self.name, True, self.rollout)
                 return True
-            set_flag(request, flag_name, False, self.rollout)
+            set_flag(request, self.name, False, self.rollout)
 
         return False
 
@@ -204,6 +204,33 @@ class Switch(models.Model):
 
     class Meta:
         verbose_name_plural = 'Switches'
+
+    @classmethod
+    def _cache_key(cls, name):
+        return keyfmt(get_setting('SWITCH_CACHE_KEY'), name)
+
+    @classmethod
+    def get(cls, name):
+        cache_key = cls._cache_key(name)
+        cached = cache.get(cache_key)
+        if cached == CACHE_EMPTY:
+            return cls()
+        if cached:
+            return cached
+
+        try:
+            switch = cls.objects.get(name=name)
+        except cls.DoesNotExist:
+            cache.add(cache_key, CACHE_EMPTY)
+            return cls()
+
+        cache.add(cache_key, switch)
+        return switch
+
+    def is_active(self):
+        if not self.pk:
+            return get_setting('SWITCH_DEFAULT')
+        return self.active
 
 
 @python_2_unicode_compatible

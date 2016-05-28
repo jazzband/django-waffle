@@ -3,6 +3,7 @@ from __future__ import unicode_literals, absolute_import
 import hashlib
 
 from django.conf import settings
+from django.core.cache import caches
 
 from . import defaults
 
@@ -21,3 +22,8 @@ def keyfmt(k, v=None):
     else:
         key = prefix + hashlib.md5((k % v).encode('utf-8')).hexdigest()
     return key.encode('utf-8')
+
+
+def get_cache():
+    CACHE_NAME = get_setting('CACHE_NAME')
+    return caches[CACHE_NAME]

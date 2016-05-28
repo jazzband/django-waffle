@@ -49,7 +49,7 @@ class WaffleTemplateTests(TestCase):
 
     def test_jinja_tags(self):
         request = get()
-        response = process_request(request, views.flag_in_jingo)
+        response = process_request(request, views.flag_in_jinja)
         self.assertContains(response, 'flag off')
         self.assertContains(response, 'switch off')
         self.assertContains(response, 'sample')

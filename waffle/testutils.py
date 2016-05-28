@@ -1,12 +1,18 @@
 from __future__ import unicode_literals
 
+import sys
+import types
 from functools import wraps
 
-from waffle.compat import CLASS_TYPES
 from waffle.models import Flag, Switch, Sample
 
 
 __all__ = ['override_flag', 'override_sample', 'override_switch']
+PY3 = sys.version_info[0] == 3
+if PY3:
+    CLASS_TYPES = (type,)
+else:
+    CLASS_TYPES = (type, types.ClassType)
 
 
 class _overrider(object):

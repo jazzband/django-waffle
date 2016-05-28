@@ -27,8 +27,8 @@ class Command(BaseCommand):
         if list_switch:
             print('Switches:')
             for switch in Switch.objects.iterator():
-                print('%s: %s', (switch.name,
-                                 'on' if switch.active else 'off'))
+                print('%s: %s' % (switch.name,
+                                  'on' if switch.active else 'off'))
             return
 
         if not (switch_name and state):

@@ -5,7 +5,8 @@ import hashlib
 from django.conf import settings
 from django.core.cache import caches
 
-from . import defaults
+import waffle
+from waffle import defaults
 
 
 def get_setting(name):
@@ -16,7 +17,7 @@ def get_setting(name):
 
 
 def keyfmt(k, v=None):
-    prefix = get_setting('CACHE_PREFIX')
+    prefix = get_setting('CACHE_PREFIX') + waffle.__version__
     if v is None:
         key = prefix + k
     else:

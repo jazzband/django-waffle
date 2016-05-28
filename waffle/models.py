@@ -1,5 +1,8 @@
 from __future__ import unicode_literals
 
+from decimal import Decimal
+import random
+
 try:
     from django.utils import timezone as datetime
 except ImportError:
@@ -15,6 +18,14 @@ from waffle.utils import get_setting, keyfmt, get_cache
 
 
 cache = get_cache()
+CACHE_EMPTY = '-'
+
+
+def set_flag(request, flag_name, active=True, session_only=False):
+    """Set a flag value on a request object."""
+    if not hasattr(request, 'waffles'):
+        request.waffles = {}
+    request.waffles[flag_name] = [active, session_only]
 
 
 @python_2_unicode_compatible
@@ -64,6 +75,107 @@ class Flag(models.Model):
         self.modified = datetime.now()
         super(Flag, self).save(*args, **kwargs)
 
+    @classmethod
+    def _cache_key(cls, name):
+        return keyfmt(get_setting('FLAG_CACHE_KEY'), name)
+
+    @classmethod
+    def get(cls, name):
+        cache_key = cls._cache_key(name)
+        cached = cache.get(cache_key)
+        if cached == CACHE_EMPTY:
+            return cls()
+        if cached:
+            return cached
+
+        try:
+            flag = cls.objects.get(name=name)
+        except cls.DoesNotExist:
+            cache.add(cache_key, CACHE_EMPTY)
+            return cls()
+
+        # TODO: Populate many-to-many fields somehow
+        cache.add(cache_key, flag)
+        return flag
+
+    def is_active(self, request):
+        # Return default for fake flags.
+        if not self.pk:
+            return get_setting('FLAG_DEFAULT')
+
+        if get_setting('OVERRIDE'):
+            if self.name in request.GET:
+                return request.GET[self.name] == '1'
+
+        if self.everyone:
+            return True
+        elif self.everyone is False:
+            return False
+
+        if self.testing:  # Testing mode is on.
+            tc = get_setting('TEST_COOKIE') % self.name
+            if tc in request.GET:
+                on = request.GET[tc] == '1'
+                if not hasattr(request, 'waffle_tests'):
+                    request.waffle_tests = {}
+                request.waffle_tests[self.name] = on
+                return on
+            if tc in request.COOKIES:
+                return request.COOKIES[tc] == 'True'
+
+        user = request.user
+
+        if self.authenticated and user.is_authenticated():
+            return True
+
+        if self.staff and getattr(user, 'is_staff', False):
+            return True
+
+        if self.superusers and getattr(user, 'is_superuser', False):
+            return True
+
+        if self.languages:
+            languages = [ln.strip() for ln in self.languages.split(',')]
+            if (hasattr(request, 'LANGUAGE_CODE') and
+                    request.LANGUAGE_CODE in languages):
+                return True
+
+        users = cache.get(keyfmt(get_setting('FLAG_USERS_CACHE_KEY'),
+                                             self.name))
+        if users is None:
+            users = self.users.all()
+        # TODO: user.pk
+        if user in users:
+            return True
+
+        groups = cache.get(keyfmt(get_setting('FLAG_GROUPS_CACHE_KEY'),
+                                  self.name))
+        if groups is None:
+            groups = self.groups.all()
+        user_groups = user.groups.all()
+        for group in groups:
+            if group in user_groups:
+                return True
+
+        if self.percent and self.percent > 0:
+            if not hasattr(request, 'waffles'):
+                request.waffles = {}
+            elif self.name in request.waffles:
+                return request.waffles[self.name][0]
+
+            cookie = get_setting('COOKIE') % self.name
+            if cookie in request.COOKIES:
+                flag_active = (request.COOKIES[cookie] == 'True')
+                set_flag(request, self.name, flag_active, self.rollout)
+                return flag_active
+
+            if Decimal(str(random.uniform(0, 100))) <= self.percent:
+                set_flag(request, self.name, True, self.rollout)
+                return True
+            set_flag(request, self.name, False, self.rollout)
+
+        return False
+
 
 @python_2_unicode_compatible
 class Switch(models.Model):
@@ -75,7 +187,7 @@ class Switch(models.Model):
     name = models.CharField(max_length=100, unique=True,
                             help_text='The human/computer readable name.')
     active = models.BooleanField(default=False, help_text=(
-        'Is this flag active?'))
+        'Is this switch active?'))
     note = models.TextField(blank=True, help_text=(
         'Note where this Switch is used.'))
     created = models.DateTimeField(default=datetime.now, db_index=True,
@@ -92,6 +204,33 @@ class Switch(models.Model):
 
     class Meta:
         verbose_name_plural = 'Switches'
+
+    @classmethod
+    def _cache_key(cls, name):
+        return keyfmt(get_setting('SWITCH_CACHE_KEY'), name)
+
+    @classmethod
+    def get(cls, name):
+        cache_key = cls._cache_key(name)
+        cached = cache.get(cache_key)
+        if cached == CACHE_EMPTY:
+            return cls()
+        if cached:
+            return cached
+
+        try:
+            switch = cls.objects.get(name=name)
+        except cls.DoesNotExist:
+            cache.add(cache_key, CACHE_EMPTY)
+            return cls()
+
+        cache.add(cache_key, switch)
+        return switch
+
+    def is_active(self):
+        if not self.pk:
+            return get_setting('SWITCH_DEFAULT')
+        return self.active
 
 
 @python_2_unicode_compatible
@@ -117,6 +256,33 @@ class Sample(models.Model):
     def save(self, *args, **kwargs):
         self.modified = datetime.now()
         super(Sample, self).save(*args, **kwargs)
+
+    @classmethod
+    def _cache_key(cls, name):
+        return keyfmt(get_setting('SAMPLE_CACHE_KEY'), name)
+
+    @classmethod
+    def get(cls, name):
+        cache_key = cls._cache_key(name)
+        cached = cache.get(cache_key)
+        if cached == CACHE_EMPTY:
+            return cls()
+        if cached:
+            return cached
+
+        try:
+            sample = cls.objects.get(name=name)
+        except cls.DoesNotExist:
+            cache.add(cache_key, CACHE_EMPTY)
+            return cls()
+
+        cache.add(cache_key, sample)
+        return sample
+
+    def is_active(self):
+        if not self.pk:
+            return get_setting('SAMPLE_DEFAULT')
+        return Decimal(str(random.uniform(0, 100))) <= self.percent
 
 
 def cache_flag(**kwargs):

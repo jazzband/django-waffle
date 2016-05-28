@@ -2,6 +2,14 @@
 Waffle Changelog
 ================
 
+v0.12
+=====
+
+- Moved bulk of code from waffle.*_is_active methods to .is_active
+  instance methods.
+- Centralized caching code behind Class.get() methods.
+
+
 v0.11.1
 =======
 

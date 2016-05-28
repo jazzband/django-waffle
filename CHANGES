@@ -2,6 +2,16 @@
 Waffle Changelog
 ================
 
+v0.11.1
+=======
+
+- Fix Django 1.9 support.
+- Fix several Python >=3.4 issues.
+- Fix output of `waffle_switch --list`.
+- Fix small documentation issues.
+- Cache a plain list instead of a ValuesListQuerySet.
+
+
 v0.11
 =====
 

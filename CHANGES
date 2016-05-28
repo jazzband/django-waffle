@@ -10,6 +10,7 @@ v0.12
   instance methods.
 - Centralized caching code behind Class.get() methods.
 - Significant caching overhaul.
+- Automatically invalidate cache on waffle upgrade.
 
 
 v0.11.1

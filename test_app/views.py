@@ -13,8 +13,8 @@ def flag_in_view(request):
     return HttpResponse('off')
 
 
-def flag_in_jingo(request):
-    return render(request, 'jingo/jingo.html')
+def flag_in_jinja(request):
+    return render(request, 'jinja/jinja.html')
 
 
 def flag_in_django(request):

@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from decimal import Decimal
 import random
 
-from waffle.utils import get_setting, keyfmt
+from waffle.utils import get_setting, keyfmt, get_cache
 
 
 VERSION = (0, 11, 1)
@@ -26,7 +26,7 @@ def set_flag(request, flag_name, active=True, session_only=False):
 
 def flag_is_active(request, flag_name):
     from .models import cache_flag, Flag
-    from .compat import cache
+    cache = get_cache()
 
     flag = cache.get(keyfmt(get_setting('FLAG_CACHE_KEY'), flag_name))
     if flag is None:
@@ -113,7 +113,7 @@ def flag_is_active(request, flag_name):
 
 def switch_is_active(switch_name):
     from .models import cache_switch, Switch
-    from .compat import cache
+    cache = get_cache()
 
     switch = cache.get(keyfmt(get_setting('SWITCH_CACHE_KEY'), switch_name))
     if switch is None:
@@ -129,7 +129,7 @@ def switch_is_active(switch_name):
 
 def sample_is_active(sample_name):
     from .models import cache_sample, Sample
-    from .compat import cache
+    cache = get_cache()
 
     sample = cache.get(keyfmt(get_setting('SAMPLE_CACHE_KEY'), sample_name))
     if sample is None:

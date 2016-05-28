@@ -5,9 +5,11 @@ from django.template import loader
 from django.views.decorators.cache import never_cache
 
 from waffle import flag_is_active, sample_is_active
-from waffle.compat import cache
 from waffle.models import Flag, Sample, Switch
-from waffle.utils import get_setting, keyfmt
+from waffle.utils import get_setting, keyfmt, get_cache
+
+
+cache = get_cache()
 
 
 @never_cache

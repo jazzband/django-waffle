@@ -32,15 +32,7 @@ def switch_is_active(switch_name):
 
 
 def sample_is_active(sample_name):
-    from .models import cache_sample, Sample
-    cache = get_cache()
+    from .models import Sample
 
-    sample = cache.get(keyfmt(get_setting('SAMPLE_CACHE_KEY'), sample_name))
-    if sample is None:
-        try:
-            sample = Sample.objects.get(name=sample_name)
-            cache_sample(instance=sample)
-        except Sample.DoesNotExist:
-            return get_setting('SAMPLE_DEFAULT')
-
-    return Decimal(str(random.uniform(0, 100))) <= sample.percent
+    sample = Sample.get(sample_name)
+    return sample.is_active()

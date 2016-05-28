@@ -257,6 +257,33 @@ class Sample(models.Model):
         self.modified = datetime.now()
         super(Sample, self).save(*args, **kwargs)
 
+    @classmethod
+    def _cache_key(cls, name):
+        return keyfmt(get_setting('SAMPLE_CACHE_KEY'), name)
+
+    @classmethod
+    def get(cls, name):
+        cache_key = cls._cache_key(name)
+        cached = cache.get(cache_key)
+        if cached == CACHE_EMPTY:
+            return cls()
+        if cached:
+            return cached
+
+        try:
+            sample = cls.objects.get(name=name)
+        except cls.DoesNotExist:
+            cache.add(cache_key, CACHE_EMPTY)
+            return cls()
+
+        cache.add(cache_key, sample)
+        return sample
+
+    def is_active(self):
+        if not self.pk:
+            return get_setting('SAMPLE_DEFAULT')
+        return Decimal(str(random.uniform(0, 100))) <= self.percent
+
 
 def cache_flag(**kwargs):
     action = kwargs.get('action', None)

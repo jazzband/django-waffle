@@ -23,7 +23,6 @@ class WaffleViewTests(TestCase):
         assert ('myflag1', True) in response.context['flags']
 
         Flag.objects.create(name='myflag2', everyone=True)
-
         response = self.client.get(reverse('wafflejs'))
         self.assertEqual(200, response.status_code)
         assert ('myflag2', True) in response.context['flags']

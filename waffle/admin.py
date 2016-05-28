@@ -21,8 +21,15 @@ def disable_for_all(ma, request, qs):
 disable_for_all.short_description = 'Disable selected flags for everyone.'
 
 
+def delete_flags(ma, request, qs):
+    # Iterate over all objects to cause cache invalidation.
+    for f in qs.all():
+        f.delete()
+delete_flags.short_description = 'Delete the selected flags.'
+
+
 class FlagAdmin(admin.ModelAdmin):
-    actions = [enable_for_all, disable_for_all]
+    actions = [enable_for_all, disable_for_all, delete_flags]
     date_hierarchy = 'created'
     list_display = ('name', 'note', 'everyone', 'percent', 'superusers',
                     'staff', 'authenticated', 'languages')

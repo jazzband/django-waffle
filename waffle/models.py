@@ -14,11 +14,81 @@ from django.db import models
 from django.db.models.signals import post_save, post_delete, m2m_changed
 from django.utils.encoding import python_2_unicode_compatible
 
+from waffle import managers
 from waffle.utils import get_setting, keyfmt, get_cache
 
 
 cache = get_cache()
 CACHE_EMPTY = '-'
+
+
+@python_2_unicode_compatible
+class BaseModel(models.Model):
+    SINGLE_CACHE_KEY = ''
+    ALL_CACHE_KEY = ''
+
+    class Meta(object):
+        abstract = True
+
+    def __str__(self):
+        return self.name
+
+    @classmethod
+    def _cache_key(cls, name):
+        return keyfmt(get_setting(cls.SINGLE_CACHE_KEY), name)
+
+    @classmethod
+    def get(cls, name):
+        cache_key = cls._cache_key(name)
+        cached = cache.get(cache_key)
+        if cached == CACHE_EMPTY:
+            return cls()
+        if cached:
+            return cached
+
+        try:
+            obj = cls.objects.get(name=name)
+        except cls.DoesNotExist:
+            cache.add(cache_key, CACHE_EMPTY)
+            return cls()
+
+        cache.add(cache_key, obj)
+        return obj
+
+    @classmethod
+    def get_all(cls):
+        cache_key = get_setting(cls.ALL_CACHE_KEY)
+        cached = cache.get(cache_key)
+        if cached == CACHE_EMPTY:
+            return []
+        if cached:
+            return cached
+
+        objs = list(cls.objects.all())
+        if not objs:
+            cache.add(cache_key, CACHE_EMPTY)
+            return []
+
+        cache.add(cache_key, objs)
+        return objs
+
+    def flush(self):
+        keys = [
+            self._cache_key(self.name),
+            get_setting(self.ALL_CACHE_KEY),
+        ]
+        cache.delete_many(keys)
+
+    def save(self, *args, **kwargs):
+        self.modified = datetime.now()
+        ret = super(BaseModel, self).save(*args, **kwargs)
+        self.flush()
+        return ret
+
+    def delete(self, *args, **kwargs):
+        ret = super(BaseModel, self).delete(*args, **kwargs)
+        self.flush()
+        return ret
 
 
 def set_flag(request, flag_name, active=True, session_only=False):
@@ -28,8 +98,7 @@ def set_flag(request, flag_name, active=True, session_only=False):
     request.waffles[flag_name] = [active, session_only]
 
 
-@python_2_unicode_compatible
-class Flag(models.Model):
+class Flag(BaseModel):
     """A feature flag.
 
     Flags are active (or not) on a per-request basis.
@@ -68,38 +137,76 @@ class Flag(models.Model):
     modified = models.DateTimeField(default=datetime.now, help_text=(
         'Date when this Flag was last modified.'))
 
-    def __str__(self):
-        return self.name
+    objects = managers.FlagManager()
 
-    def save(self, *args, **kwargs):
-        self.modified = datetime.now()
-        super(Flag, self).save(*args, **kwargs)
+    SINGLE_CACHE_KEY = 'FLAG_CACHE_KEY'
+    ALL_CACHE_KEY = 'ALL_FLAGS_CACHE_KEY'
 
-    @classmethod
-    def _cache_key(cls, name):
-        return keyfmt(get_setting('FLAG_CACHE_KEY'), name)
+    def flush(self):
+        keys = [
+            self._cache_key(self.name),
+            keyfmt(get_setting('FLAG_USERS_CACHE_KEY'), self.name),
+            keyfmt(get_setting('FLAG_GROUPS_CACHE_KEY'), self.name),
+            get_setting('ALL_FLAGS_CACHE_KEY'),
+        ]
+        cache.delete_many(keys)
 
-    @classmethod
-    def get(cls, name):
-        cache_key = cls._cache_key(name)
+    def _get_user_ids(self):
+        cache_key = keyfmt(get_setting('FLAG_USERS_CACHE_KEY'), self.name)
         cached = cache.get(cache_key)
         if cached == CACHE_EMPTY:
-            return cls()
+            return []
         if cached:
             return cached
 
-        try:
-            flag = cls.objects.get(name=name)
-        except cls.DoesNotExist:
+        user_ids = list(self.users.all().values_list('pk', flat=True))
+        if not user_ids:
             cache.add(cache_key, CACHE_EMPTY)
-            return cls()
+            return []
 
-        # TODO: Populate many-to-many fields somehow
-        cache.add(cache_key, flag)
-        return flag
+        cache.add(cache_key, user_ids)
+        return user_ids
+
+    def _get_group_ids(self):
+        cache_key = keyfmt(get_setting('FLAG_GROUPS_CACHE_KEY'), self.name)
+        cached = cache.get(cache_key)
+        if cached == CACHE_EMPTY:
+            return []
+        if cached:
+            return cached
+
+        group_ids = list(self.groups.all().values_list('pk', flat=True))
+        if not group_ids:
+            cache.add(cache_key, CACHE_EMPTY)
+            return []
+
+        cache.add(cache_key, group_ids)
+        return group_ids
+
+
+    def is_active_for_user(self, user):
+        authed = getattr(user, 'is_authenticated', lambda: False)()
+        if self.authenticated and authed:
+            return True
+
+        if self.staff and getattr(user, 'is_staff', False):
+            return True
+
+        if self.superusers and getattr(user, 'is_superuser', False):
+            return True
+
+        user_ids = self._get_user_ids()
+        if hasattr(user, 'pk') and user.pk in user_ids:
+            return True
+
+        group_ids = self._get_group_ids()
+        if hasattr(user, 'groups'):
+            user_groups = list(user.groups.all().values_list('pk', flat=True))
+            for group in group_ids:
+                if group in user_groups:
+                    return True
 
     def is_active(self, request):
-        # Return default for fake flags.
         if not self.pk:
             return get_setting('FLAG_DEFAULT')
 
@@ -123,39 +230,15 @@ class Flag(models.Model):
             if tc in request.COOKIES:
                 return request.COOKIES[tc] == 'True'
 
-        user = request.user
-
-        if self.authenticated and user.is_authenticated():
-            return True
-
-        if self.staff and getattr(user, 'is_staff', False):
-            return True
-
-        if self.superusers and getattr(user, 'is_superuser', False):
-            return True
-
         if self.languages:
             languages = [ln.strip() for ln in self.languages.split(',')]
             if (hasattr(request, 'LANGUAGE_CODE') and
                     request.LANGUAGE_CODE in languages):
                 return True
 
-        users = cache.get(keyfmt(get_setting('FLAG_USERS_CACHE_KEY'),
-                                             self.name))
-        if users is None:
-            users = self.users.all()
-        # TODO: user.pk
-        if user in users:
+        user = request.user
+        if self.is_active_for_user(user):
             return True
-
-        groups = cache.get(keyfmt(get_setting('FLAG_GROUPS_CACHE_KEY'),
-                                  self.name))
-        if groups is None:
-            groups = self.groups.all()
-        user_groups = user.groups.all()
-        for group in groups:
-            if group in user_groups:
-                return True
 
         if self.percent and self.percent > 0:
             if not hasattr(request, 'waffles'):
@@ -177,8 +260,7 @@ class Flag(models.Model):
         return False
 
 
-@python_2_unicode_compatible
-class Switch(models.Model):
+class Switch(BaseModel):
     """A feature switch.
 
     Switches are active, or inactive, globally.
@@ -195,37 +277,13 @@ class Switch(models.Model):
     modified = models.DateTimeField(default=datetime.now, help_text=(
         'Date when this Switch was last modified.'))
 
-    def __str__(self):
-        return self.name
+    objects = managers.SwitchManager()
 
-    def save(self, *args, **kwargs):
-        self.modified = datetime.now()
-        super(Switch, self).save(*args, **kwargs)
+    SINGLE_CACHE_KEY = 'SWITCH_CACHE_KEY'
+    ALL_CACHE_KEY = 'ALL_SWITCHES_CACHE_KEY'
 
     class Meta:
         verbose_name_plural = 'Switches'
-
-    @classmethod
-    def _cache_key(cls, name):
-        return keyfmt(get_setting('SWITCH_CACHE_KEY'), name)
-
-    @classmethod
-    def get(cls, name):
-        cache_key = cls._cache_key(name)
-        cached = cache.get(cache_key)
-        if cached == CACHE_EMPTY:
-            return cls()
-        if cached:
-            return cached
-
-        try:
-            switch = cls.objects.get(name=name)
-        except cls.DoesNotExist:
-            cache.add(cache_key, CACHE_EMPTY)
-            return cls()
-
-        cache.add(cache_key, switch)
-        return switch
 
     def is_active(self):
         if not self.pk:
@@ -233,8 +291,7 @@ class Switch(models.Model):
         return self.active
 
 
-@python_2_unicode_compatible
-class Sample(models.Model):
+class Sample(BaseModel):
     """A sample is true some percentage of the time, but is not connected
     to users or requests.
     """
@@ -250,96 +307,12 @@ class Sample(models.Model):
     modified = models.DateTimeField(default=datetime.now, help_text=(
         'Date when this Sample was last modified.'))
 
-    def __str__(self):
-        return self.name
+    objects = managers.SampleManager()
 
-    def save(self, *args, **kwargs):
-        self.modified = datetime.now()
-        super(Sample, self).save(*args, **kwargs)
-
-    @classmethod
-    def _cache_key(cls, name):
-        return keyfmt(get_setting('SAMPLE_CACHE_KEY'), name)
-
-    @classmethod
-    def get(cls, name):
-        cache_key = cls._cache_key(name)
-        cached = cache.get(cache_key)
-        if cached == CACHE_EMPTY:
-            return cls()
-        if cached:
-            return cached
-
-        try:
-            sample = cls.objects.get(name=name)
-        except cls.DoesNotExist:
-            cache.add(cache_key, CACHE_EMPTY)
-            return cls()
-
-        cache.add(cache_key, sample)
-        return sample
+    SINGLE_CACHE_KEY = 'SAMPLE_CACHE_KEY'
+    ALL_CACHE_KEY = 'ALL_SAMPLES_CACHE_KEY'
 
     def is_active(self):
         if not self.pk:
             return get_setting('SAMPLE_DEFAULT')
         return Decimal(str(random.uniform(0, 100))) <= self.percent
-
-
-def cache_flag(**kwargs):
-    action = kwargs.get('action', None)
-    # action is included for m2m_changed signal. Only cache on the post_*.
-    if not action or action in ['post_add', 'post_remove', 'post_clear']:
-        f = kwargs.get('instance')
-        cache.add(keyfmt(get_setting('FLAG_CACHE_KEY'), f.name), f)
-        cache.add(keyfmt(get_setting('FLAG_USERS_CACHE_KEY'), f.name),
-                  f.users.all())
-        cache.add(keyfmt(get_setting('FLAG_GROUPS_CACHE_KEY'), f.name),
-                  f.groups.all())
-
-
-def uncache_flag(**kwargs):
-    flag = kwargs.get('instance')
-    data = {
-        keyfmt(get_setting('FLAG_CACHE_KEY'), flag.name): None,
-        keyfmt(get_setting('FLAG_USERS_CACHE_KEY'), flag.name): None,
-        keyfmt(get_setting('FLAG_GROUPS_CACHE_KEY'), flag.name): None,
-        keyfmt(get_setting('ALL_FLAGS_CACHE_KEY')): None
-    }
-    cache.set_many(data, 5)
-
-post_save.connect(uncache_flag, sender=Flag, dispatch_uid='save_flag')
-post_delete.connect(uncache_flag, sender=Flag, dispatch_uid='delete_flag')
-m2m_changed.connect(uncache_flag, sender=Flag.users.through,
-                    dispatch_uid='m2m_flag_users')
-m2m_changed.connect(uncache_flag, sender=Flag.groups.through,
-                    dispatch_uid='m2m_flag_groups')
-
-
-def cache_sample(**kwargs):
-    sample = kwargs.get('instance')
-    cache.add(keyfmt(get_setting('SAMPLE_CACHE_KEY'), sample.name), sample)
-
-
-def uncache_sample(**kwargs):
-    sample = kwargs.get('instance')
-    cache.set(keyfmt(get_setting('SAMPLE_CACHE_KEY'), sample.name), None, 5)
-    cache.set(keyfmt(get_setting('ALL_SAMPLES_CACHE_KEY')), None, 5)
-
-post_save.connect(uncache_sample, sender=Sample, dispatch_uid='save_sample')
-post_delete.connect(uncache_sample, sender=Sample,
-                    dispatch_uid='delete_sample')
-
-
-def cache_switch(**kwargs):
-    switch = kwargs.get('instance')
-    cache.add(keyfmt(get_setting('SWITCH_CACHE_KEY'), switch.name), switch)
-
-
-def uncache_switch(**kwargs):
-    switch = kwargs.get('instance')
-    cache.set(keyfmt(get_setting('SWITCH_CACHE_KEY'), switch.name), None, 5)
-    cache.set(keyfmt(get_setting('ALL_SWITCHES_CACHE_KEY')), None, 5)
-
-post_delete.connect(uncache_switch, sender=Switch,
-                    dispatch_uid='delete_switch')
-post_save.connect(uncache_switch, sender=Switch, dispatch_uid='save_switch')

@@ -5,9 +5,11 @@ Waffle Changelog
 v0.12
 =====
 
+- Drop support for Django<1.8 and Python<2.7.
 - Moved bulk of code from waffle.*_is_active methods to .is_active
   instance methods.
 - Centralized caching code behind Class.get() methods.
+- Significant caching overhaul.
 
 
 v0.11.1

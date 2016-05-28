@@ -15,30 +15,46 @@ Waffle is already a useful library used in many production systems, but
 it is not done evolving.
 
 
-Present through 0.12
-=====================
+Present through pre-1.0
+=======================
 
 The immediate future is finishing common segment features and bug fixes.
 
 
-0.10.2/0.11
------------
+0.10.2–0.11.x
+-------------
 
 0.10.2_ was primarily a docs overhaul with a major fix to how caching
-works. It will probably not be released on its own but combined with
-0.11_.
+works. It was combined with 0.11_. It did include test utilities for
+consumers.
 
-0.11 includes a couple of significant refactors designed to pay down
-some of the debt that's accrued in the past few years. It also includes
-finally making a decision about auto-create/data-in-settings. There are
-also a few small tools like template syntax sugar and and integration
-testing tools.
+0.11_ updated support, dropping 1.5 and adding 1.8, and overhauled Jinja
+integration to be compatible with any Jinja2 helper, like jingo or—more
+future-proof—django-jinja_.
+
+0.11.1 is probably the last release of the 0.11.x_ series. It added
+support for Django 1.9 without deprecating any other versions.
 
 
 0.12
 ----
 
-0.12_ is about closing some long-standing feature gaps, like segmenting
+0.12_ includes a couple of significant refactors designed to pay down
+some of the debt that's accrued in the past few years.
+
+0.12 drops support for all versions of Django prior to 1.8, including
+dropping South migrations (and finally being rid of the old issues with
+them). Along with that, it changes the way settings are configured to be
+more modern.
+
+It also includes finally making a decision about
+auto-create/data-in-settings.
+
+
+0.13
+----
+
+0.13_ is about closing some long-standing feature gaps, like segmenting
 by IP and User-Agent.
 
 
@@ -46,9 +62,9 @@ Toward 1.0
 ==========
 
 There are no solid criteria for what makes 1.0 right now, but after
-0.12, most outstanding issues will be resolved and Waffle will be in
-very good shape. There are no plans for a 0.13, so it seems likely that
-the next step after 0.12 would be some clean-up and finally a 1.0.
+0.13, most outstanding issues will be resolved and Waffle will be in
+very good shape. There are no plans for a 0.14, so it seems likely that
+the next step after 0.13 would be some clean-up and finally a 1.0.
 
 
 Beyond 1.0
@@ -57,7 +73,7 @@ Beyond 1.0
 *tl;dr: Waffle2 may be a complete break from Waffle.*
 
 Waffle is one of the first Python libraries I created, you can see that
-in the amount of code I left in ``__init__.py``. It is also 4 years old,
+in the amount of code I left in ``__init__.py``. It is also 5 years old,
 and was created during a different period in my career, and in Django.
 
 There are some philosophical issues with how Waffle is designed. Adding
@@ -104,5 +120,7 @@ kind of overhaul.
 .. _milestones: https://github.com/jsocol/django-waffle/milestones
 .. _0.10.2: https://github.com/jsocol/django-waffle/milestones/0.10.2
 .. _0.11: https://github.com/jsocol/django-waffle/milestones/0.11
+.. _0.11.x: https://github.com/jsocol/django-waffle/milestones/0.11.x
 .. _0.12: https://github.com/jsocol/django-waffle/milestones/0.12
+.. _0.13: https://github.com/jsocol/django-waffle/milestones/0.13
 .. _Gargoyle: https://github.com/disqus/gargoyle

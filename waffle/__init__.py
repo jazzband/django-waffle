@@ -10,13 +10,6 @@ VERSION = (0, 11, 1)
 __version__ = '.'.join(map(str, VERSION))
 
 
-class DoesNotExist(object):
-    """The record does not exist."""
-    @property
-    def active(self):
-        return get_setting('SWITCH_DEFAULT')
-
-
 def flag_is_active(request, flag_name):
     from .models import Flag
 

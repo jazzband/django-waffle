@@ -155,14 +155,14 @@ class Flag(BaseModel):
         cache_key = keyfmt(get_setting('FLAG_USERS_CACHE_KEY'), self.name)
         cached = cache.get(cache_key)
         if cached == CACHE_EMPTY:
-            return []
+            return set()
         if cached:
             return cached
 
-        user_ids = list(self.users.all().values_list('pk', flat=True))
+        user_ids = set(self.users.all().values_list('pk', flat=True))
         if not user_ids:
             cache.add(cache_key, CACHE_EMPTY)
-            return []
+            return set()
 
         cache.add(cache_key, user_ids)
         return user_ids
@@ -171,18 +171,17 @@ class Flag(BaseModel):
         cache_key = keyfmt(get_setting('FLAG_GROUPS_CACHE_KEY'), self.name)
         cached = cache.get(cache_key)
         if cached == CACHE_EMPTY:
-            return []
+            return set()
         if cached:
             return cached
 
-        group_ids = list(self.groups.all().values_list('pk', flat=True))
+        group_ids = set(self.groups.all().values_list('pk', flat=True))
         if not group_ids:
             cache.add(cache_key, CACHE_EMPTY)
-            return []
+            return set()
 
         cache.add(cache_key, group_ids)
         return group_ids
-
 
     def is_active_for_user(self, user):
         authed = getattr(user, 'is_authenticated', lambda: False)()
@@ -199,12 +198,23 @@ class Flag(BaseModel):
         if hasattr(user, 'pk') and user.pk in user_ids:
             return True
 
-        group_ids = self._get_group_ids()
         if hasattr(user, 'groups'):
-            user_groups = list(user.groups.all().values_list('pk', flat=True))
-            for group in group_ids:
-                if group in user_groups:
-                    return True
+            group_ids = self._get_group_ids()
+            user_groups = set(user.groups.all().values_list('pk', flat=True))
+            if group_ids.intersection(user_groups):
+                return True
+        return None
+
+    def _is_active_for_user(self, request):
+        return self.is_active_for_user(request.user)
+
+    def _is_active_for_language(self, request):
+        if self.languages:
+            languages = [ln.strip() for ln in self.languages.split(',')]
+            if (hasattr(request, 'LANGUAGE_CODE') and
+                    request.LANGUAGE_CODE in languages):
+                return True
+        return None
 
     def is_active(self, request):
         if not self.pk:
@@ -230,15 +240,13 @@ class Flag(BaseModel):
             if tc in request.COOKIES:
                 return request.COOKIES[tc] == 'True'
 
-        if self.languages:
-            languages = [ln.strip() for ln in self.languages.split(',')]
-            if (hasattr(request, 'LANGUAGE_CODE') and
-                    request.LANGUAGE_CODE in languages):
-                return True
+        active_for_language = self._is_active_for_language(request)
+        if active_for_language is not None:
+            return active_for_language
 
-        user = request.user
-        if self.is_active_for_user(user):
-            return True
+        active_for_user = self._is_active_for_user(request)
+        if active_for_user is not None:
+            return active_for_user
 
         if self.percent and self.percent > 0:
             if not hasattr(request, 'waffles'):

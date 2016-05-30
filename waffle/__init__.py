@@ -6,7 +6,7 @@ import random
 from waffle.utils import get_setting, keyfmt, get_cache
 
 
-VERSION = (0, 11, 1)
+VERSION = (0, 12, 0, 'a', 1)
 __version__ = '.'.join(map(str, VERSION))
 
 

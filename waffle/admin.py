@@ -37,6 +37,12 @@ class FlagAdmin(admin.ModelAdmin):
     raw_id_fields = ('users', 'groups')
     ordering = ('-id',)
 
+    def get_actions(self, request):
+        actions = super(FlagAdmin, self).get_actions(request)
+        if 'delete_selected' in actions:
+            del actions['delete_selected']
+        return actions
+
 
 def enable_switches(ma, request, qs):
     for switch in qs:

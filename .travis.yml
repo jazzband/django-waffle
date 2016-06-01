@@ -13,7 +13,7 @@ install:
  - pip install -q "Django>=${DJANGO_VERSION},<${DJANGO_VERSION}.99" -r travis.txt
  - pip install coveralls
  - pip install codecov
-script: ./run.sh test
+script: coverage run run.sh test
 matrix:
   exclude:
     - python: "3.3"

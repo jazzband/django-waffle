@@ -11,9 +11,7 @@ env:
  - DJANGO_VERSION="1.9"
 install:
  - pip install -q "Django>=${DJANGO_VERSION},<${DJANGO_VERSION}.99" -r travis.txt
- - pip install coveralls
- - pip install codecov
-script: coverage run run.sh test
+script: coverage run run.py test
 matrix:
   exclude:
     - python: "3.3"

@@ -5,8 +5,8 @@ from django.template import loader
 from django.views.decorators.cache import never_cache
 
 from waffle import flag_is_active, sample_is_active
-from waffle.models import Flag, Sample, Switch
-from waffle.utils import get_setting, keyfmt, get_cache
+from waffle.models import Sample, Switch
+from waffle.utils import get_setting, keyfmt, get_cache, get_flag_model
 
 
 cache = get_cache()
@@ -19,6 +19,7 @@ def wafflejs(request):
 
 
 def _generate_waffle_js(request):
+    Flag = get_flag_model()
     flags = Flag.get_all()
     flag_values = [(f.name, f.is_active(request)) for f in flags]
 

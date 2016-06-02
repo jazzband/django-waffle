@@ -3,8 +3,8 @@ from __future__ import unicode_literals
 import sys
 import types
 from functools import wraps
-
-from waffle.models import Flag, Switch, Sample
+from test_app.models import Flag
+from waffle.models import Switch, Sample
 
 
 __all__ = ['override_flag', 'override_sample', 'override_switch']

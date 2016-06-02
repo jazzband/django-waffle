@@ -1,0 +1,9 @@
+# .coveragerc to control coverage.py
+[run]
+branch = True
+include =
+    waffle/*
+omit =
+    */migrations/*
+    */management/*
+

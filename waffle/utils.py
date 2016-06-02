@@ -11,8 +11,9 @@ from waffle import defaults
 
 def get_setting(name):
     try:
-        return getattr(settings, 'WAFFLE_' + name)
-    except AttributeError:
+        waffle_settings = getattr(settings, 'WAFFLE')
+        return waffle_settings[name]
+    except (AttributeError, KeyError):
         return getattr(defaults, name)
 
 

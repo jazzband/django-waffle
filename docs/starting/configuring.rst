@@ -24,6 +24,7 @@ The settings are:
     but you can also provide a custom model for it.
     **No Default**.
     If unset it will raise an ``AttributeError`` exception.
+    If set to a wrong value it will raise a ``LookupError`` exception.
 
 ``WAFFLE['UNIQUE_FLAG_NAME']``
     Should the ``name` field in ``waffle.models.BaseFlag`` be

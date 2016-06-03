@@ -31,6 +31,7 @@ def get_cache():
     CACHE_NAME = get_setting('CACHE_NAME')
     return caches[CACHE_NAME]
 
+
 def get_flag_model():
     model_name = get_setting('FLAG_CLASS')
     app_name = model_name.split('.')[0]

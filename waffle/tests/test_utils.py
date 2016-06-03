@@ -36,6 +36,12 @@ class GetFlagModelTest(TestCase):
             get_flag_model()
 
     @override_settings(WAFFLE={'FLAG_CLASS': 'test_app.NoSuchModel'})
-    def test_get_flag_model_fails_when_wrong(self):
+    def test_get_flag_model_fails_when_wrong_model(self):
+        with self.assertRaises(LookupError):
+            get_flag_model()
+
+
+    @override_settings(WAFFLE={'FLAG_CLASS': 'no_such_app.Flag'})
+    def test_get_flag_model_fails_when_wrong_app(self):
         with self.assertRaises(LookupError):
             get_flag_model()

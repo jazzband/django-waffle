@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 from django.contrib import admin
 
-from waffle.models import Flag, Sample, Switch
+from waffle.models import Sample, Switch
 
 
 class BaseAdmin(admin.ModelAdmin):
@@ -72,6 +72,5 @@ class SampleAdmin(BaseAdmin):
     ordering = ('-id',)
 
 
-admin.site.register(Flag, FlagAdmin)
 admin.site.register(Sample, SampleAdmin)
 admin.site.register(Switch, SwitchAdmin)

@@ -9,6 +9,7 @@ behavior. As of version 0.13 the settings are set in a ``WAFFLE``
 dictionary e.g.::
 
     WAFFLE = {
+        'FLAG_CLASS': 'myproject.flags.MyFlag',
         'FLAG_DEFAULT' : False,
         'SWITCH_DEFAULT' : False,
         'SAMPLE_DEFAULT' : False,
@@ -16,6 +17,18 @@ dictionary e.g.::
     }
 
 The settings are:
+
+``WAFFLE['FLAG_CLASS']``
+    **Required**. This is the name of the model that implements
+    a Flag. It *should* inherit from ``waffle.models.BaseFlag``,
+    but you can also provide a custom model for it.
+    **No Default**.
+    If unset it will raise an ``AttributeError`` exception.
+    If set to a wrong value it will raise a ``LookupError`` exception.
+
+``WAFFLE['UNIQUE_FLAG_NAME']``
+    Should the ``name` field in ``waffle.models.BaseFlag`` be
+    unique. Defaults to ``True``.
 
 ``WAFFLE['COOKIE']``
     The format for the cookies Waffle sets. Must contain ``%s``.

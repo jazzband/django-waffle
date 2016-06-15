@@ -16,7 +16,7 @@ Use ``manage.py`` to change the values of your flags::
 
     $ ./manage.py waffle_flag name-of-my-flag --everyone --percent=47
 
-Use ``--everyone`` to turn on and ``--deactive`` to turn off the flag.
+Use ``--everyone`` to turn on and ``--deactivate`` to turn off the flag.
 Set a percentage with ``--percent`` or ``-p``. Set the flag on for
 superusers (``--superusers``), staff (``--staff``) or authenticated
 (``--authenticated``) users. Set the rollout mode on with ``--rollout``

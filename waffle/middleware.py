@@ -4,8 +4,13 @@ from django.utils.encoding import smart_str
 
 from waffle.utils import get_setting
 
+try:
+    from django.utils.deprecation import MiddlewareMixin
+except ImportError:
+    MiddlewareMixin = object  # fallback for Django < 1.10
 
-class WaffleMiddleware(object):
+
+class WaffleMiddleware(MiddlewareMixin):
     def process_response(self, request, response):
         secure = get_setting('SECURE')
         max_age = get_setting('MAX_AGE')

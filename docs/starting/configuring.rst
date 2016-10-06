@@ -58,7 +58,8 @@ behavior.
     Waffle tries to store objects in cache pretty aggressively. If you
     ever upgrade and change the shape of the objects (for example
     upgrading from <0.7.5 to >0.7.5) you'll want to set this to
-    something other than ``'waffle:'``.
+    something other than ``'waffle:'``. If you're using memcached this should
+    be ASCII only, as that's all it supports.
 
 ``WAFFLE_CACHE_NAME``
     Which cache to use. Defaults to ``'default'``.

@@ -22,7 +22,7 @@ def keyfmt(k, v=None):
         key = prefix + k
     else:
         key = prefix + hashlib.md5((k % v).encode('utf-8')).hexdigest()
-    return key.encode('utf-8')
+    return key
 
 
 def get_cache():

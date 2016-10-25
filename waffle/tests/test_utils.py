@@ -23,6 +23,6 @@ class GetSettingTests(TestCase):
             assert get_setting('OVERRIDE')
 
     def test_old_style_setting(self):
-        assert not get_setting('OVERRIDE')
-        with override_settings(WAFFLE_OVERRIDE = True):
-            assert get_setting('OVERRIDE')
+        assert get_setting('CACHE_NAME') == 'default'
+        with override_settings(WAFFLE_CACHE_NAME='new-cache'):
+            assert get_setting('CACHE_NAME') == 'new-cache'

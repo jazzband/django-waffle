@@ -1,6 +1,7 @@
 from __future__ import unicode_literals, absolute_import
 
 import hashlib
+import warnings
 
 from django.conf import settings
 from django.core.cache import caches
@@ -14,7 +15,15 @@ def get_setting(name):
         waffle_settings = getattr(settings, 'WAFFLE')
         return waffle_settings[name]
     except (AttributeError, KeyError):
-        return getattr(defaults, name)
+        try:
+            setting = getattr(settings, 'WAFFLE_' + name)
+            warnings.warn(
+                'WAFFLE_[setting] is deprecated. '
+                'Use the WAFFLE dictionary instead',
+                DeprecationWarning)
+            return setting
+        except AttributeError:
+            return getattr(defaults, name)
 
 
 def keyfmt(k, v=None):

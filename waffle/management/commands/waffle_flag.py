@@ -7,6 +7,8 @@ from waffle.models import Flag
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
+        percent_help = '{0} {1}'.format('Roll out the flag for a certain percentage of users. ',
+                                        'Takes a number between 0.0 and 100.0')
         parser.add_argument('-l', '--list',
                             action='store_true',
                             dest='list_flag',
@@ -24,8 +26,7 @@ class Command(BaseCommand):
                             action='store',
                             type='int',
                             dest='percent',
-                            help='Roll out the flag for a certain percentage of users. ' +
-                                 'Takes a number between 0.0 and 100.0'),
+                            help=percent_help),
         parser.add_argument('--superusers',
                             action='store_true',
                             dest='superusers',

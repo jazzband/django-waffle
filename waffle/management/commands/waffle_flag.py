@@ -24,7 +24,7 @@ class Command(BaseCommand):
                             help="Deactivate flag for all users.")
         parser.add_argument('--percent', '-p',
                             action='store',
-                            type='int',
+                            type=int,
                             dest='percent',
                             help=percent_help)
         parser.add_argument('--superusers',

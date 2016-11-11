@@ -15,13 +15,16 @@ class Command(BaseCommand):
                             dest='create',
                             default=False,
                             help="If the switch doesn't exist, create it.")
+        parser.add_argument('switch_name', nargs='?', type=str)
+        parser.add_argument('state', nargs='?', type=str)
 
     help = 'Activate or deactivate a switch.'
     args = '<switch_name> <on/off>'
 
-    def handle(self, switch_name=None, state=None, *args, **options):
+    def handle(self, *args, **options):
         list_switch = options['list_switch']
-
+        switch_name = options['switch_name']
+        state = options['state']
         if list_switch:
             print('Switches:')
             for switch in Switch.objects.iterator():

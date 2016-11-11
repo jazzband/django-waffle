@@ -15,13 +15,15 @@ class Command(BaseCommand):
                             dest='create',
                             default=False,
                             help="If the sample doesn't exist, create it.")
+        parser.add_argument('sample_name', nargs='?', type=str)
+        parser.add_argument('percent', nargs='?', type=float)
 
     help = 'Change percentage of a sample.'
-    args = '<sample_name> <percent>'
 
-    def handle(self, sample_name=None, percent=None, *args, **options):
+    def handle(self, *args, **options):
         list_sample = options['list_sample']
-
+        sample_name = options['sample_name']
+        percent = options['percent']
         if list_sample:
             print('Samples:')
             for sample in Sample.objects.iterator():

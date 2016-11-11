@@ -52,12 +52,13 @@ class Command(BaseCommand):
                             dest='create',
                             default=False,
                             help='If the flag doesn\'t exist, create it.')
+        parser.add_argument('flag_name', nargs='?', type=str)
 
     help = "Modify a flag."
-    args = "<flag_name>"
 
-    def handle(self, flag_name=None, *args, **options):
+    def handle(self, *args, **options):
         list_flag = options['list_flag']
+        flag_name = options['flag_name']
 
         if list_flag:
             print('Flags:')

@@ -13,40 +13,40 @@ class Command(BaseCommand):
                             action='store_true',
                             dest='list_flag',
                             default=False,
-                            help="List existing samples."),
+                            help="List existing samples.")
         parser.add_argument('--everyone',
                             action='store_true',
                             dest='everyone',
-                            help="Activate flag for all users."),
+                            help="Activate flag for all users.")
         parser.add_argument('--deactivate',
                             action='store_false',
                             dest='everyone',
-                            help="Deactivate flag for all users."),
+                            help="Deactivate flag for all users.")
         parser.add_argument('--percent', '-p',
                             action='store',
                             type='int',
                             dest='percent',
-                            help=percent_help),
+                            help=percent_help)
         parser.add_argument('--superusers',
                             action='store_true',
                             dest='superusers',
                             default=False,
-                            help='Turn on the flag for Django superusers.'),
+                            help='Turn on the flag for Django superusers.')
         parser.add_argument('--staff',
                             action='store_true',
                             dest='staff',
                             default=False,
-                            help='Turn on the flag for Django staff.'),
+                            help='Turn on the flag for Django staff.')
         parser.add_argument('--authenticated',
                             action='store_true',
                             dest='authenticated',
                             default=False,
-                            help='Turn on the flag for logged in users.'),
+                            help='Turn on the flag for logged in users.')
         parser.add_argument('--rollout', '-r',
                             action='store_true',
                             dest='rollout',
                             default=False,
-                            help='Turn on rollout mode.'),
+                            help='Turn on rollout mode.')
         parser.add_argument('--create',
                             action='store_true',
                             dest='create',

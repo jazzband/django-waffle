@@ -9,7 +9,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('-l', '--list',
                             action='store_true', dest='list_sample', default=False,
-                            help='List existing samples.'),
+                            help='List existing samples.')
         parser.add_argument('--create',
                             action='store_true',
                             dest='create',

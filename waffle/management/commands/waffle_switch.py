@@ -9,12 +9,12 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('-l', '--list',
                             action='store_true', dest='list_switch', default=False,
-                            help='List existing switchs.'),
+                            help='List existing switchs.')
         parser.add_argument('--create',
                             action='store_true',
                             dest='create',
                             default=False,
-                            help="If the switch doesn't exist, create it."),
+                            help="If the switch doesn't exist, create it.")
 
     help = 'Activate or deactivate a switch.'
     args = '<switch_name> <on/off>'

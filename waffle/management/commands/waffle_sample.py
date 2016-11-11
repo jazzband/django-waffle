@@ -1,23 +1,20 @@
 from __future__ import print_function
 
-from optparse import make_option
-
 from django.core.management.base import BaseCommand, CommandError
 
 from waffle.models import Sample
 
 
 class Command(BaseCommand):
-    option_list = BaseCommand.option_list + (
-        make_option('-l', '--list',
-            action='store_true', dest='list_sample', default=False,
-            help='List existing samples.'),
-        make_option('--create',
-            action='store_true',
-            dest='create',
-            default=False,
-            help="If the sample doesn't exist, create it."),
-    )
+    def add_arguments(self, parser):
+        parser.add_argument('-l', '--list',
+                            action='store_true', dest='list_sample', default=False,
+                            help='List existing samples.'),
+        parser.add_argument('--create',
+                            action='store_true',
+                            dest='create',
+                            default=False,
+                            help="If the sample doesn't exist, create it.")
 
     help = 'Change percentage of a sample.'
     args = '<sample_name> <percent>'

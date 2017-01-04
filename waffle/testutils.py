@@ -3,8 +3,8 @@ from __future__ import unicode_literals
 import sys
 import types
 from functools import wraps
-
-from waffle.models import Flag, Switch, Sample
+from .utils import get_flag_model
+from .models import Switch, Sample
 
 
 __all__ = ['override_flag', 'override_sample', 'override_switch']
@@ -108,7 +108,7 @@ class override_switch(_overrider):
 
 
 class override_flag(_overrider):
-    cls = Flag
+    cls = get_flag_model()
 
     def update(self, active):
         obj = self.cls.objects.get(pk=self.obj.pk)

@@ -11,8 +11,9 @@ import mock
 
 import waffle
 from test_app import views
+from test_app.models import Flag
 from waffle.middleware import WaffleMiddleware
-from waffle.models import Flag, Sample, Switch
+from waffle.models import Sample, Switch
 from waffle.tests.base import TestCase
 
 
@@ -28,6 +29,7 @@ def process_request(request, view):
 
 
 class WaffleTests(TestCase):
+
     def test_persist_active_flag(self):
         Flag.objects.create(name='myflag', percent='0.1')
         request = get()
@@ -228,13 +230,15 @@ class WaffleTests(TestCase):
         request = get()
         assert not waffle.flag_is_active(request, 'foo')
 
-    @override_settings(WAFFLE={'FLAG_DEFAULT': True})
+    @override_settings(WAFFLE={'FLAG_DEFAULT': True,
+                               'FLAG_CLASS': 'test_app.Flag'})
     def test_undefined_default(self):
         """WAFFLE_FLAG_DEFAULT controls undefined flags."""
         request = get()
         assert waffle.flag_is_active(request, 'foo')
 
-    @override_settings(WAFFLE={'OVERRIDE': True})
+    @override_settings(WAFFLE={'OVERRIDE': True,
+                               'FLAG_CLASS': 'test_app.Flag',})
     def test_override(self):
         request = get(foo='1')
         Flag.objects.create(name='foo')  # Off for everyone.

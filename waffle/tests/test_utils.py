@@ -24,6 +24,12 @@ class GetSettingTests(TestCase):
         with override_settings(WAFFLE={'OVERRIDE': True}):
             assert get_setting('OVERRIDE')
 
+    def test_old_style_setting(self):
+        assert get_setting('CACHE_NAME') == 'default'
+        with override_settings(WAFFLE_CACHE_NAME='new-cache'):
+            assert get_setting('CACHE_NAME') == 'new-cache'
+
+
 class GetFlagModelTest(TestCase):
 
     def test_get_flag_model(self):
@@ -39,7 +45,6 @@ class GetFlagModelTest(TestCase):
     def test_get_flag_model_fails_when_wrong_model(self):
         with self.assertRaises(LookupError):
             get_flag_model()
-
 
     @override_settings(WAFFLE={'FLAG_CLASS': 'no_such_app.Flag'})
     def test_get_flag_model_fails_when_wrong_app(self):

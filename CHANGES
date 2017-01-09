@@ -2,6 +2,12 @@
 Waffle Changelog
 ================
 
+dev
+====
+
+- Move settings in a single `WAFFLE` dictionary.
+- Measure code coverage.
+
 v0.12
 =====
 

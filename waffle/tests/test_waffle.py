@@ -228,13 +228,13 @@ class WaffleTests(TestCase):
         request = get()
         assert not waffle.flag_is_active(request, 'foo')
 
-    @override_settings(WAFFLE_FLAG_DEFAULT=True)
+    @override_settings(WAFFLE={'FLAG_DEFAULT': True})
     def test_undefined_default(self):
         """WAFFLE_FLAG_DEFAULT controls undefined flags."""
         request = get()
         assert waffle.flag_is_active(request, 'foo')
 
-    @override_settings(WAFFLE_OVERRIDE=True)
+    @override_settings(WAFFLE={'OVERRIDE': True})
     def test_override(self):
         request = get(foo='1')
         Flag.objects.create(name='foo')  # Off for everyone.
@@ -312,7 +312,7 @@ class SwitchTests(TestCase):
     def test_undefined(self):
         assert not waffle.switch_is_active('foo')
 
-    @override_settings(WAFFLE_SWITCH_DEFAULT=True)
+    @override_settings(WAFFLE={'SWITCH_DEFAULT': True})
     def test_undefined_default(self):
         assert waffle.switch_is_active('foo')
 
@@ -340,6 +340,6 @@ class SampleTests(TestCase):
     def test_undefined(self):
         assert not waffle.sample_is_active('foo')
 
-    @override_settings(WAFFLE_SAMPLE_DEFAULT=True)
+    @override_settings(WAFFLE={'SAMPLE_DEFAULT': True})
     def test_undefined_default(self):
         assert waffle.sample_is_active('foo')

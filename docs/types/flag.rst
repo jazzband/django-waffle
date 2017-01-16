@@ -50,7 +50,7 @@ Flags can be administered through the Django `admin site`_ or the
     *Unknown* to use other critera.
 :Testing:
     Can the flag be specified via a querystring parameter? :ref:`See
-    below <types-flag-testing`.
+    below <types-flag-testing>`.
 :Percent:
     A percentage of users for whom the flag will be active, if no other
     criteria applies to them.

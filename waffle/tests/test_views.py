@@ -2,7 +2,8 @@ from __future__ import unicode_literals
 
 from django.core.urlresolvers import reverse
 
-from waffle.models import Flag, Sample, Switch
+from test_app.models import Flag
+from waffle.models import Sample, Switch
 from waffle.tests.base import TestCase
 
 

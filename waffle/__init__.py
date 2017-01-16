@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from decimal import Decimal
 import random
 
-from waffle.utils import get_setting, keyfmt, get_cache
+from waffle.utils import get_setting, keyfmt, get_cache, get_flag_model
 
 
 VERSION = (0, 12, 0, 'a', 1)
@@ -11,8 +11,7 @@ __version__ = '.'.join(map(str, VERSION))
 
 
 def flag_is_active(request, flag_name):
-    from .models import Flag
-
+    Flag = get_flag_model()
     flag = Flag.get(flag_name)
     return flag.is_active(request)
 

@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
-from waffle.models import Flag, Switch
+from test_app.models import Flag
+from waffle.models import Switch
 from waffle.tests.base import TestCase
 
 

@@ -98,13 +98,13 @@ def set_flag(request, flag_name, active=True, session_only=False):
     request.waffles[flag_name] = [active, session_only]
 
 
-class Flag(BaseModel):
+class BaseFlag(BaseModel):
     """A feature flag.
 
     Flags are active (or not) on a per-request basis.
 
     """
-    name = models.CharField(max_length=100, unique=True,
+    name = models.CharField(max_length=100, unique=get_setting('UNIQUE_FLAG_NAME'),
                             help_text='The human/computer readable name.')
     everyone = models.NullBooleanField(blank=True, help_text=(
         'Flip this flag on (Yes) or off (No) for everyone, overriding all '
@@ -141,6 +141,10 @@ class Flag(BaseModel):
 
     SINGLE_CACHE_KEY = 'FLAG_CACHE_KEY'
     ALL_CACHE_KEY = 'ALL_FLAGS_CACHE_KEY'
+
+    class Meta:
+        abstract = True
+
 
     def flush(self):
         keys = [

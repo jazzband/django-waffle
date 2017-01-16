@@ -30,7 +30,7 @@ consumers.
 
 0.11_ updated support, dropping 1.5 and adding 1.8, and overhauled Jinja
 integration to be compatible with any Jinja2 helper, like jingo or—more
-future-proof—django-jinja_.
+future-proof—django-jinja.
 
 0.11.1 is probably the last release of the 0.11.x_ series. It added
 support for Django 1.9 without deprecating any other versions.
@@ -109,7 +109,7 @@ potentially *gross*. (Then again, if it's gross underneath but exposes a
 pleasant UI, that's not ideal, but it's OK.)
 
 The other big sticking point is that this won't be a simple ``ALTER
-TABLE wafle_flag ADD COLUMN`` upgrade; things will break. 
+TABLE wafle_flag ADD COLUMN`` upgrade; things will break.
 
 I've been thinking what Waffle would be like if I designed it from
 scratch today with slightly different goals, like extensibility. Beyond

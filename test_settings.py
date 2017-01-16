@@ -76,8 +76,12 @@ TEMPLATES = [
     },
 ]
 
-WAFFLE_FLAG_DEFAULT = False
-WAFFLE_SWITCH_DEFAULT = False
-WAFFLE_SAMPLE_DEFAULT = False
-WAFFLE_OVERRIDE = False
-WAFFLE_CACHE_PREFIX = 'test:'
+WAFFLE = {
+    'FLAG_DEFAULT' : False,
+    'SWITCH_DEFAULT' : False,
+    'SAMPLE_DEFAULT' : False,
+    'OVERRIDE' : False,
+    'UNIQUE_FLAG_NAME': False,
+    'CACHE_PREFIX' : 'test:',
+    'FLAG_CLASS': 'test_app.models.Flag',
+}

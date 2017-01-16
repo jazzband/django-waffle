@@ -1,6 +1,5 @@
 from django.http import HttpResponse
-from django.shortcuts import render_to_response, render
-from django.template import Context, RequestContext
+from django.shortcuts import render
 from django.template.loader import render_to_string
 
 from waffle import flag_is_active
@@ -18,17 +17,16 @@ def flag_in_jinja(request):
 
 
 def flag_in_django(request):
-    c = RequestContext(request, {
+    context = {
         'flag_var': 'flag_var',
         'switch_var': 'switch_var',
         'sample_var': 'sample_var',
-    })
-    return render_to_response('django/django.html', context_instance=c)
+    }
+    return render(request, 'django/django.html', context=context)
 
 
 def no_request_context(request):
-    c = Context({})
-    return render_to_string('django/django_email.html', context_instance=c)
+    return render_to_string('django/django_email.html', context={})
 
 
 @waffle_switch('foo')

@@ -9,4 +9,5 @@ dist
 .project
 .pydevproject
 .settings
+.tox/
 docs/_*

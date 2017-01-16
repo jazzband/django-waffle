@@ -1,29 +1,30 @@
 from __future__ import print_function
 
-from optparse import make_option
-
 from django.core.management.base import BaseCommand, CommandError
 
 from waffle.models import Switch
 
 
 class Command(BaseCommand):
-    option_list = BaseCommand.option_list + (
-        make_option('-l', '--list',
-            action='store_true', dest='list_switch', default=False,
-            help='List existing switchs.'),
-        make_option('--create',
-            action='store_true',
-            dest='create',
-            default=False,
-            help="If the switch doesn't exist, create it."),
-    )
+    def add_arguments(self, parser):
+        parser.add_argument('-l', '--list',
+                            action='store_true', dest='list_switch', default=False,
+                            help='List existing switchs.')
+        parser.add_argument('--create',
+                            action='store_true',
+                            dest='create',
+                            default=False,
+                            help="If the switch doesn't exist, create it.")
+        parser.add_argument('switch_name', nargs='?', type=str)
+        parser.add_argument('state', nargs='?', type=str)
+
     help = 'Activate or deactivate a switch.'
     args = '<switch_name> <on/off>'
 
-    def handle(self, switch_name=None, state=None, *args, **options):
+    def handle(self, *args, **options):
         list_switch = options['list_switch']
-
+        switch_name = options['switch_name']
+        state = options['state']
         if list_switch:
             print('Switches:')
             for switch in Switch.objects.iterator():

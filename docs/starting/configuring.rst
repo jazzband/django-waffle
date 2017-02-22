@@ -45,3 +45,13 @@ behavior.
 
 ``WAFFLE_CACHE_NAME``
     Which cache to use. Defaults to ``'default'``.
+
+
+``WAFFLE_FLAG_TAG_NAME``
+    Allows to overwrite the template tag name for flag, default is ``flag``.
+
+``WAFFLE_SWITCH_TAG_NAME``
+    Allows to overwrite the template tag name for switch, default is ``switch``.
+
+``WAFFLE_SAMPLE_TAG_NAME``
+    Allows to overwrite the template tag name for sample, default is ``sample``.

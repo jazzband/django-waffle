@@ -1,9 +1,7 @@
 import os
 import django
-from distutils.version import StrictVersion
 
-
-DJANGO_VERSION = StrictVersion(django.get_version())
+DJANGO_VERSION = django.VERSION
 
 # Make filepaths relative to settings.
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -45,7 +43,7 @@ _MIDDLEWARE_CLASSES = (
 )
 
 
-if DJANGO_VERSION < StrictVersion('1.10.0'):
+if DJANGO_VERSION < (1, 10):
     MIDDLEWARE_CLASSES = _MIDDLEWARE_CLASSES
 else:
     MIDDLEWARE = _MIDDLEWARE_CLASSES

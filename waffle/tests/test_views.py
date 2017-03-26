@@ -1,6 +1,9 @@
 from __future__ import unicode_literals
 
-from django.core.urlresolvers import reverse
+try:
+    from django.urls import reverse
+except ImportError:
+    from django.core.urlresolvers import reverse  # < django 1.10
 
 from waffle.models import Flag, Sample, Switch
 from waffle.tests.base import TestCase

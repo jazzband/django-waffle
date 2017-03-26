@@ -4,7 +4,10 @@ from functools import wraps
 
 from django.http import Http404
 from django.utils.decorators import available_attrs
-from django.core.urlresolvers import reverse, NoReverseMatch
+try:
+    from django.urls import reverse, NoReverseMatch
+except ImportError:
+    from django.core.urlresolvers import reverse, NoReverseMatch  # < django 1.10
 from django.shortcuts import redirect
 
 from waffle import flag_is_active, switch_is_active

@@ -4,7 +4,7 @@ from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
 
-from waffle.models import Flag
+from waffle import get_waffle_flag_model
 
 
 class Command(BaseCommand):
@@ -59,6 +59,7 @@ class Command(BaseCommand):
     args = "<flag_name>"
 
     def handle(self, flag_name=None, *args, **options):
+        Flag = get_waffle_flag_model()
         list_flag = options['list_flag']
 
         if list_flag:

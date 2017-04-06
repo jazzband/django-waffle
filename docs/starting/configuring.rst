@@ -11,6 +11,14 @@ behavior.
     The format for the cookies Waffle sets. Must contain ``%s``.
     Defaults to ``dwf_%s``.
 
+``WAFFLE_FLAG_MODEL``
+    The model that will be use to keep track of flags. Defaults to ``waffle.Flag``
+    which allows user- and group-based flags. Can be swapped for a different Flag model
+    that allows flagging based on other things, such as an Organization a user belongs to.
+    Analogous functionality to Django's extendable User models.
+    Needs to be set at the start of a project. Migrations do not support changing after the
+    initial migration.
+
 ``WAFFLE_FLAG_DEFAULT``
     When a Flag is undefined in the database, Waffle considers it
     ``False``.  Set this to ``True`` to make Waffle consider undefined

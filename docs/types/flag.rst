@@ -92,8 +92,10 @@ Custom Flag Models
 ======================
 
 For many cases, the default Flag model provides all the necessary functionality. It allows
-flagging individual Users and Groups. If you would like to flags be applied to different things,
-such as Companies a User belongs to, you can use a custom flag model for that.
+flagging individual Users and Groups. If you would like flags be applied to different things,
+such as Companies a User belongs to, you can use a custom flag model for that. You could flag
+on any relationship or property that can be derived from request.user. Other possible ideas
+is to apply flags based on the user's language or IP address.
 
 The functonality uses the same concepts as Django's custom user models, and a lot of this will
 be immediately recognizable.
@@ -104,7 +106,7 @@ but can be pointed to an arbitrary object.
 .. note::
 
     It is not possible to change the Flag model and generate working migrations. Ideally, the flag
-    model should be defined at the start of a new project. This is a limitiation of the `swappable`
+    model should be defined at the start of a new project. This is a limitation of the `swappable`
     Django magic.
 
 The custom Flag model must inherit from `waffle.models.AbstractBaseFlag`. If you want the existing
@@ -113,7 +115,7 @@ you may extend `waffle.models.AbstractUserFlag`.
 
 If you need to refernce the class that is being used as the `Flag` model in your project, use the
 ``get_waffle_flag_model()`` method. If you reference the Flag a lot, it may be convenient to add
-``Flag = get_waffle_flag_model()`` right blow your imports and refernce the Flag model as if it had
+``Flag = get_waffle_flag_model()`` right below your imports and refernce the Flag model as if it had
 been imported directly.
 
 Example:

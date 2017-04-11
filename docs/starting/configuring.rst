@@ -12,9 +12,10 @@ behavior.
     Defaults to ``dwf_%s``.
 
 ``WAFFLE_FLAG_MODEL``
-    The model that will be use to keep track of flags. Defaults to ``waffle.Flag``
+    The model that will be used to keep track of flags. Defaults to ``waffle.Flag``
     which allows user- and group-based flags. Can be swapped for a different Flag model
-    that allows flagging based on other things, such as an Organization a user belongs to.
+    that allows flagging based on other relationships or properties, such as an Organization 
+    a user belongs to.
     Analogous functionality to Django's extendable User models.
     Needs to be set at the start of a project. Migrations do not support changing after the
     initial migration.

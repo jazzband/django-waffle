@@ -36,10 +36,9 @@ def get_waffle_flag_model():
     """
     Returns the waffle Flag model that is active in this project.
     """
-    # Add backwards compatibility by not requiring adding of WAFFLE_FLAG_MODEL
-    # for everyone who upgrades
-    # At some point it would be helpful to require this to be defined explicitly, but no for now, to
-    # remove pain form upgrading.
+    # Assume default WAFFLE_FLAG_MODEL.
+    # At some point it would be helpful to require this to be defined explicitly, but not for now
+    # This remove pain from upgrading.
     flag_model = getattr(settings, 'WAFFLE_FLAG_MODEL', 'waffle.Flag')
 
     try:

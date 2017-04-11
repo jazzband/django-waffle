@@ -36,11 +36,14 @@ def delete_individually(ma, request, qs):
 delete_individually.short_description = 'Delete selected.'
 
 
-class FlagAdmin(BaseAdmin):
+class AbstractFlagAdmin(BaseAdmin):
     actions = [enable_for_all, disable_for_all, delete_individually]
     list_display = ('name', 'note', 'everyone', 'percent', 'superusers',
                     'staff', 'authenticated', 'languages')
     list_filter = ('everyone', 'superusers', 'staff', 'authenticated')
+    ordering = ('-id',)
+
+class FlagAdmin(AbstractFlagAdmin):
     raw_id_fields = ('users', 'groups')
     ordering = ('-id',)
 

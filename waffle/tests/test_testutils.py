@@ -6,8 +6,11 @@ from django.contrib.auth.models import AnonymousUser
 from django.test import TestCase, RequestFactory
 
 import waffle
-from waffle.models import Switch, Flag, Sample
+from waffle import get_waffle_flag_model
+from waffle.models import Switch, Sample
 from waffle.testutils import override_switch, override_flag, override_sample
+
+Flag = get_waffle_flag_model()
 
 
 class OverrideSwitchTests(TestCase):

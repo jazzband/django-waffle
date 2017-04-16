@@ -12,3 +12,17 @@
 {% else %}
   sample off
 {% endsample %}
+
+
+{% if "switch"|switch %}
+  switch filter on
+{% else %}
+  switch filter off
+{% endif %}
+
+
+{% if "sample"|sample %}
+  sample filter on
+{% else %}
+  sample filter off
+{% endif %}

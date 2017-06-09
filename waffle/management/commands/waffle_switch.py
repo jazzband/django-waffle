@@ -1,52 +1,51 @@
-from __future__ import print_function
-
-from optparse import make_option
-
 from django.core.management.base import BaseCommand, CommandError
 
 from waffle.models import Switch
 
 
 class Command(BaseCommand):
-    option_list = BaseCommand.option_list + (
-        make_option('-l', '--list',
-            action='store_true', dest='list_switch', default=False,
-            help='List existing switchs.'),
-        make_option('--create',
+    def add_arguments(self, parser):
+        parser.add_argument('positionals', nargs='*')
+        parser.add_argument(
+            '-l', '--list',
+            action='store_true', dest='list_switches', default=False,
+            help='List existing switches.'),
+        parser.add_argument(
+            '--create',
             action='store_true',
             dest='create',
             default=False,
             help="If the switch doesn't exist, create it."),
-    )
+
     help = 'Activate or deactivate a switch.'
-    args = '<switch_name> <on/off>'
 
-    def handle(self, switch_name=None, state=None, *args, **options):
-        list_switch = options['list_switch']
-
-        if list_switch:
-            print('Switches:')
+    def handle(self, *args, **options):
+        if options['list_switches']:
+            self.stdout.write('Switches:')
             for switch in Switch.objects.iterator():
-                print('%s: %s' % (switch.name,
-                                  'on' if switch.active else 'off'))
+                self.stdout.write('%s: %s' % (switch.name, 'on' if switch.active else 'off'))
+            self.stdout.write('')
             return
+
+        switch_name = options['positionals'][0]
+        state = options['positionals'][1]
+        print(options['positionals'])
 
         if not (switch_name and state):
             raise CommandError('You need to specify a switch name and state.')
 
-        if not state in ['on', 'off']:
-            raise CommandError('You need to specify state of switch with '
-                               '"on" or "off".')
+        if state not in ['on', 'off']:
+            raise CommandError('You need to specify state of switch with "on" or "off".')
+
+        active = state == "on"
+        defaults = {'active': active}
 
         if options['create']:
-            switch, created = Switch.objects.get_or_create(name=switch_name)
+            switch, created = Switch.objects.get_or_create(name=switch_name, defaults=defaults)
             if created:
-                print('Creating switch: %s' % switch_name)
+                self.stdout.write('Creating switch: %s' % switch_name)
         else:
             try:
-                switch = Switch.objects.get(name=switch_name)
+                switch = Switch.objects.update_or_create(name=switch_name, defaults=defaults)
             except Switch.DoesNotExist:
                 raise CommandError("This switch doesn't exist.")
-
-        switch.active = state == "on"
-        switch.save()

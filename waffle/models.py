@@ -244,9 +244,10 @@ class Flag(BaseModel):
         if active_for_language is not None:
             return active_for_language
 
-        active_for_user = self._is_active_for_user(request)
-        if active_for_user is not None:
-            return active_for_user
+        if request:
+            active_for_user = self._is_active_for_user(request)
+            if active_for_user is not None:
+                return active_for_user
 
         if self.percent and self.percent > 0:
             if not hasattr(request, 'waffles'):

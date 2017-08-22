@@ -221,7 +221,7 @@ class Flag(BaseModel):
             return get_setting('FLAG_DEFAULT')
 
         if get_setting('OVERRIDE'):
-            if self.name in request.GET:
+            if request and self.name in request.GET:
                 return request.GET[self.name] == '1'
 
         if self.everyone:
@@ -231,13 +231,13 @@ class Flag(BaseModel):
 
         if self.testing:  # Testing mode is on.
             tc = get_setting('TEST_COOKIE') % self.name
-            if tc in request.GET:
+            if request and tc in request.GET:
                 on = request.GET[tc] == '1'
                 if not hasattr(request, 'waffle_tests'):
                     request.waffle_tests = {}
                 request.waffle_tests[self.name] = on
                 return on
-            if tc in request.COOKIES:
+            if request and tc in request.COOKIES:
                 return request.COOKIES[tc] == 'True'
 
         active_for_language = self._is_active_for_language(request)

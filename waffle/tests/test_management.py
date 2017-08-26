@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 import six
 from django.core.management import call_command
+from django.contrib.auth.models import Group
 
 from waffle.models import Flag, Sample, Switch
 from waffle.tests.base import TestCase
@@ -12,8 +13,10 @@ class WaffleFlagManagementCommandTests(TestCase):
         """ The command should create a new flag. """
         name = 'test'
         percent = 20
-        call_command('waffle_flag', name, everyone=True, percent=percent, superusers=True, staff=True,
-                     authenticated=True, rollout=True, create=True)
+        Group.objects.create(name='waffle_group')
+        call_command('waffle_flag', name, everyone=True, percent=percent,
+                     superusers=True, staff=True, authenticated=True,
+                     rollout=True, create=True, group=['waffle_group'])
 
         flag = Flag.objects.get(name=name)
         self.assertEqual(flag.percent, percent)
@@ -22,6 +25,8 @@ class WaffleFlagManagementCommandTests(TestCase):
         self.assertTrue(flag.staff)
         self.assertTrue(flag.authenticated)
         self.assertTrue(flag.rollout)
+        self.assertEqual(list(flag.groups.values_list('name', flat=True)),
+                         ['waffle_group'])
 
     def test_update(self):
         """ The command should update an existing flag. """
@@ -35,8 +40,9 @@ class WaffleFlagManagementCommandTests(TestCase):
         self.assertFalse(flag.rollout)
 
         percent = 30
-        call_command('waffle_flag', name, everyone=True, percent=percent, superusers=False, staff=True,
-                     authenticated=True, rollout=True)
+        call_command('waffle_flag', name, everyone=True, percent=percent,
+                     superusers=False, staff=True, authenticated=True,
+                     rollout=True)
 
         flag.refresh_from_db()
         self.assertEqual(flag.percent, percent)
@@ -52,10 +58,29 @@ class WaffleFlagManagementCommandTests(TestCase):
         Flag.objects.create(name='test')
 
         call_command('waffle_flag', list_flags=True, stdout=stdout)
-        expected = 'Flags:\nNAME: test\nSUPERUSERS: True\nEVERYONE: None\nAUTHENTICATED: False\nPERCENT: None\n' \
-                   'TESTING: False\nROLLOUT: False\nSTAFF: False'
+        expected = 'Flags:\nNAME: test\nSUPERUSERS: True\nEVERYONE: None\n' \
+                   'AUTHENTICATED: False\nPERCENT: None\nTESTING: False\n' \
+                   'ROLLOUT: False\nSTAFF: False\nGROUPS: []'
         actual = stdout.getvalue().strip()
         self.assertEqual(actual, expected)
+
+    def test_group_append(self):
+        """ The command should append a group to a flag. """
+        original_group = Group.objects.create(name='waffle_group')
+        Group.objects.create(name='append_group')
+        flag = Flag.objects.create(name='test')
+        flag.groups.add(original_group)
+        flag.refresh_from_db()
+
+        self.assertEqual(list(flag.groups.values_list('name', flat=True)),
+                         ['waffle_group'])
+
+        call_command('waffle_flag', 'test', group=['append_group'],
+                     append=True)
+
+        flag.refresh_from_db()
+        self.assertEqual(list(flag.groups.values_list('name', flat=True)),
+                         ['waffle_group', 'append_group'])
 
 
 class WaffleSampleManagementCommandTests(TestCase):

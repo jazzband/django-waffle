@@ -1,0 +1,15 @@
+daysUntilStale: 30
+daysUntilClose: 14
+exemptLabels:
+  - security
+  - pinned
+  - pr-wanted
+staleLabel: stale
+markComment: >
+  This issue has been automatically marked as stale because it has not
+  had recent activity. It will be closed if no further activity occurs.
+  Thank you for your contributions.
+closeComment: >
+  This issue has been closed as stale because it has not had any recent
+  activity. Please feel free to re-open if the issue is still relevant.
+  Thank you for your contributions!

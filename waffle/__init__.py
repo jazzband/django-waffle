@@ -17,6 +17,14 @@ def flag_is_active(request, flag_name):
     return flag.is_active(request)
 
 
+def switch_set_active(name, active):
+    """Sets, or unsets, the named switch, creating it if necessary."""
+    switch, _ = Switch.objects.get_or_create(name=name)
+    switch.active = active
+    switch.save()
+    return switch
+
+
 def switch_is_active(switch_name):
     from .models import Switch
 

@@ -290,6 +290,9 @@ class Switch(BaseModel):
     SINGLE_CACHE_KEY = 'SWITCH_CACHE_KEY'
     ALL_CACHE_KEY = 'ALL_SWITCHES_CACHE_KEY'
 
+        from waffle import cache_switch  # To avoid circular dependency
+        cache_switch(instance=self)
+
     class Meta:
         verbose_name_plural = 'Switches'
 

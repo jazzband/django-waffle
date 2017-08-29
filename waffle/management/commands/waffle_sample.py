@@ -33,7 +33,9 @@ class Command(BaseCommand):
         percent = options['positionals'][1]
 
         if not (sample_name and percent):
-            raise CommandError('You need to specify a sample name and percentage.')
+            raise CommandError(
+                'You need to specify a sample name and percentage.'
+            )
 
         try:
             percent = float(percent)

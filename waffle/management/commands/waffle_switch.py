@@ -23,7 +23,9 @@ class Command(BaseCommand):
         if options['list_switches']:
             self.stdout.write('Switches:')
             for switch in Switch.objects.iterator():
-                self.stdout.write('%s: %s' % (switch.name, 'on' if switch.active else 'off'))
+                self.stdout.write(
+                    '%s: %s' % (switch.name, 'on' if switch.active else 'off')
+                )
             self.stdout.write('')
             return
 
@@ -35,17 +37,21 @@ class Command(BaseCommand):
             raise CommandError('You need to specify a switch name and state.')
 
         if state not in ['on', 'off']:
-            raise CommandError('You need to specify state of switch with "on" or "off".')
+            raise CommandError(
+                'You need to specify state of switch with "on" or "off".'
+            )
 
         active = state == "on"
         defaults = {'active': active}
 
         if options['create']:
-            switch, created = Switch.objects.get_or_create(name=switch_name, defaults=defaults)
+            switch, created = Switch.objects.get_or_create(name=switch_name,
+                                                           defaults=defaults)
             if created:
                 self.stdout.write('Creating switch: %s' % switch_name)
         else:
             try:
-                switch = Switch.objects.update_or_create(name=switch_name, defaults=defaults)
+                switch = Switch.objects.update_or_create(name=switch_name,
+                                                         defaults=defaults)
             except Switch.DoesNotExist:
                 raise CommandError("This switch doesn't exist.")

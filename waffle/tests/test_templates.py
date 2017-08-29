@@ -35,8 +35,15 @@ class WaffleTemplateTests(TestCase):
         self.assertContains(response, 'window.waffle =')
 
     def test_get_nodes_by_type(self):
-        """WaffleNode.get_nodes_by_type() should correctly find all child nodes"""
-        test_template = Template('{% load waffle_tags %}{% switch "x" %}{{ a }}{% else %}{{ b }}{% endswitch %}')
+        """WaffleNode.get_nodes_by_type() should find all child nodes."""
+        test_template = Template(
+            '{% load waffle_tags %}'
+            '{% switch "x" %}'
+            '{{ a }}'
+            '{% else %}'
+            '{{ b }}'
+            '{% endswitch %}'
+        )
         children = test_template.nodelist.get_nodes_by_type(VariableNode)
         self.assertEqual(len(children), 2)
 

@@ -57,4 +57,3 @@ def get_response_to_redirect(view):
         return redirect(reverse(view)) if view else None
     except NoReverseMatch:
         return None
-

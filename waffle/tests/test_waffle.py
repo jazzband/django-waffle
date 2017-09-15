@@ -298,7 +298,7 @@ class SwitchTests(TestCase):
         assert waffle.switch_is_active(switch.name)
         queries = len(connection.queries)
         assert waffle.switch_is_active(switch.name)
-        self.assertEqual(queries, len(connection.queries), 'We should only make one query.')
+        self.assertEqual(queries, len(connection.queries))
 
     def test_switch_inactive_from_cache(self):
         """Do not make two queries for an existing inactive switch."""
@@ -307,7 +307,7 @@ class SwitchTests(TestCase):
         assert not waffle.switch_is_active(switch.name)
         queries = len(connection.queries)
         assert not waffle.switch_is_active(switch.name)
-        self.assertEqual(queries, len(connection.queries), 'We should only make one query.')
+        self.assertEqual(queries, len(connection.queries))
 
     def test_undefined(self):
         assert not waffle.switch_is_active('foo')
@@ -322,10 +322,10 @@ class SwitchTests(TestCase):
         assert not Switch.objects.filter(name='foo').exists()
         queries = len(connection.queries)
         assert not waffle.switch_is_active('foo')
-        assert len(connection.queries) > queries, 'We should make one query.'
+        assert len(connection.queries) > queries
         queries = len(connection.queries)
         assert not waffle.switch_is_active('foo')
-        self.assertEqual(queries, len(connection.queries), 'We should only make one query.')
+        self.assertEqual(queries, len(connection.queries))
 
 
 class SampleTests(TestCase):

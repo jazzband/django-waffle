@@ -31,6 +31,9 @@ class BaseModel(models.Model):
     def __str__(self):
         return self.name
 
+    def natural_key(self):
+        return (self.name,)
+
     @classmethod
     def _cache_key(cls, name):
         return keyfmt(get_setting(cls.SINGLE_CACHE_KEY), name)

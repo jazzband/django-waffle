@@ -10,4 +10,5 @@ dist
 .pydevproject
 .settings
 .tox/
+.DS_Store
 docs/_*

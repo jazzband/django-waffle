@@ -161,7 +161,6 @@ class WaffleTests(TestCase):
         assert 'dwf_myflag' not in response.cookies
 
         request.user = User(username='foo')
-        assert request.user.is_authenticated()
         response = process_request(request, views.flag_in_view)
         self.assertEqual(b'on', response.content)
         assert 'dwf_myflag' not in response.cookies
@@ -177,7 +176,6 @@ class WaffleTests(TestCase):
         assert 'dwf_myflag' not in response.cookies
 
         request.user = User(username='foo')
-        assert request.user.is_authenticated()
         response = process_request(request, views.flag_in_view)
         self.assertEqual(b'on', response.content)
         assert 'dwf_myflag' not in response.cookies
@@ -194,7 +192,6 @@ class WaffleTests(TestCase):
         assert 'dwf_myflag' not in response.cookies
 
         request.user = User(username='foo')
-        assert request.user.is_authenticated()
         response = process_request(request, views.flag_in_view)
         self.assertEqual(b'off', response.content)
         assert 'dwf_myflag' not in response.cookies

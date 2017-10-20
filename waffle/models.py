@@ -190,10 +190,11 @@ class Flag(BaseModel):
         return group_ids
 
     def is_active_for_user(self, user):
-        try:
-            authed = getattr(user, 'is_authenticated', lambda: False)()  # for older version of django
-        except:
-            authed = getattr(user, 'is_authenticated', lambda: False)  # change in user model in django>=1.10
+        # is_authenticated was a method in Django < 1.10
+        if callable(user.is_authenticated):
+            authed = user.is_authenticated()
+        else:
+            authed = user.is_authenticated
         if self.authenticated and authed:
             return True
 

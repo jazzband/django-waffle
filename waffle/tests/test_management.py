@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 
 import six
-from django.core.management import call_command
+from django.core.management import call_command, CommandError
 from django.contrib.auth.models import Group
 
 from waffle.models import Flag, Sample, Switch
@@ -27,6 +27,17 @@ class WaffleFlagManagementCommandTests(TestCase):
         self.assertTrue(flag.rollout)
         self.assertEqual(list(flag.groups.values_list('name', flat=True)),
                          ['waffle_group'])
+
+    def test_not_create(self):
+        """ The command shouldn't create a new flag if the create flag is
+        not set.
+        """
+        name = 'test'
+        with self.assertRaisesRegexp(CommandError, 'This flag does not exist.'):
+            call_command('waffle_flag', name, everyone=True, percent=20,
+                         superusers=True, staff=True, authenticated=True,
+                         rollout=True)
+        self.assertFalse(Flag.objects.filter(name=name).exists())
 
     def test_update(self):
         """ The command should update an existing flag. """
@@ -93,6 +104,15 @@ class WaffleSampleManagementCommandTests(TestCase):
         sample = Sample.objects.get(name=name)
         self.assertEqual(sample.percent, percent)
 
+    def test_not_create(self):
+        """ The command shouldn't create a new sample if the create flag is
+        not set.
+        """
+        name = 'test'
+        with self.assertRaisesRegexp(CommandError, 'This sample does not exist'):
+            call_command('waffle_sample', name, '20')
+        self.assertFalse(Sample.objects.filter(name=name).exists())
+
     def test_update(self):
         """ The command should update an existing sample. """
         name = 'test'
@@ -127,6 +147,15 @@ class WaffleSwitchManagementCommandTests(TestCase):
 
         call_command('waffle_switch', name, 'off', create=True)
         Switch.objects.get(name=name, active=False)
+
+    def test_not_create(self):
+        """ The command shouldn't create a new switch if the create flag is
+        not set.
+        """
+        name = 'test'
+        with self.assertRaisesRegexp(CommandError, 'This switch does not exist.'):
+            call_command('waffle_switch', name, 'on')
+        self.assertFalse(Switch.objects.filter(name=name).exists())
 
     def test_update(self):
         """ The command should update an existing switch. """

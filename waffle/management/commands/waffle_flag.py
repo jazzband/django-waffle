@@ -8,74 +8,76 @@ from waffle.models import Flag
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
-        parser.add_argument('name', nargs='?')
+        parser.add_argument(
+            'name',
+            nargs='?',
+            help='The name of the flag.')
         parser.add_argument(
             '-l', '--list',
             action='store_true',
             dest='list_flags',
             default=False,
-            help="List existing samples."),
+            help='List existing samples.')
         parser.add_argument(
             '--everyone',
             action='store_true',
             dest='everyone',
-            help="Activate flag for all users."),
+            help='Activate flag for all users.')
         parser.add_argument(
             '--deactivate',
             action='store_false',
             dest='everyone',
-            help="Deactivate flag for all users."),
+            help='Deactivate flag for all users.')
         parser.add_argument(
             '--percent', '-p',
             action='store',
             type=int,
             dest='percent',
             help='Roll out the flag for a certain percentage of users. Takes '
-                 'a number between 0.0 and 100.0'),
+                 'a number between 0.0 and 100.0')
         parser.add_argument(
             '--superusers',
             action='store_true',
             dest='superusers',
             default=False,
-            help='Turn on the flag for Django superusers.'),
+            help='Turn on the flag for Django superusers.')
         parser.add_argument(
             '--staff',
             action='store_true',
             dest='staff',
             default=False,
-            help='Turn on the flag for Django staff.'),
+            help='Turn on the flag for Django staff.')
         parser.add_argument(
             '--authenticated',
             action='store_true',
             dest='authenticated',
             default=False,
-            help='Turn on the flag for logged in users.'),
+            help='Turn on the flag for logged in users.')
         parser.add_argument(
             '--group', '-g',
             action='append',
             default=list(),
-            # dest='group_name',
             help='Turn on the flag for listed group names (use flag more '
                  'than once for multiple groups). WARNING: This will remove '
-                 'any currently associated groups unless --append is used!'),
+                 'any currently associated groups unless --append is used!')
         parser.add_argument(
             '--append',
             action='store_true',
             dest='append',
             default=False,
-            help='Append only mode when adding groups.'),
+            help='Append only mode when adding groups.')
         parser.add_argument(
             '--rollout', '-r',
             action='store_true',
             dest='rollout',
             default=False,
-            help='Turn on rollout mode.'),
+            help='Turn on rollout mode.')
         parser.add_argument(
             '--create',
             action='store_true',
             dest='create',
             default=False,
-            help='If the flag doesn\'t exist, create it.'),
+            help='If the flag doesn\'t exist, create it.')
 
     help = 'Modify a flag.'
 
@@ -99,6 +101,9 @@ class Command(BaseCommand):
 
         flag_name = options['name']
 
+        if not flag_name:
+            raise CommandError('You need to specify a flag name.')
+
         if options['create']:
             flag, created = Flag.objects.get_or_create(name=flag_name)
             if created:
@@ -107,7 +112,7 @@ class Command(BaseCommand):
             try:
                 flag = Flag.objects.get(name=flag_name)
             except Flag.DoesNotExist:
-                raise CommandError("This flag doesn't exist")
+                raise CommandError('This flag does not exist.')
 
         # Loop through all options, setting Flag attributes that
         # match (ie. don't want to try setting flag.verbosity)
@@ -122,7 +127,7 @@ class Command(BaseCommand):
                         group_instance = Group.objects.get(name=group)
                         group_hash[group_instance.name] = group_instance.id
                     except Group.DoesNotExist:
-                        raise CommandError("Group %s doesn't exist" % group)
+                        raise CommandError('Group %s does not exist' % group)
                 # If 'append' was not passed, we clear related groups
                 if not options['append']:
                     flag.groups.clear()

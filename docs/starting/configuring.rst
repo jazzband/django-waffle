@@ -30,6 +30,15 @@ behavior.
     How long should Waffle cookies last? (Integer, in seconds.) Defaults
     to ``2529000`` (one month).
 
+``WAFFLE_READ_FROM_WRITE_DB``
+    When calling ``*_is_active`` methods, Waffle attempts to retrieve a cached
+    version of the object, falling back to the database if necessary. In high-
+    traffic scenarios with multiple databases (e.g. a primary being replicated
+    to a readonly pool) this introduces the risk that a stale version of the
+    object might be cached if one of these methods is called immediately after
+    an update. Set this to ``True`` to ensure Waffle always reads Flags,
+    Switches, and Samples from the DB configured for writes on cache misses.
+
 ``WAFFLE_OVERRIDE``
     Allow *all* Flags to be controlled via the querystring (to allow
     e.g. Selenium to control their behavior). Defaults to ``False``.

@@ -281,6 +281,25 @@ class WaffleTests(TestCase):
         response = self.client.get('/flag_in_view?dwft_myflag=1')
         self.assertEqual(b'on', response.content)
 
+    @override_settings(DATABASE_ROUTERS=['waffle.tests.base.ReplicationRouter'])
+    def test_everyone_on_read_from_write_db(self):
+        flag = Flag.objects.create(name='myflag', everyone=True)
+
+        request = get()
+        response = process_request(request, views.flag_in_view)
+        # By default, flag_is_active should hit whatever it configured as the
+        # read DB (so values will be stale if replication is lagged).
+        self.assertEqual(b'off', response.content)
+
+        with override_settings(WAFFLE_READ_FROM_WRITE_DB=True):
+            # Save the flag again to flush the cache.
+            flag.save()
+
+            # The next read should now be directed to the write DB, ensuring
+            # the cache and DB are in sync.
+            response = process_request(request, views.flag_in_view)
+            self.assertEqual(b'on', response.content)
+
 
 class SwitchTests(TestCase):
     def test_switch_active(self):
@@ -327,6 +346,22 @@ class SwitchTests(TestCase):
         assert not waffle.switch_is_active('foo')
         self.assertEqual(queries, len(connection.queries))
 
+    @override_settings(DATABASE_ROUTERS=['waffle.tests.base.ReplicationRouter'])
+    def test_read_from_write_db(self):
+        switch = Switch.objects.create(name='switch', active=True)
+
+        # By default, switch_is_active should hit whatever it configured as the
+        # read DB (so values will be stale if replication is lagged).
+        assert not waffle.switch_is_active(switch.name)
+
+        with override_settings(WAFFLE_READ_FROM_WRITE_DB=True):
+            # Save the switch again to flush the cache.
+            switch.save()
+
+            # The next read should now be directed to the write DB, ensuring
+            # the cache and DB are in sync.
+            assert waffle.switch_is_active(switch.name)
+
 
 class SampleTests(TestCase):
     def test_sample_100(self):
@@ -343,3 +378,19 @@ class SampleTests(TestCase):
     @override_settings(WAFFLE_SAMPLE_DEFAULT=True)
     def test_undefined_default(self):
         assert waffle.sample_is_active('foo')
+
+    @override_settings(DATABASE_ROUTERS=['waffle.tests.base.ReplicationRouter'])
+    def test_read_from_write_db(self):
+        sample = Sample.objects.create(name='sample', percent='100.0')
+
+        # By default, sample_is_active should hit whatever it configured as the
+        # read DB (so values will be stale if replication is lagged).
+        assert not waffle.sample_is_active(sample.name)
+
+        with override_settings(WAFFLE_READ_FROM_WRITE_DB=True):
+            # Save the sample again to flush the cache.
+            sample.save()
+
+            # The next read should now be directed to the write DB, ensuring
+            # the cache and DB are in sync.
+            assert waffle.sample_is_active(sample.name)

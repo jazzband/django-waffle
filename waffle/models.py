@@ -10,7 +10,7 @@ except ImportError:
 
 from django.conf import settings
 from django.contrib.auth.models import Group
-from django.db import models
+from django.db import models, router
 from django.db.models.signals import post_save, post_delete, m2m_changed
 from django.utils.encoding import python_2_unicode_compatible
 
@@ -47,13 +47,20 @@ class BaseModel(models.Model):
             return cached
 
         try:
-            obj = cls.objects.get(name=name)
+            obj = cls.get_from_db(name)
         except cls.DoesNotExist:
             cache.add(cache_key, CACHE_EMPTY)
             return cls()
 
         cache.add(cache_key, obj)
         return obj
+
+    @classmethod
+    def get_from_db(cls, name):
+        objects = cls.objects
+        if get_setting('READ_FROM_WRITE_DB'):
+            objects = objects.using(router.db_for_write(cls))
+        return objects.get(name=name)
 
     @classmethod
     def get_all(cls):
@@ -64,13 +71,20 @@ class BaseModel(models.Model):
         if cached:
             return cached
 
-        objs = list(cls.objects.all())
+        objs = cls.get_all_from_db()
         if not objs:
             cache.add(cache_key, CACHE_EMPTY)
             return []
 
         cache.add(cache_key, objs)
         return objs
+
+    @classmethod
+    def get_all_from_db(cls):
+        objects = cls.objects
+        if get_setting('READ_FROM_WRITE_DB'):
+            objects = objects.using(router.db_for_write(cls))
+        return list(objects.all())
 
     def flush(self):
         keys = [

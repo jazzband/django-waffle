@@ -24,6 +24,12 @@ DATABASES = {
     'default': {
         'NAME': 'test.db',
         'ENGINE': 'django.db.backends.sqlite3',
+    },
+
+    # Provide a readonly DB for testing DB replication scenarios.
+    'readonly': {
+        'NAME': 'test.readonly.db',
+        'ENGINE': 'django.db.backends.sqlite3',
     }
 }
 
@@ -89,5 +95,6 @@ TEMPLATES = [
 WAFFLE_FLAG_DEFAULT = False
 WAFFLE_SWITCH_DEFAULT = False
 WAFFLE_SAMPLE_DEFAULT = False
+WAFFLE_READ_FROM_WRITE_DB = False
 WAFFLE_OVERRIDE = False
 WAFFLE_CACHE_PREFIX = 'test:'

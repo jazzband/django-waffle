@@ -6,6 +6,8 @@ from waffle.models import Flag, Sample, Switch
 
 
 class BaseAdmin(admin.ModelAdmin):
+    search_fields = ('name', 'note')
+    
     def get_actions(self, request):
         actions = super(BaseAdmin, self).get_actions(request)
         if 'delete_selected' in actions:

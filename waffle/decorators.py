@@ -3,9 +3,9 @@ from __future__ import unicode_literals
 from functools import wraps
 
 from django.http import Http404
-from django.utils.decorators import available_attrs
-from django.core.urlresolvers import reverse, NoReverseMatch
 from django.shortcuts import redirect
+from django.urls import reverse, NoReverseMatch
+from django.utils.decorators import available_attrs
 
 from waffle import flag_is_active, switch_is_active
 
@@ -27,7 +27,9 @@ def waffle_flag(flag_name, redirect_to=None):
                     raise Http404
 
             return view(request, *args, **kwargs)
+
         return _wrapped_view
+
     return decorator
 
 
@@ -48,7 +50,9 @@ def waffle_switch(switch_name, redirect_to=None):
                     raise Http404
 
             return view(request, *args, **kwargs)
+
         return _wrapped_view
+
     return decorator
 
 

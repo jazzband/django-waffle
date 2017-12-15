@@ -157,6 +157,10 @@ class Flag(BaseModel):
     modified = models.DateTimeField(default=datetime.now, help_text=(
         'Date when this Flag was last modified.'))
 
+    allow_override = models.NullBooleanField(default=None, help_text=(
+        'Allow to control this flag via request\'s querystring '
+        '("Unknown" means following the global "WAFFLE_OVERRIDE" setting).'))
+
     objects = managers.FlagManager()
 
     SINGLE_CACHE_KEY = 'FLAG_CACHE_KEY'
@@ -240,8 +244,9 @@ class Flag(BaseModel):
         if not self.pk:
             return get_setting('FLAG_DEFAULT')
 
-        if get_setting('OVERRIDE'):
-            if self.name in request.GET:
+        if get_setting('OVERRIDE') or self.allow_override:
+            if (self.allow_override is not False and
+               self.name in request.GET):
                 return request.GET[self.name] == '1'
 
         if self.everyone:

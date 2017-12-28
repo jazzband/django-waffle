@@ -15,7 +15,7 @@ from django.db.models.signals import post_save, post_delete, m2m_changed
 from django.utils.encoding import python_2_unicode_compatible
 
 from waffle import managers
-from waffle.utils import get_setting, keyfmt, get_cache
+from waffle.utils import get_setting, keyfmt, get_cache, is_authenticated
 
 
 cache = get_cache()
@@ -204,7 +204,8 @@ class Flag(BaseModel):
         return group_ids
 
     def is_active_for_user(self, user):
-        authed = getattr(user, 'is_authenticated', lambda: False)()
+        authed = is_authenticated(user)
+
         if self.authenticated and authed:
             return True
 

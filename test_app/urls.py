@@ -5,8 +5,13 @@ from django.http import HttpResponseNotFound, HttpResponseServerError
 from test_app import views
 
 
-handler404 = lambda r: HttpResponseNotFound()
-handler500 = lambda r: HttpResponseServerError()
+def handler404(r, exception=None):
+    return HttpResponseNotFound()
+
+
+def handler500(r, exception=None):
+    return HttpResponseServerError()
+
 
 admin.autodiscover()
 
@@ -39,5 +44,5 @@ urlpatterns = [
         views.flagged_view_with_invalid_redirect),
     url(r'^flag-off', views.flagged_off_view),
     url(r'^', include('waffle.urls')),
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', admin.site.urls),
 ]

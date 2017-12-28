@@ -33,7 +33,7 @@ class Command(BaseCommand):
         if options['list_samples']:
             self.stdout.write('Samples:')
             for sample in Sample.objects.iterator():
-                self.stdout.write('%s: %s%%' % (sample.name, sample.percent))
+                self.stdout.write('%s: %.1f%%' % (sample.name, sample.percent))
             self.stdout.write('')
             return
 

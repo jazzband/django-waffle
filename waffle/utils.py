@@ -2,6 +2,7 @@ from __future__ import unicode_literals, absolute_import
 
 import hashlib
 
+import django
 from django.conf import settings
 from django.core.cache import caches
 
@@ -28,3 +29,11 @@ def keyfmt(k, v=None):
 def get_cache():
     CACHE_NAME = get_setting('CACHE_NAME')
     return caches[CACHE_NAME]
+
+
+if django.VERSION >= (1, 10):
+    def is_authenticated(user):
+        return user.is_authenticated
+else:
+    def is_authenticated(user):
+        return user.is_authenticated()

@@ -7,7 +7,7 @@ from waffle.models import Flag, Sample, Switch
 
 class BaseAdmin(admin.ModelAdmin):
     search_fields = ('name', 'note')
-    
+
     def get_actions(self, request):
         actions = super(BaseAdmin, self).get_actions(request)
         if 'delete_selected' in actions:
@@ -43,8 +43,9 @@ delete_individually.short_description = 'Delete selected.'
 class FlagAdmin(BaseAdmin):
     actions = [enable_for_all, disable_for_all, delete_individually]
     list_display = ('name', 'note', 'everyone', 'percent', 'superusers',
-                    'staff', 'authenticated', 'languages')
-    list_filter = ('everyone', 'superusers', 'staff', 'authenticated')
+                    'staff', 'authenticated', 'languages', 'allow_override')
+    list_filter = ('everyone', 'superusers', 'staff',
+                   'authenticated', 'allow_override')
     raw_id_fields = ('users', 'groups')
     ordering = ('-id',)
 

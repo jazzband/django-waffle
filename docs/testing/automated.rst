@@ -57,6 +57,10 @@ Selenium_ or PhantomJS_) the ``WAFFLE_OVERRIDE`` :ref:`setting
 <starting-configuring>` makes it possible to control the value of any
 *Flag* via the querystring.
 
+It's also possible to have more granular control over which flags can
+be overridden by setting the ``allow_override`` attribute to ``True``
+on the chosen flag.
+
 .. highlight:: http
 
 For example, for a flag named ``foo``, we can ensure that it is "on" for

@@ -241,6 +241,24 @@ class WaffleTests(TestCase):
         Flag.objects.create(name='foo')  # Off for everyone.
         assert waffle.flag_is_active(request, 'foo')
 
+    def test_override_enabled_on_flag(self):
+        request = get(foo='1')
+        # Off for everyone.
+        Flag.objects.create(name='foo', allow_override=True)
+        assert waffle.flag_is_active(request, 'foo')
+
+    @override_settings(WAFFLE_OVERRIDE=True)
+    def test_override_disabled_on_flag(self):
+        request = get(foo='1')
+        # Off for everyone.
+        Flag.objects.create(name='foo', allow_override=False)
+        assert not waffle.flag_is_active(request, 'foo')
+
+    def test_no_override(self):
+        request = get(foo='1')
+        Flag.objects.create(name='foo')  # Off for everyone.
+        assert not waffle.flag_is_active(request, 'foo')
+
     def test_testing_flag(self):
         Flag.objects.create(name='foo', testing=True)
         request = get(dwft_foo='1')

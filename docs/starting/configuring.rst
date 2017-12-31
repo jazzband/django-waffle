@@ -40,8 +40,9 @@ behavior.
     Switches, and Samples from the DB configured for writes on cache misses.
 
 ``WAFFLE_OVERRIDE``
-    Allow *all* Flags to be controlled via the querystring (to allow
-    e.g. Selenium to control their behavior). Defaults to ``False``.
+    Allow Flags to be controlled via the querystring (to allow e.g. Selenium
+    to control their behavior), unless the given flag has explicitly set
+    ``allow_override``to ``False``. Defaults to ``False``.
 
 ``WAFFLE_SECURE``
     Whether to set the ``secure`` flag on cookies. Defaults to ``True``.

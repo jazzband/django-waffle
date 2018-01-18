@@ -78,6 +78,7 @@ class Command(BaseCommand):
             dest='create',
             default=False,
             help='If the flag doesn\'t exist, create it.')
+        parser.set_defaults(everyone=None)
 
     help = 'Modify a flag.'
 

@@ -14,13 +14,13 @@ class WaffleFlagManagementCommandTests(TestCase):
         name = 'test'
         percent = 20
         Group.objects.create(name='waffle_group')
-        call_command('waffle_flag', name, everyone=True, percent=percent,
+        call_command('waffle_flag', name, percent=percent,
                      superusers=True, staff=True, authenticated=True,
                      rollout=True, create=True, group=['waffle_group'])
 
         flag = Flag.objects.get(name=name)
         self.assertEqual(flag.percent, percent)
-        self.assertTrue(flag.everyone)
+        self.assertIsNone(flag.everyone)
         self.assertTrue(flag.superusers)
         self.assertTrue(flag.staff)
         self.assertTrue(flag.authenticated)
@@ -51,6 +51,30 @@ class WaffleFlagManagementCommandTests(TestCase):
         self.assertFalse(flag.rollout)
 
         percent = 30
+        call_command('waffle_flag', name, percent=percent,
+                     superusers=False, staff=True, authenticated=True,
+                     rollout=True)
+
+        flag.refresh_from_db()
+        self.assertEqual(flag.percent, percent)
+        self.assertIsNone(flag.everyone)
+        self.assertFalse(flag.superusers)
+        self.assertTrue(flag.staff)
+        self.assertTrue(flag.authenticated)
+        self.assertTrue(flag.rollout)
+
+    def test_update_activate_everyone(self):
+        """ The command should update everyone field to True """
+        name = 'test'
+        flag = Flag.objects.create(name=name)
+        self.assertIsNone(flag.percent)
+        self.assertIsNone(flag.everyone)
+        self.assertTrue(flag.superusers)
+        self.assertFalse(flag.staff)
+        self.assertFalse(flag.authenticated)
+        self.assertFalse(flag.rollout)
+
+        percent = 30
         call_command('waffle_flag', name, everyone=True, percent=percent,
                      superusers=False, staff=True, authenticated=True,
                      rollout=True)
@@ -58,6 +82,30 @@ class WaffleFlagManagementCommandTests(TestCase):
         flag.refresh_from_db()
         self.assertEqual(flag.percent, percent)
         self.assertTrue(flag.everyone)
+        self.assertFalse(flag.superusers)
+        self.assertTrue(flag.staff)
+        self.assertTrue(flag.authenticated)
+        self.assertTrue(flag.rollout)
+
+    def test_update_deactivate_everyone(self):
+        """ The command should update everyone field to False"""
+        name = 'test'
+        flag = Flag.objects.create(name=name)
+        self.assertIsNone(flag.percent)
+        self.assertIsNone(flag.everyone)
+        self.assertTrue(flag.superusers)
+        self.assertFalse(flag.staff)
+        self.assertFalse(flag.authenticated)
+        self.assertFalse(flag.rollout)
+
+        percent = 30
+        call_command('waffle_flag', name, everyone=False, percent=percent,
+                     superusers=False, staff=True, authenticated=True,
+                     rollout=True)
+
+        flag.refresh_from_db()
+        self.assertEqual(flag.percent, percent)
+        self.assertFalse(flag.everyone)
         self.assertFalse(flag.superusers)
         self.assertTrue(flag.staff)
         self.assertTrue(flag.authenticated)
@@ -76,7 +124,7 @@ class WaffleFlagManagementCommandTests(TestCase):
         self.assertEqual(actual, expected)
 
     def test_group_append(self):
-        """ The command should append a group to a flag. """
+        """ The command should append a group to a flag."""
         original_group = Group.objects.create(name='waffle_group')
         Group.objects.create(name='append_group')
         flag = Flag.objects.create(name='test')
@@ -92,6 +140,7 @@ class WaffleFlagManagementCommandTests(TestCase):
         flag.refresh_from_db()
         self.assertEqual(list(flag.groups.values_list('name', flat=True)),
                          ['waffle_group', 'append_group'])
+        self.assertIsNone(flag.everyone)
 
 
 class WaffleSampleManagementCommandTests(TestCase):

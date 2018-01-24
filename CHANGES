@@ -2,6 +2,15 @@
 Waffle Changelog
 ================
 
+v0.13
+=====
+- Added support for Django 2.0.
+- Added support for search the name and notes fields in Django admin.
+- Fixed small bugs in management commands.
+- Fixed small documentation issues.
+- Updated `waffle_flag` management command to accept user groups.
+- Added setting `WAFFLE_READ_FROM_WRITE_DB` to read from write DB on cache miss.
+
 v0.12
 =====
 

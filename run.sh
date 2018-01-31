@@ -6,7 +6,7 @@ export DJANGO_SETTINGS_MODULE="test_settings"
 usage() {
     echo "USAGE: $0 [command]"
     echo "  test - run the waffle tests"
-    echo "  link - run flake8"
+    echo "  lint - run flake8"
     echo "  shell - open the Django shell"
     echo "  makemigrations - create a schema migration"
     exit 1

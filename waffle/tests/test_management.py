@@ -229,3 +229,53 @@ class WaffleSwitchManagementCommandTests(TestCase):
         expected = 'Switches:\nswitch1: on\nswitch2: off'
         actual = stdout.getvalue().strip()
         self.assertEqual(actual, expected)
+
+
+class WaffleDeleteManagementCommandTests(TestCase):
+    def test_delete_flag(self):
+        """ The command should delete a flag. """
+        name = 'test_flag'
+        Flag.objects.create(name=name)
+
+        call_command('waffle_delete', flag_names=[name])
+        self.assertEqual(Flag.objects.count(), 0)
+
+    def test_delete_swtich(self):
+        """ The command should delete a switch. """
+        name = 'test_switch'
+        Switch.objects.create(name=name)
+
+        call_command('waffle_delete', switch_names=[name])
+        self.assertEqual(Switch.objects.count(), 0)
+
+    def test_delete_sample(self):
+        """ The command should delete a sample. """
+        name = 'test_sample'
+        Sample.objects.create(name=name, percent=0)
+
+        call_command('waffle_delete', sample_names=[name])
+        self.assertEqual(Sample.objects.count(), 0)
+
+    def test_delete_mix_of_types(self):
+        """ The command should delete different types of records. """
+        name = 'test'
+        Flag.objects.create(name=name)
+        Switch.objects.create(name=name)
+        Sample.objects.create(name=name, percent=0)
+        call_command('waffle_delete', switch_names=[name], flag_names=[name],
+                     sample_names=[name])
+
+        self.assertEqual(Flag.objects.count(), 0)
+        self.assertEqual(Switch.objects.count(), 0)
+        self.assertEqual(Sample.objects.count(), 0)
+
+    def test_delete_some_but_not_all_records(self):
+        """ The command should delete specified records, but leave records
+        not specified alone. """
+        flag_1 = 'test_flag_1'
+        flag_2 = 'test_flag_2'
+        Flag.objects.create(name=flag_1)
+        Flag.objects.create(name=flag_2)
+
+        call_command('waffle_delete', flag_names=[flag_1])
+        self.assertTrue(Flag.objects.filter(name=flag_2).exists())

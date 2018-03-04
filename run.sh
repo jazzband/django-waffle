@@ -24,6 +24,12 @@ case "$CMD" in
         django-admin.py shell $@ ;;
     "makemigrations" )
         django-admin.py makemigrations waffle $@ ;;
+    "makemessages" )
+        export DJANGO_SETTINGS_MODULE= && cd waffle && django-admin.py makemessages && cd - ;;
+    "compilemessages" )
+        export DJANGO_SETTINGS_MODULE= && cd waffle && django-admin.py compilemessages && cd - ;;
+    "find_uncommitted_translations" )
+        git diff --exit-code -G "^(msgid|msgstr)" || (echo "Please run ./run.sh makemessages and commit the updated django.po file." && false) ;;
     * )
         usage ;;
 esac

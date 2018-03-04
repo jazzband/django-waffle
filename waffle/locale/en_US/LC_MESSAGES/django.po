@@ -1,0 +1,206 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-03-05 20:22-0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: admin.py:65
+msgid "Enable the selected switches."
+msgstr ""
+
+#: admin.py:66
+msgid "Disable the selected switches."
+msgstr ""
+
+#: models.py:124 models.py:349 models.py:400
+msgid "The human/computer readable name."
+msgstr ""
+
+#: models.py:125 models.py:350 models.py:401
+msgid "Name"
+msgstr ""
+
+#: models.py:130
+msgid ""
+"Flip this flag on (Yes) or off (No) for everyone, overriding all other "
+"settings. Leave as Unknown to use normally."
+msgstr ""
+
+#: models.py:132
+msgid "Everyone"
+msgstr ""
+
+#: models.py:139
+msgid ""
+"A number between 0.0 and 99.9 to indicate a percentage of users for whom "
+"this flag will be active."
+msgstr ""
+
+#: models.py:141 models.py:408
+msgid "Percent"
+msgstr ""
+
+#: models.py:145
+msgid "Allow this flag to be set for a session for user testing"
+msgstr ""
+
+#: models.py:146
+msgid "Testing"
+msgstr ""
+
+#: models.py:150
+msgid "Flag always active for superusers?"
+msgstr ""
+
+#: models.py:151
+msgid "Superusers"
+msgstr ""
+
+#: models.py:155
+msgid "Flag always active for staff?"
+msgstr ""
+
+#: models.py:156
+msgid "Staff"
+msgstr ""
+
+#: models.py:160
+msgid "Flag always active for authenticated users?"
+msgstr ""
+
+#: models.py:161
+msgid "Authenticated"
+msgstr ""
+
+#: models.py:166
+msgid ""
+"Activate this flag for users with one of these languages (comma-separated "
+"list)"
+msgstr ""
+
+#: models.py:167
+msgid "Languages"
+msgstr ""
+
+#: models.py:172
+msgid "Activate this flag for these user groups."
+msgstr ""
+
+#: models.py:173
+msgid "Groups"
+msgstr ""
+
+#: models.py:178
+msgid "Activate this flag for these users."
+msgstr ""
+
+#: models.py:179
+msgid "Users"
+msgstr ""
+
+#: models.py:183
+msgid "Activate roll-out mode?"
+msgstr ""
+
+#: models.py:184
+msgid "Rollout"
+msgstr ""
+
+#: models.py:188
+msgid "Note where this Flag is used."
+msgstr ""
+
+#: models.py:189 models.py:360 models.py:413
+msgid "Note"
+msgstr ""
+
+#: models.py:194
+msgid "Date when this Flag was created."
+msgstr ""
+
+#: models.py:195 models.py:366 models.py:419
+msgid "Created"
+msgstr ""
+
+#: models.py:199
+msgid "Date when this Flag was last modified."
+msgstr ""
+
+#: models.py:200 models.py:371 models.py:424
+msgid "Modified"
+msgstr ""
+
+#: models.py:209
+msgid "Flag"
+msgstr ""
+
+#: models.py:210
+msgid "Flags"
+msgstr ""
+
+#: models.py:354
+msgid "Is this switch active?"
+msgstr ""
+
+#: models.py:355
+msgid "Active"
+msgstr ""
+
+#: models.py:359
+msgid "Note where this Switch is used."
+msgstr ""
+
+#: models.py:365
+msgid "Date when this Switch was created."
+msgstr ""
+
+#: models.py:370
+msgid "Date when this Switch was last modified."
+msgstr ""
+
+#: models.py:380
+msgid "Switch"
+msgstr ""
+
+#: models.py:381
+msgid "Switches"
+msgstr ""
+
+#: models.py:406
+msgid ""
+"A number between 0.0 and 100.0 to indicate a percentage of the time this "
+"sample will be active."
+msgstr ""
+
+#: models.py:412
+msgid "Note where this Sample is used."
+msgstr ""
+
+#: models.py:418
+msgid "Date when this Sample was created."
+msgstr ""
+
+#: models.py:423
+msgid "Date when this Sample was last modified."
+msgstr ""
+
+#: models.py:433
+msgid "Sample"
+msgstr ""
+
+#: models.py:434
+msgid "Samples"
+msgstr ""

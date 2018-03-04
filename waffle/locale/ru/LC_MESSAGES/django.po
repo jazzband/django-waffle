@@ -1,0 +1,216 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-03-05 20:22-0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Kostya Esmukov <kostya@esmukov.ru>, 2018\n"
+"Language-Team: Russian (https://www.transifex.com/django-waffle/teams/84077/ru/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ru\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);\n"
+
+#: admin.py:65
+msgid "Enable the selected switches."
+msgstr "Включить выбранные Тумблеры."
+
+#: admin.py:66
+msgid "Disable the selected switches."
+msgstr "Выключить выбранные Тумблеры."
+
+#: models.py:124 models.py:349 models.py:400
+msgid "The human/computer readable name."
+msgstr "Человеко-/машиночитаемое имя."
+
+#: models.py:125 models.py:350 models.py:401
+msgid "Name"
+msgstr "Имя"
+
+#: models.py:130
+msgid ""
+"Flip this flag on (Yes) or off (No) for everyone, overriding all other "
+"settings. Leave as Unknown to use normally."
+msgstr ""
+"Включить (Да) или Выключить (Нет) Флаг для всех, перекрывая все остальные "
+"настройки. Оставьте как Неизвестно, чтобы использовать обычный режим работы "
+"Флага."
+
+#: models.py:132
+msgid "Everyone"
+msgstr "Переопределение для всех"
+
+#: models.py:139
+msgid ""
+"A number between 0.0 and 99.9 to indicate a percentage of users for whom "
+"this flag will be active."
+msgstr ""
+"Число в интервале от 0.0 до 99.9, указывающее процент пользователей, для "
+"которых этот Флаг будет активен."
+
+#: models.py:141 models.py:408
+msgid "Percent"
+msgstr "Процент"
+
+#: models.py:145
+msgid "Allow this flag to be set for a session for user testing"
+msgstr "Разрешить включение этого Флага со стороны пользователя"
+
+#: models.py:146
+msgid "Testing"
+msgstr "Режим тестирования"
+
+#: models.py:150
+msgid "Flag always active for superusers?"
+msgstr "Флаг всегда активен для суперпользователей?"
+
+#: models.py:151
+msgid "Superusers"
+msgstr "Суперпользователи"
+
+#: models.py:155
+msgid "Flag always active for staff?"
+msgstr "Флаг всегда активен для персонала?"
+
+#: models.py:156
+msgid "Staff"
+msgstr "Персонал"
+
+#: models.py:160
+msgid "Flag always active for authenticated users?"
+msgstr "Флаг всегда активен для аутентифицированных пользователей?"
+
+#: models.py:161
+msgid "Authenticated"
+msgstr "Аутентифицированные пользователи"
+
+#: models.py:166
+msgid ""
+"Activate this flag for users with one of these languages (comma-separated "
+"list)"
+msgstr ""
+"Включить этот Флаг для пользователей с одним из перечисленных (через "
+"запятую) языков"
+
+#: models.py:167
+msgid "Languages"
+msgstr "Языки"
+
+#: models.py:172
+msgid "Activate this flag for these user groups."
+msgstr "Включить этот Флаг для этих пользовательских групп."
+
+#: models.py:173
+msgid "Groups"
+msgstr "Группы"
+
+#: models.py:178
+msgid "Activate this flag for these users."
+msgstr "Включить этот Флаг для этих пользователей."
+
+#: models.py:179
+msgid "Users"
+msgstr "Пользователи"
+
+#: models.py:183
+msgid "Activate roll-out mode?"
+msgstr "Активировать режим выкатки?"
+
+#: models.py:184
+msgid "Rollout"
+msgstr "Режим выкатки"
+
+#: models.py:188
+msgid "Note where this Flag is used."
+msgstr "Примечание о том, где используется этот Флаг."
+
+#: models.py:189 models.py:360 models.py:413
+msgid "Note"
+msgstr "Примечание"
+
+#: models.py:194
+msgid "Date when this Flag was created."
+msgstr "Дата создания этого Флага."
+
+#: models.py:195 models.py:366 models.py:419
+msgid "Created"
+msgstr "Создан"
+
+#: models.py:199
+msgid "Date when this Flag was last modified."
+msgstr "Дата последнего изменения этого Флага."
+
+#: models.py:200 models.py:371 models.py:424
+msgid "Modified"
+msgstr "Изменён"
+
+#: models.py:209
+msgid "Flag"
+msgstr "Флаг"
+
+#: models.py:210
+msgid "Flags"
+msgstr "Флаги"
+
+#: models.py:354
+msgid "Is this switch active?"
+msgstr "Тумблер включен?"
+
+#: models.py:355
+msgid "Active"
+msgstr "Включён"
+
+#: models.py:359
+msgid "Note where this Switch is used."
+msgstr "Примечание о том, где используется этот Тумблер."
+
+#: models.py:365
+msgid "Date when this Switch was created."
+msgstr "Дата создания этого Тумблера."
+
+#: models.py:370
+msgid "Date when this Switch was last modified."
+msgstr "Дата последнего изменения этого Тумблера."
+
+#: models.py:380
+msgid "Switch"
+msgstr "Тумблер"
+
+#: models.py:381
+msgid "Switches"
+msgstr "Тумблеры"
+
+#: models.py:406
+msgid ""
+"A number between 0.0 and 100.0 to indicate a percentage of the time this "
+"sample will be active."
+msgstr ""
+"Число в интервале от 0.0 до 100.0, указывающее процент проверок, в который "
+"эта Проба будет активной."
+
+#: models.py:412
+msgid "Note where this Sample is used."
+msgstr "Примечание о том, где используется эта Проба."
+
+#: models.py:418
+msgid "Date when this Sample was created."
+msgstr "Дата создания этой Пробы."
+
+#: models.py:423
+msgid "Date when this Sample was last modified."
+msgstr "Дата последнего изменения этой Пробы."
+
+#: models.py:433
+msgid "Sample"
+msgstr "Проба"
+
+#: models.py:434
+msgid "Samples"
+msgstr "Пробы"

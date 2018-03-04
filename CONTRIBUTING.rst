@@ -61,6 +61,7 @@ To be mergable, patches must:
 - add tests for new code (bug fixes should include regression tests, new
   features should have relevant tests),
 - not introduce any new flake8_ errors (run ``./run.sh lint``),
+- include updated source translations (run ``./run.sh makemessages`` and ``./run.sh compilemessages``),
 - document any new features, and
 - have a `good commit message`_.
 

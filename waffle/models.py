@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 
-from decimal import Decimal
 import random
+from decimal import Decimal
 
 try:
     from django.utils import timezone as datetime
@@ -11,12 +11,11 @@ except ImportError:
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.db import models, router
-from django.db.models.signals import post_save, post_delete, m2m_changed
 from django.utils.encoding import python_2_unicode_compatible
+from django.utils.translation import ugettext_lazy as _
 
 from waffle import managers
 from waffle.utils import get_setting, keyfmt, get_cache, is_authenticated
-
 
 cache = get_cache()
 CACHE_EMPTY = '-'
@@ -119,48 +118,96 @@ class Flag(BaseModel):
 
     """
 
-    name = models.CharField(max_length=100, unique=True,
-                            help_text='The human/computer readable name.')
-    everyone = models.NullBooleanField(blank=True, help_text=(
-        'Flip this flag on (Yes) or off (No) for everyone, overriding all '
-        'other settings. Leave as Unknown to use normally.'))
+    name = models.CharField(
+        max_length=100,
+        unique=True,
+        help_text=_('The human/computer readable name.'),
+        verbose_name=_('Name'),
+    )
+    everyone = models.NullBooleanField(
+        blank=True,
+        help_text=_(
+            'Flip this flag on (Yes) or off (No) for everyone, overriding all '
+            'other settings. Leave as Unknown to use normally.'),
+        verbose_name=_('Everyone'),
+    )
     percent = models.DecimalField(
-        max_digits=3, decimal_places=1, null=True, blank=True,
-        help_text=('A number between 0.0 and 99.9 to indicate a percentage of '
-                   'users for whom this flag will be active.')
+        max_digits=3,
+        decimal_places=1,
+        null=True,
+        blank=True,
+        help_text=_('A number between 0.0 and 99.9 to indicate a percentage of '
+                    'users for whom this flag will be active.'),
+        verbose_name=_('Percent'),
     )
-    testing = models.BooleanField(default=False, help_text=(
-        'Allow this flag to be set for a session for user testing.'))
-    superusers = models.BooleanField(default=True, help_text=(
-        'Flag always active for superusers?'))
-    staff = models.BooleanField(default=False, help_text=(
-        'Flag always active for staff?'))
-    authenticated = models.BooleanField(default=False, help_text=(
-        'Flag always active for authenticate users?'))
-    languages = models.TextField(blank=True, default='', help_text=(
-        'Activate this flag for users with one of these languages (comma '
-        'separated list)'))
-    groups = models.ManyToManyField(Group, blank=True, help_text=(
-        'Activate this flag for these user groups.'))
+    testing = models.BooleanField(
+        default=False,
+        help_text=_('Allow this flag to be set for a session for user testing'),
+        verbose_name=_('Testing'),
+    )
+    superusers = models.BooleanField(
+        default=True,
+        help_text=_('Flag always active for superusers?'),
+        verbose_name=_('Superusers'),
+    )
+    staff = models.BooleanField(
+        default=False,
+        help_text=_('Flag always active for staff?'),
+        verbose_name=_('Staff'),
+    )
+    authenticated = models.BooleanField(
+        default=False,
+        help_text=_('Flag always active for authenticated users?'),
+        verbose_name=_('Authenticated'),
+    )
+    languages = models.TextField(
+        blank=True,
+        default='',
+        help_text=_('Activate this flag for users with one of these languages (comma-separated list)'),
+        verbose_name=_('Languages'),
+    )
+    groups = models.ManyToManyField(
+        Group,
+        blank=True,
+        help_text=_('Activate this flag for these user groups.'),
+        verbose_name=_('Groups'),
+    )
     users = models.ManyToManyField(
-        settings.AUTH_USER_MODEL, blank=True,
-        help_text=('Activate this flag for these users.')
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        help_text=_('Activate this flag for these users.'),
+        verbose_name=_('Users'),
     )
-    rollout = models.BooleanField(default=False, help_text=(
-        'Activate roll-out mode?'))
-    note = models.TextField(blank=True, help_text=(
-        'Note where this Flag is used.'))
+    rollout = models.BooleanField(
+        default=False,
+        help_text=_('Activate roll-out mode?'),
+        verbose_name=_('Rollout'),
+    )
+    note = models.TextField(
+        blank=True,
+        help_text=_('Note where this Flag is used.'),
+        verbose_name=_('Note'),
+    )
     created = models.DateTimeField(
-        default=datetime.now, db_index=True,
-        help_text=('Date when this Flag was created.')
+        default=datetime.now,
+        db_index=True,
+        help_text=_('Date when this Flag was created.'),
+        verbose_name=_('Created'),
     )
-    modified = models.DateTimeField(default=datetime.now, help_text=(
-        'Date when this Flag was last modified.'))
+    modified = models.DateTimeField(
+        default=datetime.now,
+        help_text=_('Date when this Flag was last modified.'),
+        verbose_name=_('Modified'),
+    )
 
     objects = managers.FlagManager()
 
     SINGLE_CACHE_KEY = 'FLAG_CACHE_KEY'
     ALL_CACHE_KEY = 'ALL_FLAGS_CACHE_KEY'
+
+    class Meta:
+        verbose_name = _('Flag')
+        verbose_name_plural = _('Flags')
 
     def flush(self):
         keys = [
@@ -296,18 +343,33 @@ class Switch(BaseModel):
 
     """
 
-    name = models.CharField(max_length=100, unique=True,
-                            help_text='The human/computer readable name.')
-    active = models.BooleanField(default=False, help_text=(
-        'Is this switch active?'))
-    note = models.TextField(blank=True, help_text=(
-        'Note where this Switch is used.'))
-    created = models.DateTimeField(
-        default=datetime.now, db_index=True,
-        help_text=('Date when this Switch was created.')
+    name = models.CharField(
+        max_length=100,
+        unique=True,
+        help_text=_('The human/computer readable name.'),
+        verbose_name=_('Name'),
     )
-    modified = models.DateTimeField(default=datetime.now, help_text=(
-        'Date when this Switch was last modified.'))
+    active = models.BooleanField(
+        default=False,
+        help_text=_('Is this switch active?'),
+        verbose_name=_('Active'),
+    )
+    note = models.TextField(
+        blank=True,
+        help_text=_('Note where this Switch is used.'),
+        verbose_name=_('Note'),
+    )
+    created = models.DateTimeField(
+        default=datetime.now,
+        db_index=True,
+        help_text=_('Date when this Switch was created.'),
+        verbose_name=_('Created'),
+    )
+    modified = models.DateTimeField(
+        default=datetime.now,
+        help_text=_('Date when this Switch was last modified.'),
+        verbose_name=_('Modified'),
+    )
 
     objects = managers.SwitchManager()
 
@@ -315,7 +377,8 @@ class Switch(BaseModel):
     ALL_CACHE_KEY = 'ALL_SWITCHES_CACHE_KEY'
 
     class Meta:
-        verbose_name_plural = 'Switches'
+        verbose_name = _('Switch')
+        verbose_name_plural = _('Switches')
 
     def is_active(self):
         if not self.pk:
@@ -331,24 +394,44 @@ class Sample(BaseModel):
 
     """
 
-    name = models.CharField(max_length=100, unique=True,
-                            help_text='The human/computer readable name.')
-    percent = models.DecimalField(max_digits=4, decimal_places=1, help_text=(
-        'A number between 0.0 and 100.0 to indicate a percentage of the time '
-        'this sample will be active.'))
-    note = models.TextField(blank=True, help_text=(
-        'Note where this Sample is used.'))
-    created = models.DateTimeField(
-        default=datetime.now, db_index=True,
-        help_text=('Date when this Sample was created.')
+    name = models.CharField(
+        max_length=100,
+        unique=True,
+        help_text=_('The human/computer readable name.'),
+        verbose_name=_('Name'),
     )
-    modified = models.DateTimeField(default=datetime.now, help_text=(
-        'Date when this Sample was last modified.'))
+    percent = models.DecimalField(
+        max_digits=4,
+        decimal_places=1,
+        help_text=_('A number between 0.0 and 100.0 to indicate a percentage of the time '
+                    'this sample will be active.'),
+        verbose_name=_('Percent'),
+    )
+    note = models.TextField(
+        blank=True,
+        help_text=_('Note where this Sample is used.'),
+        verbose_name=_('Note'),
+    )
+    created = models.DateTimeField(
+        default=datetime.now,
+        db_index=True,
+        help_text=_('Date when this Sample was created.'),
+        verbose_name=_('Created'),
+    )
+    modified = models.DateTimeField(
+        default=datetime.now,
+        help_text=_('Date when this Sample was last modified.'),
+        verbose_name=_('Modified'),
+    )
 
     objects = managers.SampleManager()
 
     SINGLE_CACHE_KEY = 'SAMPLE_CACHE_KEY'
     ALL_CACHE_KEY = 'ALL_SAMPLES_CACHE_KEY'
+
+    class Meta:
+        verbose_name = _('Sample')
+        verbose_name_plural = _('Samples')
 
     def is_active(self):
         if not self.pk:

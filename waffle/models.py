@@ -3,19 +3,15 @@ from __future__ import unicode_literals
 import random
 from decimal import Decimal
 
-try:
-    from django.utils import timezone as datetime
-except ImportError:
-    from datetime import datetime
-
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.db import models, router
+from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
 from waffle import managers
-from waffle.utils import get_setting, keyfmt, get_cache, is_authenticated
+from waffle.utils import get_setting, keyfmt, get_cache
 
 cache = get_cache()
 CACHE_EMPTY = '-'
@@ -93,7 +89,7 @@ class BaseModel(models.Model):
         cache.delete_many(keys)
 
     def save(self, *args, **kwargs):
-        self.modified = datetime.now()
+        self.modified = timezone.now()
         ret = super(BaseModel, self).save(*args, **kwargs)
         self.flush()
         return ret
@@ -189,13 +185,13 @@ class Flag(BaseModel):
         verbose_name=_('Note'),
     )
     created = models.DateTimeField(
-        default=datetime.now,
+        default=timezone.now,
         db_index=True,
         help_text=_('Date when this Flag was created.'),
         verbose_name=_('Created'),
     )
     modified = models.DateTimeField(
-        default=datetime.now,
+        default=timezone.now,
         help_text=_('Date when this Flag was last modified.'),
         verbose_name=_('Modified'),
     )
@@ -251,9 +247,7 @@ class Flag(BaseModel):
         return group_ids
 
     def is_active_for_user(self, user):
-        authed = is_authenticated(user)
-
-        if self.authenticated and authed:
+        if self.authenticated and user.is_authenticated:
             return True
 
         if self.staff and getattr(user, 'is_staff', False):
@@ -360,13 +354,13 @@ class Switch(BaseModel):
         verbose_name=_('Note'),
     )
     created = models.DateTimeField(
-        default=datetime.now,
+        default=timezone.now,
         db_index=True,
         help_text=_('Date when this Switch was created.'),
         verbose_name=_('Created'),
     )
     modified = models.DateTimeField(
-        default=datetime.now,
+        default=timezone.now,
         help_text=_('Date when this Switch was last modified.'),
         verbose_name=_('Modified'),
     )
@@ -413,13 +407,13 @@ class Sample(BaseModel):
         verbose_name=_('Note'),
     )
     created = models.DateTimeField(
-        default=datetime.now,
+        default=timezone.now,
         db_index=True,
         help_text=_('Date when this Sample was created.'),
         verbose_name=_('Created'),
     )
     modified = models.DateTimeField(
-        default=datetime.now,
+        default=timezone.now,
         help_text=_('Date when this Sample was last modified.'),
         verbose_name=_('Modified'),
     )

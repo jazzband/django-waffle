@@ -3,12 +3,9 @@ from __future__ import unicode_literals
 from functools import wraps
 
 from django.http import Http404
-from django.utils.decorators import available_attrs
-try:
-    from django.urls import reverse, NoReverseMatch
-except ImportError:
-    from django.core.urlresolvers import reverse, NoReverseMatch
 from django.shortcuts import redirect
+from django.urls import reverse, NoReverseMatch
+from django.utils.decorators import available_attrs
 
 from waffle import flag_is_active, switch_is_active
 

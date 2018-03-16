@@ -29,11 +29,3 @@ def keyfmt(k, v=None):
 def get_cache():
     CACHE_NAME = get_setting('CACHE_NAME')
     return caches[CACHE_NAME]
-
-
-if django.VERSION >= (1, 10):
-    def is_authenticated(user):
-        return user.is_authenticated
-else:
-    def is_authenticated(user):
-        return user.is_authenticated()

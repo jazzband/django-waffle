@@ -1,16 +1,11 @@
 import os
-import django
-from distutils.version import StrictVersion
 
-
-DJANGO_VERSION = StrictVersion(django.get_version())
 
 # Make filepaths relative to settings.
 ROOT = os.path.dirname(os.path.abspath(__file__))
 path = lambda *a: os.path.join(ROOT, *a)
 
 DEBUG = True
-TEMPLATE_DEBUG = True
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 JINJA_CONFIG = {}
@@ -43,18 +38,13 @@ INSTALLED_APPS = (
     'test_app',
 )
 
-_MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'waffle.middleware.WaffleMiddleware',
 )
 
-
-if DJANGO_VERSION < StrictVersion('1.10.0'):
-    MIDDLEWARE_CLASSES = _MIDDLEWARE_CLASSES
-else:
-    MIDDLEWARE = _MIDDLEWARE_CLASSES
 
 ROOT_URLCONF = 'test_app.urls'
 

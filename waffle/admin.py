@@ -36,9 +36,9 @@ def delete_individually(ma, request, qs):
         f.delete()
 
 
-enable_for_all.short_description = 'Enable selected flags for everyone.'
-disable_for_all.short_description = 'Disable selected flags for everyone.'
-delete_individually.short_description = 'Delete selected.'
+enable_for_all.short_description = 'Enable selected flags for everyone'
+disable_for_all.short_description = 'Disable selected flags for everyone'
+delete_individually.short_description = 'Delete selected'
 
 
 class FlagAdmin(BaseAdmin):

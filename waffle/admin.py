@@ -36,9 +36,9 @@ def delete_individually(ma, request, qs):
         f.delete()
 
 
-enable_for_all.short_description = 'Enable selected flags for everyone'
-disable_for_all.short_description = 'Disable selected flags for everyone'
-delete_individually.short_description = 'Delete selected'
+enable_for_all.short_description = _('Enable selected flags for everyone')
+disable_for_all.short_description = _('Disable selected flags for everyone')
+delete_individually.short_description = _('Delete selected')
 
 
 class FlagAdmin(BaseAdmin):
@@ -62,8 +62,8 @@ def disable_switches(ma, request, qs):
         switch.save()
 
 
-enable_switches.short_description = _('Enable the selected switches.')
-disable_switches.short_description = _('Disable the selected switches.')
+enable_switches.short_description = _('Enable selected switches')
+disable_switches.short_description = _('Disable selected switches')
 
 
 class SwitchAdmin(BaseAdmin):

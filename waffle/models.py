@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 import random
 from decimal import Decimal
+import logging
 
 from django.conf import settings
 from django.contrib.auth.models import Group
@@ -12,6 +13,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from waffle import managers
 from waffle.utils import get_setting, keyfmt, get_cache
+
+logger = logging.getLogger('waffle')
 
 cache = get_cache()
 CACHE_EMPTY = '-'
@@ -37,6 +40,7 @@ class BaseModel(models.Model):
         cache_key = cls._cache_key(name)
         cached = cache.get(cache_key)
         if cached == CACHE_EMPTY:
+            logger.warning("%s: %s does not exist", cls.__name__, name)
             return cls()
         if cached:
             return cached

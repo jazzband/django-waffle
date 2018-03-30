@@ -11,6 +11,9 @@ cache = get_cache()
 class BaseManager(models.Manager):
     KEY_SETTING = ''
 
+    def get_by_natural_key(self, name):
+        return self.get(name=name)
+
     def create(self, *args, **kwargs):
         ret = super(BaseManager, self).create(*args, **kwargs)
         cache_key = get_setting(self.KEY_SETTING)

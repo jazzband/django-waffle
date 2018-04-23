@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from waffle.utils import get_cache, get_setting, keyfmt
+from waffle.helpers import waffle_flag_call, waffle_switch_call
 
 VERSION = (0, 13, 0)
 __version__ = '.'.join(map(str, VERSION))

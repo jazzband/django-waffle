@@ -2,8 +2,11 @@ from __future__ import unicode_literals
 
 from django.urls import reverse
 
-from waffle.models import Flag, Sample, Switch
+from waffle import get_waffle_flag_model
+from waffle.models import Sample, Switch
 from waffle.tests.base import TestCase
+
+Flag = get_waffle_flag_model()
 
 
 class WaffleViewTests(TestCase):

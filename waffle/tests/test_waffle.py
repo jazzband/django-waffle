@@ -11,9 +11,12 @@ import mock
 
 import waffle
 from test_app import views
+from waffle import get_waffle_flag_model
 from waffle.middleware import WaffleMiddleware
-from waffle.models import Flag, Sample, Switch
+from waffle.models import Sample, Switch
 from waffle.tests.base import TestCase
+
+Flag = get_waffle_flag_model()
 
 
 def get(**kw):

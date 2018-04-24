@@ -41,11 +41,14 @@ disable_for_all.short_description = _('Disable selected flags for everyone')
 delete_individually.short_description = _('Delete selected')
 
 
-class FlagAdmin(BaseAdmin):
+class AbstractFlagAdmin(BaseAdmin):
     actions = [enable_for_all, disable_for_all, delete_individually]
     list_display = ('name', 'note', 'everyone', 'percent', 'superusers',
                     'staff', 'authenticated', 'languages')
     list_filter = ('everyone', 'superusers', 'staff', 'authenticated')
+    ordering = ('-id',)
+
+class FlagAdmin(AbstractFlagAdmin):
     raw_id_fields = ('users', 'groups')
     ordering = ('-id',)
 

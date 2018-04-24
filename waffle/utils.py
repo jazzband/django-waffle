@@ -10,11 +10,20 @@ import waffle
 from waffle import defaults
 
 
-def get_setting(name):
+def get_setting(name, more_defaults=None):
+    """
+    :param name: Name of WAFFLE_* setting (value of *) to get from settings or waffle.defaults
+    :param more_defaults: additional app-defined defaults
+    :return: the setting value
+    """
     try:
         return getattr(settings, 'WAFFLE_' + name)
     except AttributeError:
-        return getattr(defaults, name)
+        try:
+            return getattr(defaults, name)
+        except AttributeError:
+            more_defaults = more_defaults or {}
+            return more_defaults[name]
 
 
 def keyfmt(k, v=None):

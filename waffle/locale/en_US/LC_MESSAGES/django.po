@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-03-21 09:17-0400\n"
+"POT-Creation-Date: 2018-04-24 15:31-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,190 +29,190 @@ msgstr ""
 msgid "Delete selected"
 msgstr ""
 
-#: admin.py:65
+#: admin.py:68
 msgid "Enable selected switches"
 msgstr ""
 
-#: admin.py:66
+#: admin.py:69
 msgid "Disable selected switches"
 msgstr ""
 
-#: models.py:120 models.py:343 models.py:394
+#: models.py:123 models.py:377 models.py:428
 msgid "The human/computer readable name."
 msgstr ""
 
-#: models.py:121 models.py:344 models.py:395
+#: models.py:124 models.py:378 models.py:429
 msgid "Name"
 msgstr ""
 
-#: models.py:126
+#: models.py:129
 msgid ""
 "Flip this flag on (Yes) or off (No) for everyone, overriding all other "
 "settings. Leave as Unknown to use normally."
 msgstr ""
 
-#: models.py:128
+#: models.py:131
 msgid "Everyone"
 msgstr ""
 
-#: models.py:135
+#: models.py:138
 msgid ""
 "A number between 0.0 and 99.9 to indicate a percentage of users for whom "
 "this flag will be active."
 msgstr ""
 
-#: models.py:137 models.py:402
+#: models.py:140 models.py:436
 msgid "Percent"
 msgstr ""
 
-#: models.py:141
+#: models.py:144
 msgid "Allow this flag to be set for a session for user testing"
 msgstr ""
 
-#: models.py:142
+#: models.py:145
 msgid "Testing"
 msgstr ""
 
-#: models.py:146
+#: models.py:149
 msgid "Flag always active for superusers?"
 msgstr ""
 
-#: models.py:147
+#: models.py:150
 msgid "Superusers"
 msgstr ""
 
-#: models.py:151
+#: models.py:154
 msgid "Flag always active for staff?"
 msgstr ""
 
-#: models.py:152
+#: models.py:155
 msgid "Staff"
 msgstr ""
 
-#: models.py:156
+#: models.py:159
 msgid "Flag always active for authenticated users?"
 msgstr ""
 
-#: models.py:157
+#: models.py:160
 msgid "Authenticated"
 msgstr ""
 
-#: models.py:162
+#: models.py:165
 msgid ""
 "Activate this flag for users with one of these languages (comma-separated "
 "list)"
 msgstr ""
 
-#: models.py:163
+#: models.py:166
 msgid "Languages"
 msgstr ""
 
-#: models.py:168
-msgid "Activate this flag for these user groups."
-msgstr ""
-
-#: models.py:169
-msgid "Groups"
-msgstr ""
-
-#: models.py:174
-msgid "Activate this flag for these users."
-msgstr ""
-
-#: models.py:175
-msgid "Users"
-msgstr ""
-
-#: models.py:179
+#: models.py:170
 msgid "Activate roll-out mode?"
 msgstr ""
 
-#: models.py:180
+#: models.py:171
 msgid "Rollout"
 msgstr ""
 
-#: models.py:184
+#: models.py:175
 msgid "Note where this Flag is used."
 msgstr ""
 
-#: models.py:185 models.py:354 models.py:407
+#: models.py:176 models.py:388 models.py:441
 msgid "Note"
 msgstr ""
 
-#: models.py:190
+#: models.py:181
 msgid "Date when this Flag was created."
 msgstr ""
 
-#: models.py:191 models.py:360 models.py:413
+#: models.py:182 models.py:394 models.py:447
 msgid "Created"
 msgstr ""
 
-#: models.py:195
+#: models.py:186
 msgid "Date when this Flag was last modified."
 msgstr ""
 
-#: models.py:196 models.py:365 models.py:418
+#: models.py:187 models.py:399 models.py:452
 msgid "Modified"
 msgstr ""
 
-#: models.py:205
+#: models.py:196
 msgid "Flag"
 msgstr ""
 
-#: models.py:206
+#: models.py:197
 msgid "Flags"
 msgstr ""
 
-#: models.py:348
+#: models.py:292
+msgid "Activate this flag for these user groups."
+msgstr ""
+
+#: models.py:293
+msgid "Groups"
+msgstr ""
+
+#: models.py:298
+msgid "Activate this flag for these users."
+msgstr ""
+
+#: models.py:299
+msgid "Users"
+msgstr ""
+
+#: models.py:382
 msgid "Is this switch active?"
 msgstr ""
 
-#: models.py:349
+#: models.py:383
 msgid "Active"
 msgstr ""
 
-#: models.py:353
+#: models.py:387
 msgid "Note where this Switch is used."
 msgstr ""
 
-#: models.py:359
+#: models.py:393
 msgid "Date when this Switch was created."
 msgstr ""
 
-#: models.py:364
+#: models.py:398
 msgid "Date when this Switch was last modified."
 msgstr ""
 
-#: models.py:374
+#: models.py:408
 msgid "Switch"
 msgstr ""
 
-#: models.py:375
+#: models.py:409
 msgid "Switches"
 msgstr ""
 
-#: models.py:400
+#: models.py:434
 msgid ""
 "A number between 0.0 and 100.0 to indicate a percentage of the time this "
 "sample will be active."
 msgstr ""
 
-#: models.py:406
+#: models.py:440
 msgid "Note where this Sample is used."
 msgstr ""
 
-#: models.py:412
+#: models.py:446
 msgid "Date when this Sample was created."
 msgstr ""
 
-#: models.py:417
+#: models.py:451
 msgid "Date when this Sample was last modified."
 msgstr ""
 
-#: models.py:427
+#: models.py:461
 msgid "Sample"
 msgstr ""
 
-#: models.py:428
+#: models.py:462
 msgid "Samples"
 msgstr ""

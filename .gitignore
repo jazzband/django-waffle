@@ -12,3 +12,6 @@ dist
 .tox/
 .DS_Store
 docs/_*
+
+# Visual Studio Code config files
+.vscode

@@ -2,7 +2,8 @@ from __future__ import print_function
 
 from django.core.management.base import BaseCommand
 
-from waffle.models import Flag, Sample, Switch
+from waffle import get_waffle_flag_model
+from waffle.models import Sample, Switch
 
 
 class Command(BaseCommand):
@@ -31,7 +32,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         flags = options['flag_names']
         if flags:
-            flag_queryset = Flag.objects.filter(name__in=flags)
+            flag_queryset = get_waffle_flag_model().objects.filter(name__in=flags)
             flag_count = flag_queryset.count()
             flag_queryset.delete()
             self.stdout.write('Deleted %s Flags' % flag_count)

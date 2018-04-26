@@ -114,13 +114,12 @@ def set_flag(request, flag_name, active=True, session_only=False):
     request.waffles[flag_name] = [active, session_only]
 
 
-class Flag(BaseModel):
+class AbstractBaseFlag(BaseModel):
     """A feature flag.
 
     Flags are active (or not) on a per-request basis.
 
     """
-
     name = models.CharField(
         max_length=100,
         unique=True,
@@ -169,18 +168,6 @@ class Flag(BaseModel):
         help_text=_('Activate this flag for users with one of these languages (comma-separated list)'),
         verbose_name=_('Languages'),
     )
-    groups = models.ManyToManyField(
-        Group,
-        blank=True,
-        help_text=_('Activate this flag for these user groups.'),
-        verbose_name=_('Groups'),
-    )
-    users = models.ManyToManyField(
-        settings.AUTH_USER_MODEL,
-        blank=True,
-        help_text=_('Activate this flag for these users.'),
-        verbose_name=_('Users'),
-    )
     rollout = models.BooleanField(
         default=False,
         help_text=_('Activate roll-out mode?'),
@@ -209,49 +196,21 @@ class Flag(BaseModel):
     ALL_CACHE_KEY = 'ALL_FLAGS_CACHE_KEY'
 
     class Meta:
+        abstract = True
         verbose_name = _('Flag')
         verbose_name_plural = _('Flags')
 
     def flush(self):
-        keys = [
-            self._cache_key(self.name),
-            keyfmt(get_setting('FLAG_USERS_CACHE_KEY'), self.name),
-            keyfmt(get_setting('FLAG_GROUPS_CACHE_KEY'), self.name),
-            get_setting('ALL_FLAGS_CACHE_KEY'),
-        ]
+        keys = self.get_flush_keys()
         cache.delete_many(keys)
 
-    def _get_user_ids(self):
-        cache_key = keyfmt(get_setting('FLAG_USERS_CACHE_KEY'), self.name)
-        cached = cache.get(cache_key)
-        if cached == CACHE_EMPTY:
-            return set()
-        if cached:
-            return cached
-
-        user_ids = set(self.users.all().values_list('pk', flat=True))
-        if not user_ids:
-            cache.add(cache_key, CACHE_EMPTY)
-            return set()
-
-        cache.add(cache_key, user_ids)
-        return user_ids
-
-    def _get_group_ids(self):
-        cache_key = keyfmt(get_setting('FLAG_GROUPS_CACHE_KEY'), self.name)
-        cached = cache.get(cache_key)
-        if cached == CACHE_EMPTY:
-            return set()
-        if cached:
-            return cached
-
-        group_ids = set(self.groups.all().values_list('pk', flat=True))
-        if not group_ids:
-            cache.add(cache_key, CACHE_EMPTY)
-            return set()
-
-        cache.add(cache_key, group_ids)
-        return group_ids
+    def get_flush_keys(self, flush_keys=None):
+        flush_keys = flush_keys or []
+        flush_keys.extend([
+            self._cache_key(self.name),
+            get_setting('ALL_FLAGS_CACHE_KEY'),
+        ])
+        return flush_keys
 
     def is_active_for_user(self, user):
         if self.authenticated and user.is_authenticated:
@@ -263,15 +222,6 @@ class Flag(BaseModel):
         if self.superusers and getattr(user, 'is_superuser', False):
             return True
 
-        user_ids = self._get_user_ids()
-        if hasattr(user, 'pk') and user.pk in user_ids:
-            return True
-
-        if hasattr(user, 'groups'):
-            group_ids = self._get_group_ids()
-            user_groups = set(user.groups.all().values_list('pk', flat=True))
-            if group_ids.intersection(user_groups):
-                return True
         return None
 
     def _is_active_for_user(self, request):
@@ -335,6 +285,95 @@ class Flag(BaseModel):
             set_flag(request, self.name, False, self.rollout)
 
         return False
+
+
+class AbstractUserFlag(AbstractBaseFlag):
+    groups = models.ManyToManyField(
+        Group,
+        blank=True,
+        help_text=_('Activate this flag for these user groups.'),
+        verbose_name=_('Groups'),
+    )
+    users = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        help_text=_('Activate this flag for these users.'),
+        verbose_name=_('Users'),
+    )
+
+    class Meta(AbstractBaseFlag.Meta):
+        abstract = True
+        verbose_name = _('Flag')
+        verbose_name_plural = _('Flags')
+
+    def get_flush_keys(self, flush_keys=None):
+        flush_keys = super(AbstractUserFlag, self).get_flush_keys(flush_keys)
+        flush_keys.extend([
+            keyfmt(get_setting('FLAG_USERS_CACHE_KEY'), self.name),
+            keyfmt(get_setting('FLAG_GROUPS_CACHE_KEY'), self.name),
+        ])
+        return flush_keys
+
+    def _get_user_ids(self):
+        cache_key = keyfmt(get_setting('FLAG_USERS_CACHE_KEY'), self.name)
+        cached = cache.get(cache_key)
+        if cached == CACHE_EMPTY:
+            return set()
+        if cached:
+            return cached
+
+        user_ids = set(self.users.all().values_list('pk', flat=True))
+        if not user_ids:
+            cache.add(cache_key, CACHE_EMPTY)
+            return set()
+
+        cache.add(cache_key, user_ids)
+        return user_ids
+
+    def _get_group_ids(self):
+        cache_key = keyfmt(get_setting('FLAG_GROUPS_CACHE_KEY'), self.name)
+        cached = cache.get(cache_key)
+        if cached == CACHE_EMPTY:
+            return set()
+        if cached:
+            return cached
+
+        group_ids = set(self.groups.all().values_list('pk', flat=True))
+        if not group_ids:
+            cache.add(cache_key, CACHE_EMPTY)
+            return set()
+
+        cache.add(cache_key, group_ids)
+        return group_ids
+
+    def is_active_for_user(self, user):
+        is_active = super(AbstractUserFlag, self).is_active_for_user(user)
+        if is_active:
+            return is_active
+
+        user_ids = self._get_user_ids()
+        if hasattr(user, 'pk') and user.pk in user_ids:
+            return True
+
+        if hasattr(user, 'groups'):
+            group_ids = self._get_group_ids()
+            user_groups = set(user.groups.all().values_list('pk', flat=True))
+            if group_ids.intersection(user_groups):
+                return True
+
+        return None
+
+
+class Flag(AbstractUserFlag):
+    """A feature flag.
+
+    Flags are active (or not) on a per-request basis.
+
+    """
+    class Meta(AbstractUserFlag.Meta):
+        swappable = 'WAFFLE_FLAG_MODEL'
+        verbose_name = _('Flag')
+        verbose_name_plural = _('Flags')
 
 
 class Switch(BaseModel):

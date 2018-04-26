@@ -4,7 +4,8 @@ import six
 from django.core.management import call_command, CommandError
 from django.contrib.auth.models import Group
 
-from waffle.models import Flag, Sample, Switch
+from waffle import get_waffle_flag_model
+from waffle.models import Sample, Switch
 from waffle.tests.base import TestCase
 
 
@@ -18,7 +19,7 @@ class WaffleFlagManagementCommandTests(TestCase):
                      superusers=True, staff=True, authenticated=True,
                      rollout=True, create=True, group=['waffle_group'])
 
-        flag = Flag.objects.get(name=name)
+        flag = get_waffle_flag_model().objects.get(name=name)
         self.assertEqual(flag.percent, percent)
         self.assertIsNone(flag.everyone)
         self.assertTrue(flag.superusers)
@@ -37,12 +38,12 @@ class WaffleFlagManagementCommandTests(TestCase):
             call_command('waffle_flag', name, everyone=True, percent=20,
                          superusers=True, staff=True, authenticated=True,
                          rollout=True)
-        self.assertFalse(Flag.objects.filter(name=name).exists())
+        self.assertFalse(get_waffle_flag_model().objects.filter(name=name).exists())
 
     def test_update(self):
         """ The command should update an existing flag. """
         name = 'test'
-        flag = Flag.objects.create(name=name)
+        flag = get_waffle_flag_model().objects.create(name=name)
         self.assertIsNone(flag.percent)
         self.assertIsNone(flag.everyone)
         self.assertTrue(flag.superusers)
@@ -66,7 +67,7 @@ class WaffleFlagManagementCommandTests(TestCase):
     def test_update_activate_everyone(self):
         """ The command should update everyone field to True """
         name = 'test'
-        flag = Flag.objects.create(name=name)
+        flag = get_waffle_flag_model().objects.create(name=name)
         self.assertIsNone(flag.percent)
         self.assertIsNone(flag.everyone)
         self.assertTrue(flag.superusers)
@@ -90,7 +91,7 @@ class WaffleFlagManagementCommandTests(TestCase):
     def test_update_deactivate_everyone(self):
         """ The command should update everyone field to False"""
         name = 'test'
-        flag = Flag.objects.create(name=name)
+        flag = get_waffle_flag_model().objects.create(name=name)
         self.assertIsNone(flag.percent)
         self.assertIsNone(flag.everyone)
         self.assertTrue(flag.superusers)
@@ -114,7 +115,7 @@ class WaffleFlagManagementCommandTests(TestCase):
     def test_list(self):
         """ The command should list all flags."""
         stdout = six.StringIO()
-        Flag.objects.create(name='test')
+        get_waffle_flag_model().objects.create(name='test')
 
         call_command('waffle_flag', list_flags=True, stdout=stdout)
         expected = 'Flags:\nNAME: test\nSUPERUSERS: True\nEVERYONE: None\n' \
@@ -127,7 +128,7 @@ class WaffleFlagManagementCommandTests(TestCase):
         """ The command should append a group to a flag."""
         original_group = Group.objects.create(name='waffle_group')
         Group.objects.create(name='append_group')
-        flag = Flag.objects.create(name='test')
+        flag = get_waffle_flag_model().objects.create(name='test')
         flag.groups.add(original_group)
         flag.refresh_from_db()
 
@@ -235,10 +236,10 @@ class WaffleDeleteManagementCommandTests(TestCase):
     def test_delete_flag(self):
         """ The command should delete a flag. """
         name = 'test_flag'
-        Flag.objects.create(name=name)
+        get_waffle_flag_model().objects.create(name=name)
 
         call_command('waffle_delete', flag_names=[name])
-        self.assertEqual(Flag.objects.count(), 0)
+        self.assertEqual(get_waffle_flag_model().objects.count(), 0)
 
     def test_delete_swtich(self):
         """ The command should delete a switch. """
@@ -259,13 +260,13 @@ class WaffleDeleteManagementCommandTests(TestCase):
     def test_delete_mix_of_types(self):
         """ The command should delete different types of records. """
         name = 'test'
-        Flag.objects.create(name=name)
+        get_waffle_flag_model().objects.create(name=name)
         Switch.objects.create(name=name)
         Sample.objects.create(name=name, percent=0)
         call_command('waffle_delete', switch_names=[name], flag_names=[name],
                      sample_names=[name])
 
-        self.assertEqual(Flag.objects.count(), 0)
+        self.assertEqual(get_waffle_flag_model().objects.count(), 0)
         self.assertEqual(Switch.objects.count(), 0)
         self.assertEqual(Sample.objects.count(), 0)
 
@@ -274,8 +275,8 @@ class WaffleDeleteManagementCommandTests(TestCase):
         not specified alone. """
         flag_1 = 'test_flag_1'
         flag_2 = 'test_flag_2'
-        Flag.objects.create(name=flag_1)
-        Flag.objects.create(name=flag_2)
+        get_waffle_flag_model().objects.create(name=flag_1)
+        get_waffle_flag_model().objects.create(name=flag_2)
 
         call_command('waffle_delete', flag_names=[flag_1])
-        self.assertTrue(Flag.objects.filter(name=flag_2).exists())
+        self.assertTrue(get_waffle_flag_model().objects.filter(name=flag_2).exists())

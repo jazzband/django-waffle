@@ -3,7 +3,7 @@ from __future__ import print_function
 from django.contrib.auth.models import Group
 from django.core.management.base import BaseCommand, CommandError
 
-from waffle.models import Flag
+from waffle import get_waffle_flag_model
 
 
 class Command(BaseCommand):
@@ -85,7 +85,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if options['list_flags']:
             self.stdout.write('Flags:')
-            for flag in Flag.objects.iterator():
+            for flag in get_waffle_flag_model().objects.iterator():
                 self.stdout.write('NAME: %s' % flag.name)
                 self.stdout.write('SUPERUSERS: %s' % flag.superusers)
                 self.stdout.write('EVERYONE: %s' % flag.everyone)
@@ -106,13 +106,13 @@ class Command(BaseCommand):
             raise CommandError('You need to specify a flag name.')
 
         if options['create']:
-            flag, created = Flag.objects.get_or_create(name=flag_name)
+            flag, created = get_waffle_flag_model().objects.get_or_create(name=flag_name)
             if created:
                 self.stdout.write('Creating flag: %s' % flag_name)
         else:
             try:
-                flag = Flag.objects.get(name=flag_name)
-            except Flag.DoesNotExist:
+                flag = get_waffle_flag_model().objects.get(name=flag_name)
+            except get_waffle_flag_model().DoesNotExist:
                 raise CommandError('This flag does not exist.')
 
         # Loop through all options, setting Flag attributes that

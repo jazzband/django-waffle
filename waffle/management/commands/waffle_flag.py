@@ -3,7 +3,7 @@ from __future__ import print_function
 from django.contrib.auth.models import Group
 from django.core.management.base import BaseCommand, CommandError
 
-from waffle.models import Flag
+from waffle import get_waffle_flag_model
 
 
 class Command(BaseCommand):
@@ -82,8 +82,11 @@ class Command(BaseCommand):
 
     help = 'Modify a flag.'
 
-    def handle(self, *args, **options):
-        if options['list_flags']:
+    def handle(self, flag_name=None, *args, **options):
+        Flag = get_waffle_flag_model()
+        list_flags = options.get('list_flags', False)
+
+        if list_flags:
             self.stdout.write('Flags:')
             for flag in Flag.objects.iterator():
                 self.stdout.write('NAME: %s' % flag.name)

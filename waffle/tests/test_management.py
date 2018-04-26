@@ -4,8 +4,11 @@ import six
 from django.core.management import call_command, CommandError
 from django.contrib.auth.models import Group
 
-from waffle.models import Flag, Sample, Switch
+from waffle import get_waffle_flag_model
+from waffle.models import Sample, Switch
 from waffle.tests.base import TestCase
+
+Flag = get_waffle_flag_model()
 
 
 class WaffleFlagManagementCommandTests(TestCase):

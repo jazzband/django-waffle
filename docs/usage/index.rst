@@ -14,6 +14,7 @@ JavaScript.
    
    views
    decorators
+   helpers
    templates
    javascript
    cli

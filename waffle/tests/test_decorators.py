@@ -2,6 +2,8 @@ from __future__ import unicode_literals
 
 from waffle.models import Flag, Switch
 from waffle.tests.base import TestCase
+from waffle.decorators import waffle_callable
+from waffle.callables import WaffleCallable
 
 
 class DecoratorTests(TestCase):
@@ -102,3 +104,13 @@ class DecoratorTests(TestCase):
         Flag.objects.create(name='foo', everyone=True)
         resp = self.client.get('/flagged_view_with_invalid_redirect')
         self.assertEqual(200, resp.status_code)
+
+    def test_waffle_callable_decorated_function_only_called_if_called_twice(self):
+
+        @waffle_callable
+        def test_func(a, b, c):
+            return (1, 2, 3)
+
+        test_func_callable = test_func('a', 'b', 'c')
+        self.assertEqual(type(test_func_callable), WaffleCallable)
+        self.assertEqual(test_func_callable(), (1, 2, 3))

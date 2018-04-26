@@ -8,6 +8,7 @@ from django.urls import reverse, NoReverseMatch
 from django.utils.decorators import available_attrs
 
 from waffle import flag_is_active, switch_is_active
+from waffle.callables import WaffleCallable
 
 
 def waffle_flag(flag_name, redirect_to=None):
@@ -57,3 +58,9 @@ def get_response_to_redirect(view, *args, **kwargs):
         return redirect(reverse(view, args=args, kwargs=kwargs)) if view else None
     except NoReverseMatch:
         return None
+
+
+def waffle_callable(func):
+    def _wrapped_function(*args, **kwargs):
+        return WaffleCallable(func, args=args, kwargs=kwargs)
+    return _wrapped_function

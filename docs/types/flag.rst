@@ -92,8 +92,8 @@ Custom Flag Models
 ======================
 
 For many cases, the default Flag model provides all the necessary functionality. It allows
-flagging individual ``User``s and ``Group``s. If you would like to flags be applied to
-different things, such as companies a User belongs to, you can use a custom flag model for that.
+flagging individual ``User``s and ``Group``s. If you would like flags to be applied to
+different things, such as companies a User belongs to, you can use a custom flag model.
 
 The functionality uses the same concepts as Django's custom user models, and a lot of this will
 be immediately recognizable.

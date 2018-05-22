@@ -1,9 +1,11 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.template.loader import render_to_string
+from django.views.generic import View
 
 from waffle import flag_is_active
 from waffle.decorators import waffle_flag, waffle_switch
+from waffle.mixins import WaffleFlagViewMixin, WaffleSwitchViewMixin
 
 
 def flag_in_view(request):
@@ -105,3 +107,119 @@ def flagged_view_with_args_with_valid_url_name(request, some_number):
 @waffle_flag('foo', redirect_to='invalid_view')
 def flagged_view_with_invalid_redirect(request):
     return HttpResponse('foo')
+
+
+class SwitchedView(WaffleSwitchViewMixin, View):
+    switch_name = 'foo'
+
+    def get(self, request, *args, **kwargs):
+        return HttpResponse('foo')
+
+
+class SwitchedOffView(WaffleSwitchViewMixin, View):
+    switch_name = '!foo'
+
+    def get(self, request, *args, **kwargs):
+        return HttpResponse('foo')
+
+
+class FlaggedView(WaffleFlagViewMixin, View):
+    flag_name = 'foo'
+
+    def get(self, request, *args, **kwargs):
+        return HttpResponse('foo')
+
+
+class FlaggedOffView(WaffleFlagViewMixin, View):
+    flag_name = '!foo'
+
+    def get(self, request, *args, **kwargs):
+        return HttpResponse('foo')
+
+
+class FlaggedViewWithValidRedirect(WaffleFlagViewMixin, View):
+    flag_name = 'foo'
+
+    def get_inactive_flag_redirect_to(self):
+        return foo_view
+
+    def get(self, request, *args, **kwargs):
+        return HttpResponse('foo')
+
+
+class FlaggedViewWithValidUrlName(WaffleFlagViewMixin, View):
+    flag_name = 'foo'
+    inactive_flag_redirect_to = 'foo_view'
+
+    def get(self, request, *args, **kwargs):
+        return HttpResponse('foo')
+
+
+class FlaggedViewWithArgsWithValidRedirect(WaffleFlagViewMixin, View):
+    flag_name = 'foo'
+
+    def get_inactive_flag_redirect_to(self):
+        return foo_view_with_args
+
+    def get(self, request, *args, **kwargs):
+        return HttpResponse('foo with {}'.format(kwargs.get('some_number')))
+
+
+class FlaggedViewWithArgsWithValidUrlName(WaffleFlagViewMixin, View):
+    flag_name = 'foo'
+    inactive_flag_redirect_to = 'foo_view_with_args'
+
+    def get(self, request, *args, **kwargs):
+        return HttpResponse('foo with {}'.format(kwargs.get('some_number')))
+
+
+class FlaggedViewWithInvalidRedirect(WaffleFlagViewMixin, View):
+    flag_name = 'foo'
+    inactive_flag_redirect_to = 'invalid_view'
+
+    def get(self, request, *args, **kwargs):
+        return HttpResponse('foo')
+
+
+class SwitchedViewWithValidRedirect(WaffleSwitchViewMixin, View):
+    switch_name = 'foo'
+
+    def get_inactive_switch_redirect_to(self):
+        return foo_view
+
+    def get(self, request, *args, **kwargs):
+        return HttpResponse('foo')
+
+
+class SwitchedViewWithValidUrlName(WaffleSwitchViewMixin, View):
+    switch_name = 'foo'
+    inactive_switch_redirect_to = 'foo_view'
+
+    def get(self, request, *args, **kwargs):
+        return HttpResponse('foo')
+
+
+class SwitchedViewWithArgsWithValidRedirect(WaffleSwitchViewMixin, View):
+    switch_name = 'foo'
+
+    def get_inactive_switch_redirect_to(self):
+        return foo_view_with_args
+
+    def get(self, request, *args, **kwargs):
+        return HttpResponse('foo with {}'.format(kwargs.get('some_number')))
+
+
+class SwitchedViewWithArgsWithValidUrlName(WaffleSwitchViewMixin, View):
+    switch_name = 'foo'
+    inactive_switch_redirect_to = 'foo_view_with_args'
+
+    def get(self, request, *args, **kwargs):
+        return HttpResponse('foo with {}'.format(kwargs.get('some_number')))
+
+
+class SwitchedViewWithInvalidRedirect(WaffleSwitchViewMixin, View):
+    switch_name = 'foo'
+    inactive_switch_redirect_to = 'invalid_view'
+
+    def get(self, request, *args, **kwargs):
+        return HttpResponse('foo')

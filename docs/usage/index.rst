@@ -14,6 +14,7 @@ JavaScript.
    
    views
    decorators
+   mixins
    templates
    javascript
    cli

@@ -3,14 +3,14 @@ from __future__ import unicode_literals
 from decimal import Decimal
 
 from django.contrib.auth.models import AnonymousUser
-from django.test import TestCase, RequestFactory
+from django.test import TransactionTestCase, RequestFactory
 
 import waffle
 from waffle.models import Switch, Flag, Sample
 from waffle.testutils import override_switch, override_flag, override_sample
 
 
-class OverrideSwitchTests(TestCase):
+class OverrideSwitchTests(TransactionTestCase):
     def test_switch_existed_and_was_active(self):
         Switch.objects.create(name='foo', active=True)
 
@@ -94,7 +94,7 @@ def req():
     return r
 
 
-class OverrideFlagTests(TestCase):
+class OverrideFlagTests(TransactionTestCase):
     def test_flag_existed_and_was_active(self):
         Flag.objects.create(name='foo', everyone=True)
 
@@ -140,7 +140,7 @@ class OverrideFlagTests(TestCase):
         assert not Flag.objects.filter(name='foo').exists()
 
 
-class OverrideSampleTests(TestCase):
+class OverrideSampleTests(TransactionTestCase):
     def test_sample_existed_and_was_100(self):
         Sample.objects.create(name='foo', percent='100.0')
 
@@ -190,7 +190,7 @@ class OverrideSampleTests(TestCase):
 
 
 @override_switch('foo', active=False)
-class OverrideSwitchOnClassTests(TestCase):
+class OverrideSwitchOnClassTests(TransactionTestCase):
     def setUp(self):
         assert not Switch.objects.filter(name='foo').exists()
         Switch.objects.create(name='foo', active=True)
@@ -200,7 +200,7 @@ class OverrideSwitchOnClassTests(TestCase):
 
 
 @override_flag('foo', active=False)
-class OverrideFlagOnClassTests(TestCase):
+class OverrideFlagOnClassTests(TransactionTestCase):
     def setUp(self):
         assert not Flag.objects.filter(name='foo').exists()
         Flag.objects.create(name='foo', everyone=True)
@@ -210,7 +210,7 @@ class OverrideFlagOnClassTests(TestCase):
 
 
 @override_sample('foo', active=False)
-class OverrideSampleOnClassTests(TestCase):
+class OverrideSampleOnClassTests(TransactionTestCase):
     def setUp(self):
         assert not Sample.objects.filter(name='foo').exists()
         Sample.objects.create(name='foo', percent='100.0')

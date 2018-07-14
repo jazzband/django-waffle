@@ -9,12 +9,24 @@ python:
   - "3.6"
 
 matrix:
- include:
-  - python: 3.6
-    env: TOXENV=i18n
+  include:
+    - python: 3.6
+      env: TOXENV=i18n
 
 install:
- - pip install tox tox-travis
+  - pip install tox tox-travis
+
+# Some tests may require accessing the database from multiple threads
+# (see #296), which isn't supported by the sqlite3 engine. Run the tests with
+# Postgres in CI to allow full test coverage.
+services:
+  postgresql
+
+before_script:
+  - psql -c 'create database waffle_test;' -U postgres
+
+env:
+  - DATABASE_URL=postgres://postgres@localhost:5432/waffle_test
 
 script:
- - tox
+  - tox

@@ -6,7 +6,7 @@ import logging
 
 from django.conf import settings
 from django.contrib.auth.models import Group
-from django.db import models, router
+from django.db import models, router, transaction
 from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
@@ -98,12 +98,18 @@ class BaseModel(models.Model):
     def save(self, *args, **kwargs):
         self.modified = timezone.now()
         ret = super(BaseModel, self).save(*args, **kwargs)
-        self.flush()
+        if hasattr(transaction, 'on_commit'):
+            transaction.on_commit(self.flush)
+        else:
+            self.flush()
         return ret
 
     def delete(self, *args, **kwargs):
         ret = super(BaseModel, self).delete(*args, **kwargs)
-        self.flush()
+        if hasattr(transaction, 'on_commit'):
+            transaction.on_commit(self.flush)
+        else:
+            self.flush()
         return ret
 
 

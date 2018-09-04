@@ -1,11 +1,15 @@
 from __future__ import unicode_literals
 
 import random
+import threading
+import unittest
 
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import AnonymousUser, Group
-from django.db import connection
-from django.test import RequestFactory
+from django.conf import settings
+from django.contrib.auth.models import AnonymousUser, Group, User
+from django.db import connection, transaction
+from django.test import RequestFactory, TransactionTestCase
+
 from django.test.utils import override_settings
 
 import mock
@@ -424,3 +428,102 @@ class SampleTests(TestCase):
             # The next read should now be directed to the write DB, ensuring
             # the cache and DB are in sync.
             assert waffle.sample_is_active(sample.name)
+
+
+class TransactionTestMixin(object):
+    """Mixin providing an abstract test case for writing in a transaction.
+    """
+    def create_toggle(self):
+        """Create an inactive feature toggle (i.e. flag, switch, sample)."""
+        raise NotImplementedError
+
+    def flip_toggle(self, toggle):
+        """Flip the toggle to an active state."""
+        raise NotImplementedError
+
+    def toggle_is_active(self, toggle):
+        """Use the built-in *_is_active helper to check the toggle's state."""
+        raise NotImplementedError
+
+    @unittest.skipIf('sqlite3' in settings.DATABASES['default']['ENGINE'],
+                     'This test uses threads, which the sqlite3 DB engine '
+                     'does not support.')
+    def test_flip_toggle_in_transaction(self):
+        """Wait to invalidate the cache until after the current transaction.
+
+        This test covers a potential race condition where, if the cache were
+        flushed in the middle of a transaction, the next read from the database
+        (before the transaction is committed) would get a stale value and cache
+        it. See #296 for more context.
+        """
+        toggle = self.create_toggle()
+        self.addCleanup(toggle.delete)
+
+        written_in_background_thread = threading.Event()
+        read_in_main_thread = threading.Event()
+
+        @transaction.atomic
+        def update_toggle():
+            self.flip_toggle(toggle)
+
+            # Signal to the main thread that the toggle has been updated, but
+            # the transaction is not yet committed.
+            written_in_background_thread.set()
+
+            # Pause here to allow the main thread to make an assertion.
+            read_in_main_thread.wait(timeout=1)
+
+        # Start a background thread to update the toggle in a transaction.
+        t = threading.Thread(target=update_toggle)
+        t.daemon = True
+        t.start()
+
+        # After the toggle is updated but before the transaction is committed,
+        # the cache will still have the previous value.
+        written_in_background_thread.wait(timeout=1)
+        assert not self.toggle_is_active(toggle)
+
+        # After the transaction is committed, the cache should have been
+        # invalidated, hence the next call to *_is_active should have the
+        # correct value.
+        read_in_main_thread.set()
+        t.join(timeout=1)
+        assert self.toggle_is_active(toggle)
+
+
+class FlagTransactionTests(TransactionTestMixin, TransactionTestCase):
+    def create_toggle(self):
+        return Flag.objects.create(name='transaction-flag-name',
+                                   everyone=False)
+
+    def flip_toggle(self, flag):
+        flag.everyone = True
+        flag.save()
+
+    def toggle_is_active(self, flag):
+        return waffle.flag_is_active(get(), flag.name)
+
+
+class SwitchTransactionTests(TransactionTestMixin, TransactionTestCase):
+    def create_toggle(self):
+        return Switch.objects.create(name='transaction-switch-name',
+                                     active=False)
+
+    def flip_toggle(self, switch):
+        switch.active = True
+        switch.save()
+
+    def toggle_is_active(self, switch):
+        return waffle.switch_is_active(switch.name)
+
+
+class SampleTransactionTests(TransactionTestMixin, TransactionTestCase):
+    def create_toggle(self):
+        return Sample.objects.create(name='transaction-sample-name', percent=0)
+
+    def flip_toggle(self, sample):
+        sample.percent = 100
+        sample.save()
+
+    def toggle_is_active(self, sample):
+        return waffle.sample_is_active(sample.name)

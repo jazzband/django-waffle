@@ -6,7 +6,7 @@ import unittest
 
 from django.contrib.auth import get_user_model
 from django.conf import settings
-from django.contrib.auth.models import AnonymousUser, Group, User
+from django.contrib.auth.models import AnonymousUser, Group
 from django.db import connection, transaction
 from django.test import RequestFactory, TransactionTestCase
 
@@ -493,8 +493,9 @@ class TransactionTestMixin(object):
 
 class FlagTransactionTests(TransactionTestMixin, TransactionTestCase):
     def create_toggle(self):
-        return Flag.objects.create(name='transaction-flag-name',
-                                   everyone=False)
+        return waffle.get_waffle_flag_model().objects.create(
+            name='transaction-flag-name', everyone=False
+        )
 
     def flip_toggle(self, flag):
         flag.everyone = True

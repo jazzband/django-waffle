@@ -84,6 +84,98 @@ are in the group *or* if they are in the 12%.
     Users are assigned randomly when using Percentages, so in practice
     the actual proportion of users for whom the Flag is active will
     probably differ slightly from the Percentage value.
+    
+    
+.. _types-flag-custom-model:
+
+Custom Flag Models
+======================
+
+For many cases, the default Flag model provides all the necessary functionality. It allows
+flagging individual ``User``s and ``Group``s. If you would like flags to be applied to
+different things, such as companies a User belongs to, you can use a custom flag model.
+
+The functionality uses the same concepts as Django's custom user models, and a lot of this will
+be immediately recognizable.
+
+An application needs to define a ``WAFFLE_FLAG_MODEL`` settings. The default is ``waffle.Flag``
+but can be pointed to an arbitrary object.
+
+.. note::
+
+    It is not possible to change the Flag model and generate working migrations. Ideally, the flag
+    model should be defined at the start of a new project. This is a limitation of the `swappable`
+    Django magic. Please use magic responsibly.
+
+The custom Flag model must inherit from `waffle.models.AbstractBaseFlag`. If you want the existing
+``User`` and ``Group`` based flagging and would like to add more entities to it,
+you may extend `waffle.models.AbstractUserFlag`.
+
+If you need to reference the class that is being used as the `Flag` model in your project, use the
+``get_waffle_flag_model()`` method. If you reference the Flag a lot, it may be convenient to add
+``Flag = get_waffle_flag_model()`` right below your imports and reference the Flag model as if it had
+been imported directly.
+
+Example:
+
+```python
+# settings.py
+WAFFLE_FLAG_MODEL = 'myapp.Flag'
+
+# models.py
+class Flag(AbstractUserFlag):
+    FLAG_COMPANIES_CACHE_KEY = 'FLAG_COMPANIES_CACHE_KEY'
+    FLAG_COMPANIES_CACHE_KEY_DEFAULT = 'flag:%s:companies'
+
+    companies = models.ManyToManyField(
+        Company,
+        blank=True,
+        help_text=_('Activate this flag for these companies.'),
+    )
+
+    def get_flush_keys(self, flush_keys=None):
+        flush_keys = super(Flag, self).get_flush_keys(flush_keys)
+        companies_cache_key = get_setting(Flag.FLAG_COMPANIES_CACHE_KEY, Flag.FLAG_COMPANIES_CACHE_KEY_DEFAULT)
+        flush_keys.append(keyfmt(companies_cache_key, self.name))
+        return flush_keys
+
+    def is_active_for_user(self, user):
+        is_active = super(Flag, self).is_active_for_user(user)
+        if is_active:
+            return is_active
+
+        if getattr(user, 'company_id', None):
+            company_ids = self._get_company_ids()
+            if user.company_id in company_ids:
+                return True
+
+    def _get_company_ids(self):
+        cache_key = keyfmt(
+            get_setting(Flag.FLAG_COMPANIES_CACHE_KEY, Flag.FLAG_COMPANIES_CACHE_KEY_DEFAULT),
+            self.name
+        )
+        cached = cache.get(cache_key)
+        if cached == CACHE_EMPTY:
+            return set()
+        if cached:
+            return cached
+
+        company_ids = set(self.companies.all().values_list('pk', flat=True))
+        if not company_ids:
+            cache.add(cache_key, CACHE_EMPTY)
+            return set()
+
+        cache.add(cache_key, company_ids)
+        return company_ids
+
+# admin.py
+from waffle.admin import FlagAdmin as WaffleFlagAdmin
+
+class FlagAdmin(WaffleFlagAdmin):
+    raw_id_fields = tuple(list(WaffleFlagAdmin.raw_id_fields)  ['companies'])
+admin.site.register(Flag, FlagAdmin)
+
+```
 
 
 .. _types-flag-testing:

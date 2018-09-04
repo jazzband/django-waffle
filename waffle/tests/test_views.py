@@ -2,7 +2,8 @@ from __future__ import unicode_literals
 
 from django.urls import reverse
 
-from waffle.models import Flag, Sample, Switch
+from waffle import get_waffle_flag_model
+from waffle.models import Sample, Switch
 from waffle.tests.base import TestCase
 
 
@@ -17,12 +18,12 @@ class WaffleViewTests(TestCase):
 
     def test_flush_all_flags(self):
         """Test the 'FLAGS_ALL' list gets invalidated correctly."""
-        Flag.objects.create(name='myflag1', everyone=True)
+        get_waffle_flag_model().objects.create(name='myflag1', everyone=True)
         response = self.client.get(reverse('wafflejs'))
         self.assertEqual(200, response.status_code)
         assert ('myflag1', True) in response.context['flags']
 
-        Flag.objects.create(name='myflag2', everyone=True)
+        get_waffle_flag_model().objects.create(name='myflag2', everyone=True)
         response = self.client.get(reverse('wafflejs'))
         self.assertEqual(200, response.status_code)
         assert ('myflag2', True) in response.context['flags']

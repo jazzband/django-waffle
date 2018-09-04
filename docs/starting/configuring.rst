@@ -16,6 +16,14 @@ behavior.
     ``False``.  Set this to ``True`` to make Waffle consider undefined
     flags ``True``.  Defaults to ``False``.
 
+``WAFFLE_FLAG_MODEL``
+    The model that will be use to keep track of flags. Defaults to ``waffle.Flag``
+    which allows user- and group-based flags. Can be swapped for a different Flag model
+    that allows flagging based on other things, such as an organization or a company
+    that a user belongs to. Analogous functionality to Django's extendable User models.
+    Needs to be set at the start of a project, as the Django migrations framework does not
+    support changing swappable models after the initial migration.
+
 ``WAFFLE_SWITCH_DEFAULT``
     When a Switch is undefined in the database, Waffle considers it
     ``False``.  Set this to ``True`` to make Waffle consider undefined

@@ -433,7 +433,6 @@ class SwitchTests(TestCase):
         assert Switch.objects.count() == 1
 
         switch = Switch.objects.all()[0]
-        print('!!!!!!!', switch, switch.name, Switch.objects.count())
         assert switch.name == 'my_dynamically_created_switch'
         assert not switch.active
 
@@ -486,7 +485,6 @@ class SampleTests(TestCase):
     def test_sample_created_dynamically_default_false(self):
         assert Sample.objects.count() ==  0
         assert not waffle.sample_is_active('my_dynamically_created_sample')
-        print('!!!! Sample Count', Sample.objects.count())
         assert Sample.objects.count() == 1
 
         sample = Sample.objects.all()[0]

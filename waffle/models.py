@@ -44,7 +44,7 @@ class BaseModel(models.Model):
         cached = cache.get(cache_key)
         if cached == CACHE_EMPTY:
             logger.warning("%s: %s does not exist", cls.__name__, name)
-            return cls()
+            return cls(name=name)
         if cached:
             return cached
 
@@ -52,7 +52,7 @@ class BaseModel(models.Model):
             obj = cls.get_from_db(name)
         except cls.DoesNotExist:
             cache.add(cache_key, CACHE_EMPTY)
-            return cls()
+            return cls(name=name)
 
         cache.add(cache_key, obj)
         return obj
@@ -508,7 +508,7 @@ class Sample(BaseModel):
 
     def is_active(self):
         if not self.pk:
-            if get_setting('CREATE_MISSING_SAMPLE'):
+            if get_setting('CREATE_MISSING_SAMPLES'):
                 default_percent = 0.0
 
                 if get_setting('SAMPLE_DEFAULT'):

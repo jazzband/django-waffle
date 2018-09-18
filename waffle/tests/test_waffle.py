@@ -334,6 +334,35 @@ class WaffleTests(TestCase):
         self.assertEqual(b'off', response.content)
         assert 'dwf_myflag' not in response.cookies
 
+    @override_settings(WAFFLE_CREATE_MISSING_FLAGS=True)
+    @override_settings(WAFFLE_FLAG_DEFAULT=False)
+    def test_flag_created_dynamically_default_false(self):
+        flag_model = waffle.get_waffle_flag_model()
+
+        assert flag_model.objects.count() ==  0
+        assert not waffle.flag_is_active(get(), 'my_dynamically_created_flag')
+        assert flag_model.objects.count() == 1
+
+        flag = flag_model.objects.all()[0]
+
+        flag.name == 'my_dynamically_created_flag'
+        assert not flag.everyone
+
+    @override_settings(WAFFLE_CREATE_MISSING_FLAGS=True)
+    @override_settings(WAFFLE_FLAG_DEFAULT=True)
+    def test_flag_created_dynamically_default_true(self):
+        flag_model = waffle.get_waffle_flag_model()
+
+        assert flag_model.objects.count() ==  0
+        assert waffle.flag_is_active(get(), 'my_dynamically_created_flag')
+        assert flag_model.objects.count() == 1
+
+        flag = flag_model.objects.all()[0]
+
+        flag.name == 'my_dynamically_created_flag'
+        assert flag.everyone
+
+
 
 class SwitchTests(TestCase):
     def test_switch_active(self):
@@ -396,6 +425,29 @@ class SwitchTests(TestCase):
             # the cache and DB are in sync.
             assert waffle.switch_is_active(switch.name)
 
+    @override_settings(WAFFLE_CREATE_MISSING_SWITCHES=True)
+    @override_settings(WAFFLE_SWITCH_DEFAULT=False)
+    def test_switch_created_dynamically_false(self):
+        assert Switch.objects.count() ==  0
+        assert not waffle.switch_is_active('my_dynamically_created_switch')
+        assert Switch.objects.count() == 1
+
+        switch = Switch.objects.all()[0]
+        print('!!!!!!!', switch, switch.name, Switch.objects.count())
+        assert switch.name == 'my_dynamically_created_switch'
+        assert not switch.active
+
+    @override_settings(WAFFLE_CREATE_MISSING_SWITCHES=True)
+    @override_settings(WAFFLE_SWITCH_DEFAULT=True)
+    def test_switch_created_dynamically_true(self):
+        assert Switch.objects.count() ==  0
+        assert waffle.switch_is_active('my_dynamically_created_switch')
+        assert Switch.objects.count() == 1
+
+        switch = Switch.objects.all()[0]
+        assert switch.name == 'my_dynamically_created_switch'
+        assert switch.active
+
 
 class SampleTests(TestCase):
     def test_sample_100(self):
@@ -428,6 +480,32 @@ class SampleTests(TestCase):
             # The next read should now be directed to the write DB, ensuring
             # the cache and DB are in sync.
             assert waffle.sample_is_active(sample.name)
+
+    @override_settings(WAFFLE_CREATE_MISSING_SAMPLES=True)
+    @override_settings(WAFFLE_SAMPLE_DEFAULT=False)
+    def test_sample_created_dynamically_default_false(self):
+        assert Sample.objects.count() ==  0
+        assert not waffle.sample_is_active('my_dynamically_created_sample')
+        print('!!!! Sample Count', Sample.objects.count())
+        assert Sample.objects.count() == 1
+
+        sample = Sample.objects.all()[0]
+        
+        assert sample.name == 'my_dynamically_created_sample'
+        assert sample.percent == 0.0
+
+    @override_settings(WAFFLE_CREATE_MISSING_SAMPLES=True)
+    @override_settings(WAFFLE_SAMPLE_DEFAULT=True)
+    def test_sample_created_dynamically_default_true(self):
+        assert Sample.objects.count() ==  0
+        assert waffle.sample_is_active('my_dynamically_created_sample')
+        assert Sample.objects.count() == 1
+
+        sample = Sample.objects.all()[0]
+        
+        assert sample.name == 'my_dynamically_created_sample'
+        assert sample.percent == 100.0
+
 
 
 class TransactionTestMixin(object):

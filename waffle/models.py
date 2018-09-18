@@ -6,7 +6,7 @@ import logging
 
 from django.conf import settings
 from django.contrib.auth.models import Group
-from django.db import models, router, transaction
+from django.db import models, router, transaction, IntegrityError
 from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
@@ -244,11 +244,18 @@ class AbstractBaseFlag(BaseModel):
     def is_active(self, request):
         if not self.pk:
             if get_setting('CREATE_MISSING_FLAGS'):
-                get_waffle_flag_model().objects.create(
-                    name=self.name,
-                    everyone=get_setting('FLAG_DEFAULT')
-                )
-            
+                try:
+                    with transaction.atomic():
+                        get_waffle_flag_model().objects.create(
+                            name=self.name,
+                            everyone=get_setting('FLAG_DEFAULT')
+                        )
+                except IntegrityError:
+                    logger.warning(
+                        "integrity error attempting to create missing flag %s",
+                        self.name
+                    )
+
             return get_setting('FLAG_DEFAULT')
 
         if get_setting('OVERRIDE'):
@@ -435,12 +442,20 @@ class Switch(BaseModel):
     def is_active(self):
         if not self.pk:
             if get_setting('CREATE_MISSING_SWITCHES'):
-                Switch.objects.create(
-                    name=self.name,
-                    active=get_setting('SWITCH_DEFAULT')
-                )
-            
+                try:
+                    with transaction.atomic():
+                        Switch.objects.create(
+                            name=self.name,
+                            active=get_setting('SWITCH_DEFAULT')
+                        )
+                except IntegrityError:
+                    logger.warning(
+                        "encountered integrity error when attempting to create missing switch %s",
+                        self.name
+                    )
+
             return get_setting('SWITCH_DEFAULT')
+
         return self.active
 
 
@@ -498,11 +513,18 @@ class Sample(BaseModel):
 
                 if get_setting('SAMPLE_DEFAULT'):
                     default_percent = 100.0
-                
-                Sample.objects.create(
-                    name=self.name,
-                    percent=default_percent
-                )
-            
+
+                try:
+                    with transaction.atomic():
+                        Sample.objects.create(
+                            name=self.name,
+                            percent=default_percent
+                        )
+                except IntegrityError:
+                    logger.warning(
+                        "integrity error creating missing sample %s",
+                        self.name
+                    )
+
             return get_setting('SAMPLE_DEFAULT')
         return Decimal(str(random.uniform(0, 100))) <= self.percent

@@ -6,7 +6,7 @@ import logging
 
 from django.conf import settings
 from django.contrib.auth.models import Group
-from django.db import models, router, transaction, IntegrityError
+from django.db import models, router, transaction
 from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
@@ -244,17 +244,12 @@ class AbstractBaseFlag(BaseModel):
     def is_active(self, request):
         if not self.pk:
             if get_setting('CREATE_MISSING_FLAGS'):
-                try:
-                    with transaction.atomic():
-                        get_waffle_flag_model().objects.create(
-                            name=self.name,
-                            everyone=get_setting('FLAG_DEFAULT')
-                        )
-                except IntegrityError:
-                    logger.warning(
-                        "integrity error attempting to create missing flag %s",
-                        self.name
-                    )
+                get_waffle_flag_model().objects.get_or_create(
+                    name=self.name,
+                    defaults={
+                        'everyone': get_setting('FLAG_DEFAULT')
+                    }
+                )
 
             return get_setting('FLAG_DEFAULT')
 
@@ -442,17 +437,12 @@ class Switch(BaseModel):
     def is_active(self):
         if not self.pk:
             if get_setting('CREATE_MISSING_SWITCHES'):
-                try:
-                    with transaction.atomic():
-                        Switch.objects.create(
-                            name=self.name,
-                            active=get_setting('SWITCH_DEFAULT')
-                        )
-                except IntegrityError:
-                    logger.warning(
-                        "encountered integrity error when attempting to create missing switch %s",
-                        self.name
-                    )
+                Switch.objects.get_or_create(
+                    name=self.name,
+                    defaults={
+                        'active': get_setting('SWITCH_DEFAULT')
+                    }
+                )
 
             return get_setting('SWITCH_DEFAULT')
 
@@ -509,22 +499,15 @@ class Sample(BaseModel):
     def is_active(self):
         if not self.pk:
             if get_setting('CREATE_MISSING_SAMPLES'):
-                default_percent = 0.0
 
-                if get_setting('SAMPLE_DEFAULT'):
-                    default_percent = 100.0
+                default_percent = 100 if get_setting('SAMPLE_DEFAULT') else 0
 
-                try:
-                    with transaction.atomic():
-                        Sample.objects.create(
-                            name=self.name,
-                            percent=default_percent
-                        )
-                except IntegrityError:
-                    logger.warning(
-                        "integrity error creating missing sample %s",
-                        self.name
-                    )
+                Sample.objects.get_or_create(
+                    name=self.name,
+                    defaults={
+                        'percent': default_percent
+                    }
+                )
 
             return get_setting('SAMPLE_DEFAULT')
         return Decimal(str(random.uniform(0, 100))) <= self.percent

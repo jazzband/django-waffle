@@ -34,6 +34,19 @@ def process_request(request, view):
 
 
 class WaffleTests(TestCase):
+    def assert_flag_dynamically_created_with_value(self, expected_value):
+        FLAG_NAME = 'my_dynamically_created_flag'
+        flag_model = waffle.get_waffle_flag_model()
+
+        assert flag_model.objects.count() ==  0
+        assert expected_value == waffle.flag_is_active(get(), FLAG_NAME)
+        assert flag_model.objects.count() == 1
+
+        flag = flag_model.objects.get(name=FLAG_NAME)
+        assert flag.name == FLAG_NAME
+
+        return flag
+
     def test_persist_active_flag(self):
         waffle.get_waffle_flag_model().objects.create(name='myflag', percent='0.1')
         request = get()
@@ -337,34 +350,26 @@ class WaffleTests(TestCase):
     @override_settings(WAFFLE_CREATE_MISSING_FLAGS=True)
     @override_settings(WAFFLE_FLAG_DEFAULT=False)
     def test_flag_created_dynamically_default_false(self):
-        flag_model = waffle.get_waffle_flag_model()
-
-        assert flag_model.objects.count() ==  0
-        assert not waffle.flag_is_active(get(), 'my_dynamically_created_flag')
-        assert flag_model.objects.count() == 1
-
-        flag = flag_model.objects.all()[0]
-
-        flag.name == 'my_dynamically_created_flag'
-        assert not flag.everyone
+        self.assert_flag_dynamically_created_with_value(False)
 
     @override_settings(WAFFLE_CREATE_MISSING_FLAGS=True)
     @override_settings(WAFFLE_FLAG_DEFAULT=True)
     def test_flag_created_dynamically_default_true(self):
-        flag_model = waffle.get_waffle_flag_model()
-
-        assert flag_model.objects.count() ==  0
-        assert waffle.flag_is_active(get(), 'my_dynamically_created_flag')
-        assert flag_model.objects.count() == 1
-
-        flag = flag_model.objects.all()[0]
-
-        flag.name == 'my_dynamically_created_flag'
-        assert flag.everyone
-
+        self.assert_flag_dynamically_created_with_value(True)
 
 
 class SwitchTests(TestCase):
+    def assert_switch_dynamically_created_with_value(self, expected_value):
+        SWITCH_NAME = 'my_dynamically_created_switch'
+
+        assert Switch.objects.count() ==  0
+        assert expected_value == waffle.switch_is_active(SWITCH_NAME)
+        assert Switch.objects.count() == 1
+
+        switch = Switch.objects.get(name=SWITCH_NAME)
+        assert switch.name == SWITCH_NAME
+        assert expected_value == switch.active
+
     def test_switch_active(self):
         switch = Switch.objects.create(name='myswitch', active=True)
         assert waffle.switch_is_active(switch.name)
@@ -428,27 +433,27 @@ class SwitchTests(TestCase):
     @override_settings(WAFFLE_CREATE_MISSING_SWITCHES=True)
     @override_settings(WAFFLE_SWITCH_DEFAULT=False)
     def test_switch_created_dynamically_false(self):
-        assert Switch.objects.count() ==  0
-        assert not waffle.switch_is_active('my_dynamically_created_switch')
-        assert Switch.objects.count() == 1
-
-        switch = Switch.objects.all()[0]
-        assert switch.name == 'my_dynamically_created_switch'
-        assert not switch.active
+        self.assert_switch_dynamically_created_with_value(False)
 
     @override_settings(WAFFLE_CREATE_MISSING_SWITCHES=True)
     @override_settings(WAFFLE_SWITCH_DEFAULT=True)
     def test_switch_created_dynamically_true(self):
-        assert Switch.objects.count() ==  0
-        assert waffle.switch_is_active('my_dynamically_created_switch')
-        assert Switch.objects.count() == 1
-
-        switch = Switch.objects.all()[0]
-        assert switch.name == 'my_dynamically_created_switch'
-        assert switch.active
+        self.assert_switch_dynamically_created_with_value(True)
 
 
 class SampleTests(TestCase):
+    def assert_sample_dynamically_created_with_value(self, is_active, expected_value):
+        SAMPLE_NAME = 'my_dynamically_created_sample'
+
+        assert Sample.objects.count() ==  0
+        assert is_active == waffle.sample_is_active(SAMPLE_NAME)
+        assert Sample.objects.count() == 1
+
+        sample = Sample.objects.get(name=SAMPLE_NAME)
+
+        assert sample.name == SAMPLE_NAME
+        assert sample.percent == expected_value
+
     def test_sample_100(self):
         sample = Sample.objects.create(name='sample', percent='100.0')
         assert waffle.sample_is_active(sample.name)
@@ -483,27 +488,12 @@ class SampleTests(TestCase):
     @override_settings(WAFFLE_CREATE_MISSING_SAMPLES=True)
     @override_settings(WAFFLE_SAMPLE_DEFAULT=False)
     def test_sample_created_dynamically_default_false(self):
-        assert Sample.objects.count() ==  0
-        assert not waffle.sample_is_active('my_dynamically_created_sample')
-        assert Sample.objects.count() == 1
-
-        sample = Sample.objects.all()[0]
-        
-        assert sample.name == 'my_dynamically_created_sample'
-        assert sample.percent == 0.0
+        self.assert_sample_dynamically_created_with_value(False, 0.0)
 
     @override_settings(WAFFLE_CREATE_MISSING_SAMPLES=True)
     @override_settings(WAFFLE_SAMPLE_DEFAULT=True)
     def test_sample_created_dynamically_default_true(self):
-        assert Sample.objects.count() ==  0
-        assert waffle.sample_is_active('my_dynamically_created_sample')
-        assert Sample.objects.count() == 1
-
-        sample = Sample.objects.all()[0]
-        
-        assert sample.name == 'my_dynamically_created_sample'
-        assert sample.percent == 100.0
-
+        self.assert_sample_dynamically_created_with_value(True, 100.0)
 
 
 class TransactionTestMixin(object):

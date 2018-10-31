@@ -222,4 +222,4 @@ missing flag you can set :ref:`WAFFLE_CREATE_MISSING_FLAGS
 <starting-configuring>` to ``True``. Missing flags will be created in
 the database and the value of the ``Everyone`` flag attribute will be
 set to :ref:`WAFFLE_FLAG_DEFAULT <starting-configuring>` in the
-auto created database record.
+auto-created database record.

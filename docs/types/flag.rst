@@ -207,3 +207,19 @@ visitors" to "percent chance that the Flag will be activated per visit."
 
 .. _request: https://docs.djangoproject.com/en/dev/topics/http/urls/#how-django-processes-a-request
 .. _admin site: https://docs.djangoproject.com/en/dev/ref/contrib/admin/
+
+
+.. _types-flag-auto-create-missing:
+
+Auto Create Missing
+===================
+
+When a flag is evaluated in code that is missing in the database the
+flag returns the :ref:`WAFFLE_FLAG_DEFAULT <starting-configuring>`
+value but does not create a flag in the database. If you'd like waffle
+to create missing flags in the database whenever it encounters a
+missing flag you can set :ref:`WAFFLE_CREATE_MISSING_FLAGS
+<starting-configuring>` to ``True``. Missing flags will be created in
+the database and the value of the ``Everyone`` flag attribute will be
+set to :ref:`WAFFLE_FLAG_DEFAULT <starting-configuring>` in the
+auto created database record.

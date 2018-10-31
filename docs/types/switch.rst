@@ -38,4 +38,4 @@ missing switch you can set :ref:`WAFFLE_CREATE_MISSING_SWITCHS
 <starting-configuring>` to ``True``. Missing switchs will be created in
 the database and the value of the ``Active`` switch attribute will be
 set to :ref:`WAFFLE_SWITCH_DEFAULT <starting-configuring>` in the
-auto created database record.
+auto-created database record.

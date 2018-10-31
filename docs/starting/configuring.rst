@@ -74,7 +74,7 @@ behavior.
     Defaults to ``False``.
 
 ``WAFFLE_CREATE_MISSING_SAMPLES``
-    If waffle encounters a reference to a sample that is not in the database should it create it?
+    If Waffle encounters a reference to a sample that is not in the database, should Waffle create the sample?
     If true new samples are created and set to the value of ``WAFFLE_SAMPLE_DEFAULT``
     Defaults to ``False``.
     

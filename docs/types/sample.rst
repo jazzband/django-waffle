@@ -68,4 +68,4 @@ encounters a missing sample you can set
 ``Percent`` attribute of the sample will be created as 100.0 (so that
 when the sample is checked it always evalues to 
 ``True``). Otherwise the value will be set to 0.0 so that the sample
-always evaluates to ``False``.`
+always evaluates to ``False``.

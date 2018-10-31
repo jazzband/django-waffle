@@ -64,7 +64,7 @@ behavior.
     Which cache to use. Defaults to ``'default'``.
 
 ``WAFFLE_CREATE_MISSING_FLAGS``
-    If waffle encounters a reference to a flag that is not in the database should it create it?
+    If Waffle encounters a reference to a flag that is not in the database, should Waffle create the flag?
     If true new flags are created and set to the value of ``WAFFLE_FLAG_DEFAULT``
     Defaults to ``False``.
 

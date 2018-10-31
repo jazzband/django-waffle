@@ -35,7 +35,7 @@ switch returns the :ref:`WAFFLE_SWITCH_DEFAULT <starting-configuring>`
 value but does not create a switch in the database. If you'd like waffle
 to create missing switchs in the database whenever it encounters a
 missing switch you can set :ref:`WAFFLE_CREATE_MISSING_SWITCHS
-<starting-configuring>` to ``True``. Missing switchs will be created in
+<starting-configuring>` to ``True``. Missing switches will be created in
 the database and the value of the ``Active`` switch attribute will be
 set to :ref:`WAFFLE_SWITCH_DEFAULT <starting-configuring>` in the
 auto-created database record.

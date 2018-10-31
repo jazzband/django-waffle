@@ -69,7 +69,7 @@ behavior.
     Defaults to ``False``.
 
 ``WAFFLE_CREATE_MISSING_SWITCHES``
-    If waffle encounters a reference to a switch that is not in the database should it create it?
+    If Waffle encounters a reference to a switch that is not in the database, should Waffle create the sample?
     If true new switchs are created and set to the value of ``WAFFLE_SWITCH_DEFAULT``
     Defaults to ``False``.
 

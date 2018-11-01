@@ -62,3 +62,19 @@ behavior.
 
 ``WAFFLE_CACHE_NAME``
     Which cache to use. Defaults to ``'default'``.
+
+``WAFFLE_CREATE_MISSING_FLAGS``
+    If Waffle encounters a reference to a flag that is not in the database, should Waffle create the flag?
+    If true new flags are created and set to the value of ``WAFFLE_FLAG_DEFAULT``
+    Defaults to ``False``.
+
+``WAFFLE_CREATE_MISSING_SWITCHES``
+    If Waffle encounters a reference to a switch that is not in the database, should Waffle create the sample?
+    If true new switchs are created and set to the value of ``WAFFLE_SWITCH_DEFAULT``
+    Defaults to ``False``.
+
+``WAFFLE_CREATE_MISSING_SAMPLES``
+    If Waffle encounters a reference to a sample that is not in the database, should Waffle create the sample?
+    If true new samples are created and set to the value of ``WAFFLE_SAMPLE_DEFAULT``
+    Defaults to ``False``.
+    

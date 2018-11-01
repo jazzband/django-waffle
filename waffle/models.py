@@ -11,7 +11,7 @@ from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
-from waffle import managers
+from waffle import managers, get_waffle_flag_model
 from waffle.utils import get_setting, keyfmt, get_cache
 
 logger = logging.getLogger('waffle')
@@ -44,7 +44,7 @@ class BaseModel(models.Model):
         cached = cache.get(cache_key)
         if cached == CACHE_EMPTY:
             logger.warning("%s: %s does not exist", cls.__name__, name)
-            return cls()
+            return cls(name=name)
         if cached:
             return cached
 
@@ -52,7 +52,7 @@ class BaseModel(models.Model):
             obj = cls.get_from_db(name)
         except cls.DoesNotExist:
             cache.add(cache_key, CACHE_EMPTY)
-            return cls()
+            return cls(name=name)
 
         cache.add(cache_key, obj)
         return obj
@@ -243,6 +243,14 @@ class AbstractBaseFlag(BaseModel):
 
     def is_active(self, request):
         if not self.pk:
+            if get_setting('CREATE_MISSING_FLAGS'):
+                get_waffle_flag_model().objects.get_or_create(
+                    name=self.name,
+                    defaults={
+                        'everyone': get_setting('FLAG_DEFAULT')
+                    }
+                )
+
             return get_setting('FLAG_DEFAULT')
 
         if get_setting('OVERRIDE'):
@@ -428,7 +436,16 @@ class Switch(BaseModel):
 
     def is_active(self):
         if not self.pk:
+            if get_setting('CREATE_MISSING_SWITCHES'):
+                Switch.objects.get_or_create(
+                    name=self.name,
+                    defaults={
+                        'active': get_setting('SWITCH_DEFAULT')
+                    }
+                )
+
             return get_setting('SWITCH_DEFAULT')
+
         return self.active
 
 
@@ -481,5 +498,16 @@ class Sample(BaseModel):
 
     def is_active(self):
         if not self.pk:
+            if get_setting('CREATE_MISSING_SAMPLES'):
+
+                default_percent = 100 if get_setting('SAMPLE_DEFAULT') else 0
+
+                Sample.objects.get_or_create(
+                    name=self.name,
+                    defaults={
+                        'percent': default_percent
+                    }
+                )
+
             return get_setting('SAMPLE_DEFAULT')
         return Decimal(str(random.uniform(0, 100))) <= self.percent

@@ -6,6 +6,8 @@ v0.15.0
 =======
 - Dropped support for Django < 1.11
 - Dropped support for Python 3.3
+- Added settings `WAFFLE_CREATE_MISSING_(FLAG|SWITCHES|SAMPLES)` to optionally 
+  create missing objects in the database automatically
 
 v0.14.0
 =======

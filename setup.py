@@ -7,7 +7,7 @@ setup(
     long_description=open('README.rst').read(),
     author='James Socol',
     author_email='me@jamessocol.com',
-    url='http://github.com/jsocol/django-waffle',
+    url='http://github.com/django-waffle/django-waffle',
     license='BSD',
     packages=find_packages(exclude=['test_app', 'test_settings']),
     include_package_data=True,

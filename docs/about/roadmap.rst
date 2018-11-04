@@ -119,10 +119,10 @@ scratch today with slightly different goals, like extensibility. Beyond
 kind of overhaul.
 
 
-.. _milestones: https://github.com/jsocol/django-waffle/milestones
-.. _0.10.2: https://github.com/jsocol/django-waffle/milestones/0.10.2
-.. _0.11: https://github.com/jsocol/django-waffle/milestones/0.11
-.. _0.11.x: https://github.com/jsocol/django-waffle/milestones/0.11.x
-.. _0.12: https://github.com/jsocol/django-waffle/milestones/0.12
-.. _0.13: https://github.com/jsocol/django-waffle/milestones/0.13
+.. _milestones: https://github.com/django-waffle/django-waffle/milestones
+.. _0.10.2: https://github.com/django-waffle/django-waffle/milestones/0.10.2
+.. _0.11: https://github.com/django-waffle/django-waffle/milestones/0.11
+.. _0.11.x: https://github.com/django-waffle/django-waffle/milestones/0.11.x
+.. _0.12: https://github.com/django-waffle/django-waffle/milestones/0.12
+.. _0.13: https://github.com/django-waffle/django-waffle/milestones/0.13
 .. _Gargoyle: https://github.com/disqus/gargoyle

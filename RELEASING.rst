@@ -16,7 +16,7 @@ These are the steps necessary to release a new version of Django Waffle.
 
 5. Ensure the documentation build passes: https://readthedocs.org/projects/waffle/
 
-6. Ensure the Travis build, for the `master` branch, has passed: https://travis-ci.org/jsocol/django-waffle/branches
+6. Ensure the Travis build, for the `master` branch, has passed: https://travis-ci.org/django-waffle/django-waffle/branches
 
 7. Build and push to PyPI:
 

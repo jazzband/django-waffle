@@ -8,6 +8,8 @@ v0.15.0
 - Dropped support for Python 3.3
 - Added settings `WAFFLE_CREATE_MISSING_(FLAG|SWITCHES|SAMPLES)` to optionally 
   create missing objects in the database automatically
+- Allow serializing/de-serializing waffle models by natural key
+- Added pluggable Flag model
 
 v0.14.0
 =======

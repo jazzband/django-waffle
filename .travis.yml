@@ -30,3 +30,13 @@ env:
 
 script:
   - tox
+
+deploy:
+  provider: pypi
+  user: django-waffle
+  password:
+    secure: sQzN+jn7JdkIJbXsjS1uRueNVo2AsPh2iJChDAisWu8qFRMFREbHCKRu33+WZ9Vbw0NuRC2Wl2DknPTKYBtMq+4YzbKyRLAXvf/qAzWwcbjQsPAz1bQnfDBbOhcewiltfVf3AEbsq97NdKhOS4+T0R3/eqMhbAM9PVP2WO78cvA=
+  distributions: sdist bdist_wheel
+  on:
+    tags: true
+    python: 3.6

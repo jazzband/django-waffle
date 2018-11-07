@@ -77,4 +77,22 @@ behavior.
     If Waffle encounters a reference to a sample that is not in the database, should Waffle create the sample?
     If true new samples are created and set to the value of ``WAFFLE_SAMPLE_DEFAULT``
     Defaults to ``False``.
+
+``WAFFLE_LOG_MISSING_FLAGS``
+    If Waffle encounters a reference to a flag that is not in the database, should Waffle log it?
+    The value describes the level of wanted warning, possible values are all levels know by pythons default logging,
+    e.g. ``logging.WARNING``.
+    Defaults to ``None``.
+
+``WAFFLE_LOG_MISSING_SWITCHES``
+    If Waffle encounters a reference to a switch that is not in the database, should Waffle log it?
+    The value describes the level of wanted warning, possible values are all levels know by pythons default logging,
+    e.g. ``logging.WARNING``.
+    Defaults to ``None``.
+
+``WAFFLE_LOG_MISSING_SAMPLES``
+    If Waffle encounters a reference to a sample that is not in the database,, should Waffle log it?
+    The value describes the level of wanted warning, possible values are all levels know by pythons default logging,
+    e.g. ``logging.WARNING``.
+    Defaults to ``None``.
     

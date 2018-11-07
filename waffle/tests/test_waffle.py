@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+import logging
 import random
 import threading
 import unittest
@@ -356,6 +357,19 @@ class WaffleTests(TestCase):
     def test_flag_created_dynamically_default_true(self):
         self.assert_flag_dynamically_created_with_value(True)
 
+    @mock.patch('waffle.models.logger')
+    def test_no_logging_missing_flag_by_default(self, mock_logger):
+        request = get()
+        waffle.flag_is_active(request, 'foo')
+        mock_logger.log.call_count == 0
+
+    @override_settings(WAFFLE_LOG_MISSING_FLAGS=logging.WARNING)
+    @mock.patch('waffle.models.logger')
+    def test_logging_missing_flag(self, mock_logger):
+        request = get()
+        waffle.flag_is_active(request, 'foo')
+        mock_logger.log.assert_called_with(level=logging.WARNING, msg=('Flag %s not found', 'foo'))
+
 
 class SwitchTests(TestCase):
     def assert_switch_dynamically_created_with_value(self, expected_value):
@@ -439,6 +453,17 @@ class SwitchTests(TestCase):
     def test_switch_created_dynamically_true(self):
         self.assert_switch_dynamically_created_with_value(True)
 
+    @mock.patch('waffle.models.logger')
+    def test_no_logging_missing_switch_by_default(self, mock_logger):
+        waffle.switch_is_active('foo')
+        mock_logger.log.call_count == 0
+
+    @override_settings(WAFFLE_LOG_MISSING_SWITCHES=logging.WARNING)
+    @mock.patch('waffle.models.logger')
+    def test_logging_missing_switch(self, mock_logger):
+        waffle.switch_is_active('foo')
+        mock_logger.log.assert_called_with(level=logging.WARNING, msg=('Switch %s not found', 'foo'))
+
 
 class SampleTests(TestCase):
     def assert_sample_dynamically_created_with_value(self, is_active, expected_value):
@@ -493,6 +518,17 @@ class SampleTests(TestCase):
     @override_settings(WAFFLE_SAMPLE_DEFAULT=True)
     def test_sample_created_dynamically_default_true(self):
         self.assert_sample_dynamically_created_with_value(True, 100.0)
+
+    @mock.patch('waffle.models.logger')
+    def test_no_logging_missing_sample_by_default(self, mock_logger):
+        waffle.switch_is_active('foo')
+        mock_logger.log.call_count == 0
+
+    @override_settings(WAFFLE_LOG_MISSING_SAMPLES=logging.WARNING)
+    @mock.patch('waffle.models.logger')
+    def test_logging_missing_sample(self, mock_logger):
+        waffle.sample_is_active('foo')
+        mock_logger.log.assert_called_with(level=logging.WARNING, msg=('Sample %s not found', 'foo'))
 
 
 class TransactionTestMixin(object):

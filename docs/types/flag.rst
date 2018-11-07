@@ -223,3 +223,14 @@ missing flag you can set :ref:`WAFFLE_CREATE_MISSING_FLAGS
 the database and the value of the ``Everyone`` flag attribute will be
 set to :ref:`WAFFLE_FLAG_DEFAULT <starting-configuring>` in the
 auto-created database record.
+
+
+.. _types-flag-log-missing:
+
+Log Missing
+===================
+
+Wether or not you enabled :ref:`Auto Create Missing Flags <types-flag-auto-create-missing>`,
+it can be practical to be informed that a flag was or is missing.
+If you'd like waffle to log a warning, error, ... you can set :ref:`WAFFLE_LOG_MISSING_FLAGS
+<starting-configuring>` to any level known by Python default logger.

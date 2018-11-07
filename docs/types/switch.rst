@@ -39,3 +39,14 @@ missing switch you can set :ref:`WAFFLE_CREATE_MISSING_SWITCHES
 the database and the value of the ``Active`` switch attribute will be
 set to :ref:`WAFFLE_SWITCH_DEFAULT <starting-configuring>` in the
 auto-created database record.
+
+
+.. _types-switch-log-missing:
+
+Log Missing
+===================
+
+Wether or not you enabled :ref:`Auto Create Missing Switch <types-switch-auto-create-missing>`,
+it can be practical to be informed that a switch was or is missing.
+If you'd like waffle to log a warning, error, ... you can set :ref:`WAFFLE_LOG_MISSING_FLAGS
+<starting-configuring>` to any level known by Python default logger.

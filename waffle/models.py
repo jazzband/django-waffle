@@ -243,6 +243,8 @@ class AbstractBaseFlag(BaseModel):
 
     def is_active(self, request):
         if not self.pk:
+            if get_setting('LOG_MISSING_FLAGS'):
+                logger.log(level=get_setting('LOG_MISSING_FLAGS'), msg=("Flag %s not found", self.name))
             if get_setting('CREATE_MISSING_FLAGS'):
                 get_waffle_flag_model().objects.get_or_create(
                     name=self.name,
@@ -436,6 +438,8 @@ class Switch(BaseModel):
 
     def is_active(self):
         if not self.pk:
+            if get_setting('LOG_MISSING_SWITCHES'):
+                logger.log(level=get_setting('LOG_MISSING_SWITCHES'), msg=("Switch %s not found", self.name))
             if get_setting('CREATE_MISSING_SWITCHES'):
                 Switch.objects.get_or_create(
                     name=self.name,
@@ -498,6 +502,8 @@ class Sample(BaseModel):
 
     def is_active(self):
         if not self.pk:
+            if get_setting('LOG_MISSING_SAMPLES'):
+                logger.log(level=get_setting('LOG_MISSING_SAMPLES'), msg=("Sample %s not found", self.name))
             if get_setting('CREATE_MISSING_SAMPLES'):
 
                 default_percent = 100 if get_setting('SAMPLE_DEFAULT') else 0

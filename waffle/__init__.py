@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 from django.core.exceptions import ImproperlyConfigured
 
-from waffle.utils import get_cache, get_setting, keyfmt
+from waffle.utils import get_setting
 from django.apps import apps as django_apps
 
 VERSION = (0, 13, 0)

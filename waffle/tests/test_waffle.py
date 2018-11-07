@@ -38,7 +38,7 @@ class WaffleTests(TestCase):
         FLAG_NAME = 'my_dynamically_created_flag'
         flag_model = waffle.get_waffle_flag_model()
 
-        assert flag_model.objects.count() ==  0
+        assert flag_model.objects.count() == 0
         assert expected_value == waffle.flag_is_active(get(), FLAG_NAME)
         assert flag_model.objects.count() == 1
 
@@ -203,8 +203,7 @@ class WaffleTests(TestCase):
 
     def test_everyone_off(self):
         """Test the 'everyone' switch off."""
-        waffle.get_waffle_flag_model().objects.create(name='myflag', everyone=False,
-                            authenticated=True)
+        waffle.get_waffle_flag_model().objects.create(name='myflag', everyone=False, authenticated=True)
 
         request = get()
         request.COOKIES['dwf_myflag'] = 'True'
@@ -362,7 +361,7 @@ class SwitchTests(TestCase):
     def assert_switch_dynamically_created_with_value(self, expected_value):
         SWITCH_NAME = 'my_dynamically_created_switch'
 
-        assert Switch.objects.count() ==  0
+        assert Switch.objects.count() == 0
         assert expected_value == waffle.switch_is_active(SWITCH_NAME)
         assert Switch.objects.count() == 1
 
@@ -445,7 +444,7 @@ class SampleTests(TestCase):
     def assert_sample_dynamically_created_with_value(self, is_active, expected_value):
         SAMPLE_NAME = 'my_dynamically_created_sample'
 
-        assert Sample.objects.count() ==  0
+        assert Sample.objects.count() == 0
         assert is_active == waffle.sample_is_active(SAMPLE_NAME)
         assert Sample.objects.count() == 1
 

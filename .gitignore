@@ -6,6 +6,7 @@ dist
 *test.db
 .coverage
 .idea/
+*.iml
 .project
 .pydevproject
 .settings

@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 import six
 from django.core.management import call_command, CommandError
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User
 
 from waffle import get_waffle_flag_model
 from waffle.models import Sample, Switch
@@ -120,7 +120,7 @@ class WaffleFlagManagementCommandTests(TestCase):
         call_command('waffle_flag', list_flags=True, stdout=stdout)
         expected = 'Flags:\nNAME: test\nSUPERUSERS: True\nEVERYONE: None\n' \
                    'AUTHENTICATED: False\nPERCENT: None\nTESTING: False\n' \
-                   'ROLLOUT: False\nSTAFF: False\nGROUPS: []'
+                   'ROLLOUT: False\nSTAFF: False\nGROUPS: []\nUSERS: []'
         actual = stdout.getvalue().strip()
         self.assertEqual(actual, expected)
 
@@ -141,6 +141,34 @@ class WaffleFlagManagementCommandTests(TestCase):
         flag.refresh_from_db()
         self.assertEqual(list(flag.groups.values_list('name', flat=True)),
                          ['waffle_group', 'append_group'])
+        self.assertIsNone(flag.everyone)
+
+    def test_user_append(self):
+        """ The command should append a user to a flag."""
+        original_group = User.objects.create_user('waffle_test')
+        User.objects.create_user('append_user')
+        User.objects.create_user('append_user_email', email='test@example.com')
+        flag = get_waffle_flag_model().objects.create(name='test')
+        flag.users.add(original_group)
+        flag.refresh_from_db()
+
+        self.assertEqual(list(flag.users.values_list('username', flat=True)),
+                         ['waffle_test'])
+
+        call_command('waffle_flag', 'test', user=['append_user'],
+                     append=True)
+
+        flag.refresh_from_db()
+        self.assertEqual(list(flag.users.values_list('username', flat=True)),
+                         ['waffle_test', 'append_user'])
+        self.assertIsNone(flag.everyone)
+
+        call_command('waffle_flag', 'test', user=['test@example.com'],
+                     append=True)
+
+        flag.refresh_from_db()
+        self.assertEqual(list(flag.users.values_list('username', flat=True)),
+                         ['waffle_test', 'append_user', 'append_user_email'])
         self.assertIsNone(flag.everyone)
 
 

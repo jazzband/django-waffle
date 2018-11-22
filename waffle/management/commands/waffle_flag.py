@@ -1,9 +1,13 @@
 from __future__ import print_function
 
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.core.management.base import BaseCommand, CommandError
+from django.db.models import Q
 
 from waffle import get_waffle_flag_model
+
+UserModel = get_user_model()
 
 
 class Command(BaseCommand):
@@ -61,6 +65,13 @@ class Command(BaseCommand):
                  'than once for multiple groups). WARNING: This will remove '
                  'any currently associated groups unless --append is used!')
         parser.add_argument(
+            '--user', '-u',
+            action='append',
+            default=list(),
+            help='Turn on the flag for listed usernames (use flag more '
+                 'than once for multiple users). WARNING: This will remove '
+                 'any currently associated users unless --append is used!')
+        parser.add_argument(
             '--append',
             action='store_true',
             dest='append',
@@ -97,6 +108,9 @@ class Command(BaseCommand):
                 self.stdout.write('GROUPS: %s' % list(
                     flag.groups.values_list('name', flat=True))
                 )
+                self.stdout.write('USERS: %s' % list(
+                    flag.users.values_list(UserModel.USERNAME_FIELD, flat=True))
+                                  )
                 self.stdout.write('')
             return
 
@@ -137,6 +151,23 @@ class Command(BaseCommand):
                 )
                 for group_name, group_id in group_hash.items():
                     flag.groups.add(group_id)
+            elif option == 'user':
+                user_hash = set()
+                for username in options['user']:
+                    try:
+                        user_instance = UserModel.objects.get(
+                            Q(**{UserModel.USERNAME_FIELD: username}) |
+                            Q(**{UserModel.EMAIL_FIELD: username})
+                        )
+                        user_hash.add(user_instance)
+                    except UserModel.DoesNotExist:
+                        raise CommandError('User %s does not exist' % username)
+                # If 'append' was not passed, we clear related users
+                if not options['append']:
+                    flag.users.clear()
+                self.stdout.write('Setting user(s): %s' % user_hash)
+                # for user in user_hash:
+                flag.users.add(*[user.id for user in user_hash])
             elif hasattr(flag, option):
                 self.stdout.write('Setting %s: %s' % (option, options[option]))
                 setattr(flag, option, options[option])

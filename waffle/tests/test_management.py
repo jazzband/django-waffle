@@ -143,13 +143,31 @@ class WaffleFlagManagementCommandTests(TestCase):
                          ['waffle_group', 'append_group'])
         self.assertIsNone(flag.everyone)
 
+    def test_user(self):
+        """ The command should replace a user to a flag."""
+        original_user = User.objects.create_user('waffle_test')
+        User.objects.create_user('add_user')
+        flag = get_waffle_flag_model().objects.create(name='test')
+        flag.users.add(original_user)
+        flag.refresh_from_db()
+
+        self.assertEqual(list(flag.users.values_list('username', flat=True)),
+                         ['waffle_test'])
+
+        call_command('waffle_flag', 'test', user=['add_user'])
+
+        flag.refresh_from_db()
+        self.assertEqual(list(flag.users.values_list('username', flat=True)),
+                         ['add_user'])
+        self.assertIsNone(flag.everyone)
+
     def test_user_append(self):
         """ The command should append a user to a flag."""
-        original_group = User.objects.create_user('waffle_test')
+        original_user = User.objects.create_user('waffle_test')
         User.objects.create_user('append_user')
         User.objects.create_user('append_user_email', email='test@example.com')
         flag = get_waffle_flag_model().objects.create(name='test')
-        flag.users.add(original_group)
+        flag.users.add(original_user)
         flag.refresh_from_db()
 
         self.assertEqual(list(flag.users.values_list('username', flat=True)),

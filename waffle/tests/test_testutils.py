@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+import asyncio
 from decimal import Decimal
 
 from django.contrib.auth.models import AnonymousUser
@@ -60,6 +61,25 @@ class OverrideSwitchTests(TransactionTestCase):
             assert not waffle.switch_is_active('foo')
 
         test_disabled()
+
+        assert not Switch.objects.filter(name='foo').exists()
+
+    def test_as_coroutine_decorator(self):
+        assert not Switch.objects.filter(name='foo').exists()
+
+        loop = asyncio.get_event_loop()
+
+        @override_switch('foo', active=True)
+        async def test_enabled():
+            assert waffle.switch_is_active('foo')
+
+        loop.run_until_complete(test_enabled())
+
+        @override_switch('foo', active=False)
+        async def test_disabled():
+            assert not waffle.switch_is_active('foo')
+
+        loop.run_until_complete(test_disabled())
 
         assert not Switch.objects.filter(name='foo').exists()
 

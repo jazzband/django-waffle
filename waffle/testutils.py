@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+import inspect
 import sys
 import types
 from functools import wraps
@@ -24,6 +25,8 @@ class _overrider(object):
     def __call__(self, func):
         if isinstance(func, CLASS_TYPES):
             return self.for_class(func)
+        elif inspect.iscoroutinefunction(func):
+            return self.for_coroutine(func)
         else:
             return self.for_callable(func)
 
@@ -50,6 +53,14 @@ class _overrider(object):
         def _wrapped(*args, **kwargs):
             with self:
                 return func(*args, **kwargs)
+
+        return _wrapped
+
+    def for_coroutine(self, func):
+        @wraps(func)
+        async def _wrapped(*args, **kwargs):
+            with self:
+                return await func(*args, **kwargs)
 
         return _wrapped
 

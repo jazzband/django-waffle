@@ -4,6 +4,7 @@ import asyncio
 from decimal import Decimal
 
 from django.contrib.auth.models import AnonymousUser
+from django.db import transaction
 from django.test import TransactionTestCase, RequestFactory
 
 import waffle
@@ -107,6 +108,18 @@ class OverrideSwitchTests(TransactionTestCase):
 
         assert Switch.objects.get(name='foo').active
 
+    def test_cache_is_flushed_by_testutils_even_in_transaction(self):
+        Switch.objects.create(name='foo', active=True)
+
+        with transaction.atomic():
+            with override_switch('foo', active=True):
+                assert waffle.switch_is_active('foo')
+
+            with override_switch('foo', active=False):
+                assert not waffle.switch_is_active('foo')
+
+        assert waffle.switch_is_active('foo')
+
 
 def req():
     r = RequestFactory().get('/')
@@ -159,6 +172,18 @@ class OverrideFlagTests(TransactionTestCase):
 
         assert not waffle.get_waffle_flag_model().objects.filter(name='foo').exists()
 
+    def test_cache_is_flushed_by_testutils_even_in_transaction(self):
+        waffle.get_waffle_flag_model().objects.create(name='foo', everyone=True)
+
+        with transaction.atomic():
+            with override_flag('foo', active=True):
+                assert waffle.flag_is_active(req(), 'foo')
+
+            with override_flag('foo', active=False):
+                assert not waffle.flag_is_active(req(), 'foo')
+
+        assert waffle.flag_is_active(req(), 'foo')
+
 
 class OverrideSampleTests(TransactionTestCase):
     def test_sample_existed_and_was_100(self):
@@ -207,6 +232,18 @@ class OverrideSampleTests(TransactionTestCase):
             assert not waffle.sample_is_active('foo')
 
         assert not Sample.objects.filter(name='foo').exists()
+
+    def test_cache_is_flushed_by_testutils_even_in_transaction(self):
+        Sample.objects.create(name='foo', percent='100.0')
+
+        with transaction.atomic():
+            with override_sample('foo', active=True):
+                assert waffle.sample_is_active('foo')
+
+            with override_sample('foo', active=False):
+                assert not waffle.sample_is_active('foo')
+
+        assert waffle.sample_is_active('foo')
 
 
 @override_switch('foo', active=False)

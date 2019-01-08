@@ -5,9 +5,6 @@ from django.db import models
 from waffle.utils import get_setting, get_cache
 
 
-cache = get_cache()
-
-
 class BaseManager(models.Manager):
     KEY_SETTING = ''
 
@@ -15,6 +12,7 @@ class BaseManager(models.Manager):
         return self.get(name=name)
 
     def create(self, *args, **kwargs):
+        cache = get_cache()
         ret = super(BaseManager, self).create(*args, **kwargs)
         cache_key = get_setting(self.KEY_SETTING)
         cache.delete(cache_key)

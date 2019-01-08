@@ -16,7 +16,6 @@ from waffle.utils import get_setting, keyfmt, get_cache
 
 logger = logging.getLogger('waffle')
 
-cache = get_cache()
 CACHE_EMPTY = '-'
 
 
@@ -40,6 +39,7 @@ class BaseModel(models.Model):
 
     @classmethod
     def get(cls, name):
+        cache = get_cache()
         cache_key = cls._cache_key(name)
         cached = cache.get(cache_key)
         if cached == CACHE_EMPTY:
@@ -66,6 +66,7 @@ class BaseModel(models.Model):
 
     @classmethod
     def get_all(cls):
+        cache = get_cache()
         cache_key = get_setting(cls.ALL_CACHE_KEY)
         cached = cache.get(cache_key)
         if cached == CACHE_EMPTY:
@@ -89,6 +90,7 @@ class BaseModel(models.Model):
         return list(objects.all())
 
     def flush(self):
+        cache = get_cache()
         keys = [
             self._cache_key(self.name),
             get_setting(self.ALL_CACHE_KEY),
@@ -207,6 +209,7 @@ class AbstractBaseFlag(BaseModel):
         verbose_name_plural = _('Flags')
 
     def flush(self):
+        cache = get_cache()
         keys = self.get_flush_keys()
         cache.delete_many(keys)
 
@@ -331,6 +334,7 @@ class AbstractUserFlag(AbstractBaseFlag):
         return flush_keys
 
     def _get_user_ids(self):
+        cache = get_cache()
         cache_key = keyfmt(get_setting('FLAG_USERS_CACHE_KEY'), self.name)
         cached = cache.get(cache_key)
         if cached == CACHE_EMPTY:
@@ -347,6 +351,7 @@ class AbstractUserFlag(AbstractBaseFlag):
         return user_ids
 
     def _get_group_ids(self):
+        cache = get_cache()
         cache_key = keyfmt(get_setting('FLAG_GROUPS_CACHE_KEY'), self.name)
         cached = cache.get(cache_key)
         if cached == CACHE_EMPTY:

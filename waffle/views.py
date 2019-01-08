@@ -6,10 +6,7 @@ from django.views.decorators.cache import never_cache
 
 from waffle import get_waffle_flag_model
 from waffle.models import Sample, Switch
-from waffle.utils import get_setting, get_cache
-
-
-cache = get_cache()
+from waffle.utils import get_setting
 
 
 @never_cache

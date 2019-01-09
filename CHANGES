@@ -4,6 +4,10 @@ Waffle Changelog
 
 v0.15.1
 =======
+- Optionally logging missing flags, samples, and switches
+- Added --users option to waffle_flag management command
+- Updated testutils to flush caches
+- Improved admin site for users and groups
 - Fixed global cache thread safety issues
 
 v0.15.0

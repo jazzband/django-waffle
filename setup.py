@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='django-waffle',
-    version='0.15.0',
+    version='0.15.1',
     description='A feature flipper for Django.',
     long_description=open('README.rst').read(),
     author='James Socol',
@@ -25,7 +25,6 @@ setup(
         'Framework :: Django :: 2.0',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',

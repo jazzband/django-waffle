@@ -43,7 +43,6 @@ class BaseModel(models.Model):
         cache_key = cls._cache_key(name)
         cached = cache.get(cache_key)
         if cached == CACHE_EMPTY:
-            logger.warning("%s: %s does not exist", cls.__name__, name)
             return cls(name=name)
         if cached:
             return cached

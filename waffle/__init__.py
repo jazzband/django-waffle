@@ -7,6 +7,7 @@ from django.apps import apps as django_apps
 
 VERSION = (0, 13, 0)
 __version__ = '.'.join(map(str, VERSION))
+default_app_config = 'waffle.apps.WaffleConfig'
 
 
 def flag_is_active(request, flag_name):

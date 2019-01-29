@@ -150,6 +150,12 @@ class WaffleTests(TestCase):
         self.assertEqual(b'off', response.content)
         assert 'dwf_myflag' not in response.cookies
 
+        # Unsetting the flag on a user should have an effect.
+        flag.users.remove(user)
+        request.user = user
+        response = process_request(request, views.flag_in_view)
+        self.assertEqual(b'off', response.content)
+
     def test_group(self):
         """Test the per-group switch."""
         group = Group.objects.create(name='foo')
@@ -170,6 +176,12 @@ class WaffleTests(TestCase):
         response = process_request(request, views.flag_in_view)
         self.assertEqual(b'off', response.content)
         assert 'dwf_myflag' not in response.cookies
+
+        # Unsetting the flag on a group should have an effect.
+        flag.groups.remove(group)
+        request.user = user
+        response = process_request(request, views.flag_in_view)
+        self.assertEqual(b'off', response.content)
 
     def test_authenticated(self):
         """Test the authenticated/anonymous switch."""

@@ -71,6 +71,7 @@ class _overrider(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         if self.created:
             self.obj.delete()
+            self.obj.flush()
         else:
             self.update(self.old_value)
 

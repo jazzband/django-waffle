@@ -344,18 +344,30 @@ class OverrideSampleOnClassTransactionTestCase(OverrideSampleOnClassTestsMixin,
 
 
 class InheritanceOverrideSwitchOnClassTests(OverrideSwitchOnClassTestCase):
+    """
+    Extend ``OverrideSwitchOnClassTestCase``
+    and make sure ``override_switch`` change still works.
+    """
 
     def test_child_undecorated_method_is_set_properly_for_switch(self):
         self.assertFalse(waffle.switch_is_active('foo'))
 
 
 class InheritanceOverrideFlagOnClassTests(OverrideFlagOnClassTestCase):
+    """
+    Extend ``OverrideFlagOnClassTestCase``
+    and make sure ``override_flag`` change still works.
+    """
 
     def test_child_undecorated_method_is_set_properly_for_flag(self):
         self.assertFalse(waffle.flag_is_active(req(), 'foo'))
 
 
 class InheritanceOverrideSampleOnClassTests(OverrideSampleOnClassTestCase):
+    """
+    Extend ``OverrideSampleOnClassTestCase``
+    and make sure ``override_sample`` change still works.
+    """
 
     def test_child_undecorated_method_is_set_properly_for_sample(self):
         self.assertFalse(waffle.sample_is_active('foo'))

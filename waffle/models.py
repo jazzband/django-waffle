@@ -4,6 +4,9 @@ import random
 from decimal import Decimal
 import logging
 
+
+
+
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.db import models, router, transaction
@@ -12,7 +15,7 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
 from waffle import managers, get_waffle_flag_model
-from waffle.utils import get_setting, keyfmt, get_cache
+from waffle.utils import get_setting, keyfmt, get_cache, request_in_cidr_range
 
 logger = logging.getLogger('waffle')
 
@@ -175,6 +178,16 @@ class AbstractBaseFlag(BaseModel):
         help_text=_('Activate this flag for users with one of these languages (comma-separated list)'),
         verbose_name=_('Languages'),
     )
+    cidr_range_always_on = models.TextField(
+        blank=True,
+        null=True,
+        help_text="Comma separated list of CIDR IP ranges flag should always be active, For single IP use x.x.x.x/32"
+    )
+    cidr_range_always_off = models.TextField(
+        blank=True,
+        null=True,
+        help_text="Comma separated list of CIDR IP ranges flag should always be inactive, For single IP use x.x.x.x/32"
+    )
     rollout = models.BooleanField(
         default=False,
         help_text=_('Activate roll-out mode?'),
@@ -243,6 +256,15 @@ class AbstractBaseFlag(BaseModel):
                 return True
         return None
 
+    def _is_active_for_ip(self, request):
+        if self.cidr_range_always_on is not None and request_in_cidr_range(request, self.cidr_range_always_on):
+            return True
+
+        if self.cidr_range_always_off is not None and request_in_cidr_range(request, self.cidr_range_always_off):
+            return False
+
+        return None
+
     def is_active(self, request):
         if not self.pk:
             if get_setting('LOG_MISSING_FLAGS'):
@@ -276,6 +298,10 @@ class AbstractBaseFlag(BaseModel):
                 return on
             if tc in request.COOKIES:
                 return request.COOKIES[tc] == 'True'
+
+        active_for_ip = self._is_active_for_ip(request)
+        if active_for_ip is not None:
+            return active_for_ip
 
         active_for_language = self._is_active_for_language(request)
         if active_for_language is not None:

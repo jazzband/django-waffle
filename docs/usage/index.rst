@@ -11,7 +11,7 @@ JavaScript.
 
 .. toctree::
    :titlesonly:
-   
+
    views
    decorators
    templates

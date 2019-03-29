@@ -5,19 +5,17 @@ import random
 import threading
 import unittest
 
-from django.contrib.auth import get_user_model
+import mock
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser, Group
 from django.db import connection, transaction
 from django.test import RequestFactory, TransactionTestCase
-
 from django.test.utils import override_settings
-
-import mock
 
 import waffle
 from test_app import views
-from test_app.models import CompanyAwareFlag, Company
+from test_app.models import Flag
 from waffle.middleware import WaffleMiddleware
 from waffle.models import Sample, Switch
 from waffle.tests.base import TestCase
@@ -35,18 +33,6 @@ def process_request(request, view):
 
 
 class WaffleTests(TestCase):
-    def assert_flag_dynamically_created_with_value(self, expected_value):
-        FLAG_NAME = 'my_dynamically_created_flag'
-        flag_model = waffle.get_waffle_flag_model()
-
-        assert flag_model.objects.count() == 0
-        assert expected_value == waffle.flag_is_active(get(), FLAG_NAME)
-        assert flag_model.objects.count() == 1
-
-        flag = flag_model.objects.get(name=FLAG_NAME)
-        assert flag.name == FLAG_NAME
-
-        return flag
 
     def test_persist_active_flag(self):
         waffle.get_waffle_flag_model().objects.create(name='myflag', percent='0.1')
@@ -259,13 +245,15 @@ class WaffleTests(TestCase):
         request = get()
         assert not waffle.flag_is_active(request, 'foo')
 
-    @override_settings(WAFFLE_FLAG_DEFAULT=True)
+    @override_settings(WAFFLE={'FLAG_DEFAULT': True,
+                               'FLAG_CLASS': 'test_app.Flag'})
     def test_undefined_default(self):
         """WAFFLE_FLAG_DEFAULT controls undefined flags."""
         request = get()
         assert waffle.flag_is_active(request, 'foo')
 
-    @override_settings(WAFFLE_OVERRIDE=True)
+    @override_settings(WAFFLE={'OVERRIDE': True,
+                               'FLAG_CLASS': 'test_app.Flag',})
     def test_override(self):
         request = get(foo='1')
         waffle.get_waffle_flag_model().objects.create(name='foo')  # Off for everyone.
@@ -424,7 +412,7 @@ class SwitchTests(TestCase):
     def test_undefined(self):
         assert not waffle.switch_is_active('foo')
 
-    @override_settings(WAFFLE_SWITCH_DEFAULT=True)
+    @override_settings(WAFFLE={'SWITCH_DEFAULT': True})
     def test_undefined_default(self):
         assert waffle.switch_is_active('foo')
 
@@ -501,7 +489,7 @@ class SampleTests(TestCase):
     def test_undefined(self):
         assert not waffle.sample_is_active('foo')
 
-    @override_settings(WAFFLE_SAMPLE_DEFAULT=True)
+    @override_settings(WAFFLE={'SAMPLE_DEFAULT': True})
     def test_undefined_default(self):
         assert waffle.sample_is_active('foo')
 

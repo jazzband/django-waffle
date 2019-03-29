@@ -5,7 +5,7 @@ from django.contrib.admin.widgets import ManyToManyRawIdWidget
 from django.utils.html import escape
 from django.utils.translation import ugettext_lazy as _
 
-from waffle.models import Flag, Sample, Switch
+from waffle.models import Sample, Switch
 
 
 class BaseAdmin(admin.ModelAdmin):
@@ -111,6 +111,5 @@ class SampleAdmin(BaseAdmin):
     ordering = ('-id',)
 
 
-admin.site.register(Flag, FlagAdmin)
 admin.site.register(Sample, SampleAdmin)
 admin.site.register(Switch, SwitchAdmin)

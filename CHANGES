@@ -34,6 +34,12 @@ v0.13
 - Updated `waffle_flag` management command to accept user groups.
 - Added setting `WAFFLE_READ_FROM_WRITE_DB` to read from write DB on cache miss.
 
+dev
+====
+
+- Move settings in a single `WAFFLE` dictionary.
+- Measure code coverage.
+
 v0.12
 =====
 

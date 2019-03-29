@@ -1,10 +1,15 @@
 from __future__ import unicode_literals
 
+import sys
+import types
+from functools import wraps
+
 from django.test.utils import TestContextDecorator
 
-from waffle import get_waffle_flag_model
-from waffle.models import Switch, Sample
+from waffle.models import Sample, Switch
 
+from .models import Sample, Switch
+from .utils import get_flag_model
 
 __all__ = ['override_flag', 'override_sample', 'override_switch']
 
@@ -73,7 +78,7 @@ class override_switch(_overrider):
 
 
 class override_flag(_overrider):
-    cls = get_waffle_flag_model()
+    cls = get_flag_model()
 
     def update(self, active):
         obj = self.cls.objects.get(pk=self.obj.pk)

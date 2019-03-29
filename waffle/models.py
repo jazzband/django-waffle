@@ -11,9 +11,13 @@ from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
-from waffle import get_waffle_flag_model, managers
+from waffle import managers
 from waffle.utils import get_cache, get_setting, keyfmt
 
+try:
+    from django.utils import timezone as datetime
+except ImportError:
+    from datetime import datetime
 logger = logging.getLogger('waffle')
 
 CACHE_EMPTY = '-'

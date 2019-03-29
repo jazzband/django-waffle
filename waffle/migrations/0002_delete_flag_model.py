@@ -19,11 +19,6 @@ class Migration(migrations.Migration):
             model_name='flag',
             name='users',
         ),
-        migrations.AlterField(
-            model_name='switch',
-            name='active',
-            field=models.BooleanField(default=False, help_text='Is this switch active?'),
-        ),
         migrations.DeleteModel(
             name='Flag',
         ),

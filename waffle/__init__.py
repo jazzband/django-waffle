@@ -27,25 +27,3 @@ def sample_is_active(sample_name):
 
     sample = Sample.get(sample_name)
     return sample.is_active()
-
-
-def get_waffle_flag_model():
-    """
-    Returns the waffle Flag model that is active in this project.
-    """
-    # Add backwards compatibility by not requiring adding of WAFFLE_FLAG_MODEL
-    # for everyone who upgrades.
-    # At some point it would be helpful to require this to be defined explicitly,
-    # but no for now, to remove pain form upgrading.
-    flag_model_name = get_setting('FLAG_MODEL', 'waffle.Flag')
-
-    try:
-        return django_apps.get_model(flag_model_name)
-    except ValueError:
-        raise ImproperlyConfigured("WAFFLE_FLAG_MODEL must be of the form 'app_label.model_name'")
-    except LookupError:
-        raise ImproperlyConfigured(
-            "WAFFLE_FLAG_MODEL refers to model '{}' that has not been installed".format(
-                flag_model_name
-            )
-        )

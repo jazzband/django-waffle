@@ -3,8 +3,7 @@ from __future__ import unicode_literals
 from decimal import Decimal
 
 from django.contrib.auth.models import AnonymousUser
-from django.db import transaction
-from django.test import RequestFactory, TestCase, TransactionTestCase
+from django.test import RequestFactory, TestCase
 
 import waffle
 from test_app.models import Flag
@@ -90,30 +89,6 @@ class OverrideSwitchTests(TestCase):
 
         assert Switch.objects.get(name='foo').active
 
-    def test_cache_is_flushed_by_testutils_even_in_transaction(self):
-        Switch.objects.create(name='foo', active=True)
-
-        with transaction.atomic():
-            with override_switch('foo', active=True):
-                assert waffle.switch_is_active('foo')
-
-            with override_switch('foo', active=False):
-                assert not waffle.switch_is_active('foo')
-
-        assert waffle.switch_is_active('foo')
-
-
-class OverrideSwitchTestCase(OverrideSwitchMixin, TestCase):
-    """
-    Run tests with Django TestCase
-    """
-
-
-class OverrideSwitchTransactionTestCase(OverrideSwitchMixin, TransactionTestCase):
-    """
-    Run tests with Django TransactionTestCase
-    """
-
 
 def req():
     r = RequestFactory().get('/')
@@ -124,7 +99,7 @@ def req():
 class OverrideFlagTests(TestCase):
 
     def test_flag_existed_and_was_active(self):
-        waffle.get_waffle_flag_model().objects.create(name='foo', everyone=True)
+        Flag.objects.create(name='foo', everyone=True)
 
         with override_flag('foo', active=True):
             assert waffle.flag_is_active(req(), 'foo')
@@ -132,10 +107,10 @@ class OverrideFlagTests(TestCase):
         with override_flag('foo', active=False):
             assert not waffle.flag_is_active(req(), 'foo')
 
-        assert waffle.get_waffle_flag_model().objects.get(name='foo').everyone
+        assert Flag.objects.get(name='foo').everyone
 
     def test_flag_existed_and_was_inactive(self):
-        waffle.get_waffle_flag_model().objects.create(name='foo', everyone=False)
+        Flag.objects.create(name='foo', everyone=False)
 
         with override_flag('foo', active=True):
             assert waffle.flag_is_active(req(), 'foo')
@@ -143,10 +118,10 @@ class OverrideFlagTests(TestCase):
         with override_flag('foo', active=False):
             assert not waffle.flag_is_active(req(), 'foo')
 
-        assert waffle.get_waffle_flag_model().objects.get(name='foo').everyone is False
+        assert Flag.objects.get(name='foo').everyone is False
 
     def test_flag_existed_and_was_null(self):
-        waffle.get_waffle_flag_model().objects.create(name='foo', everyone=None)
+        Flag.objects.create(name='foo', everyone=None)
 
         with override_flag('foo', active=True):
             assert waffle.flag_is_active(req(), 'foo')
@@ -154,10 +129,10 @@ class OverrideFlagTests(TestCase):
         with override_flag('foo', active=False):
             assert not waffle.flag_is_active(req(), 'foo')
 
-        assert waffle.get_waffle_flag_model().objects.get(name='foo').everyone is None
+        assert Flag.objects.get(name='foo').everyone is None
 
     def test_flag_did_not_exist(self):
-        assert not waffle.get_waffle_flag_model().objects.filter(name='foo').exists()
+        assert not Flag.objects.filter(name='foo').exists()
 
         with override_flag('foo', active=True):
             assert waffle.flag_is_active(req(), 'foo')
@@ -165,25 +140,8 @@ class OverrideFlagTests(TestCase):
         with override_flag('foo', active=False):
             assert not waffle.flag_is_active(req(), 'foo')
 
-        assert not waffle.get_waffle_flag_model().objects.filter(name='foo').exists()
+        assert not Flag.objects.filter(name='foo').exists()
 
-    def test_cache_is_flushed_by_testutils_even_in_transaction(self):
-        waffle.get_waffle_flag_model().objects.create(name='foo', everyone=True)
-
-        with transaction.atomic():
-            with override_flag('foo', active=True):
-                assert waffle.flag_is_active(req(), 'foo')
-
-            with override_flag('foo', active=False):
-                assert not waffle.flag_is_active(req(), 'foo')
-
-        assert waffle.flag_is_active(req(), 'foo')
-
-
-class OverrideFlagsTestCase(OverrideFlagTestsMixin, TestCase):
-    """
-    Run tests with Django TestCase
-    """
 
 class OverrideSampleTests(TestCase):
 
@@ -233,14 +191,6 @@ class OverrideSampleTests(TestCase):
             assert not waffle.sample_is_active('foo')
 
         assert not Sample.objects.filter(name='foo').exists()
-
-    def test_cache_is_flushed_by_testutils_even_in_transaction(self):
-        Sample.objects.create(name='foo', percent='100.0')
-
-        with transaction.atomic():
-            with override_sample('foo', active=True):
-                assert waffle.sample_is_active('foo')
-            assert not Sample.objects.filter(name='foo').exists()
 
 
 @override_switch('foo', active=False)

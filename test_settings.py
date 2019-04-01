@@ -1,5 +1,7 @@
 import os
 
+import django
+
 # Make filepaths relative to settings.
 ROOT = os.path.dirname(os.path.abspath(__file__))
 path = lambda *a: os.path.join(ROOT, *a)
@@ -99,6 +101,7 @@ WAFFLE_OVERRIDE = False
 WAFFLE_UNIQUE_FLAG_NAME = False
 WAFFLE_CACHE_PREFIX = 'test:'
 WAFFLE_FLAG_CLASS = 'test_app.models.Flag'
+WAFFLE_FLAG_MODEL = 'waffle.Flag'
 
 WAFFLE = {
     'FLAG_DEFAULT' : False,
@@ -109,4 +112,5 @@ WAFFLE = {
     'UNIQUE_FLAG_NAME': False,
     'CACHE_PREFIX' : 'test:',
     'FLAG_CLASS': 'test_app.models.Flag',
+    'FLAG_MODEL' : 'waffle.Flag',
 }

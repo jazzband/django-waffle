@@ -18,12 +18,12 @@ class WaffleViewTests(TestCase):
 
     def test_flush_all_flags(self):
         """Test the 'FLAGS_ALL' list gets invalidated correctly."""
-        get_waffle_flag_model().objects.create(name='myflag1', everyone=True)
+        Flag.objects.create(name='myflag1', everyone=True)
         response = self.client.get(reverse('wafflejs'))
         self.assertEqual(200, response.status_code)
         assert ('myflag1', True) in response.context['flags']
 
-        get_waffle_flag_model().objects.create(name='myflag2', everyone=True)
+        Flag.objects.create(name='myflag2', everyone=True)
         response = self.client.get(reverse('wafflejs'))
         self.assertEqual(200, response.status_code)
         assert ('myflag2', True) in response.context['flags']

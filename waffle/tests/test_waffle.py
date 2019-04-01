@@ -1,16 +1,11 @@
 from __future__ import unicode_literals
 
-import logging
 import random
-import threading
-import unittest
 
 import mock
-from django.conf import settings
-from django.contrib.auth import get_user_model
-from django.contrib.auth.models import AnonymousUser, Group
-from django.db import connection, transaction
-from django.test import RequestFactory, TransactionTestCase
+from django.contrib.auth.models import AnonymousUser, Group, User
+from django.db import connection
+from django.test import RequestFactory
 from django.test.utils import override_settings
 
 import waffle
@@ -35,7 +30,7 @@ def process_request(request, view):
 class WaffleTests(TestCase):
 
     def test_persist_active_flag(self):
-        waffle.get_waffle_flag_model().objects.create(name='myflag', percent='0.1')
+        Flag.objects.create(name='myflag', percent='0.1')
         request = get()
 
         # Flag stays on.
@@ -46,7 +41,7 @@ class WaffleTests(TestCase):
         self.assertEqual('True', response.cookies['dwf_myflag'].value)
 
     def test_persist_inactive_flag(self):
-        waffle.get_waffle_flag_model().objects.create(name='myflag', percent='99.9')
+        Flag.objects.create(name='myflag', percent='99.9')
         request = get()
 
         # Flag stays off.
@@ -65,19 +60,19 @@ class WaffleTests(TestCase):
 
     def test_superuser(self):
         """Test the superuser switch."""
-        waffle.get_waffle_flag_model().objects.create(name='myflag', superusers=True)
+        Flag.objects.create(name='myflag', superusers=True)
         request = get()
         response = process_request(request, views.flag_in_view)
         self.assertEqual(b'off', response.content)
         assert 'dwf_myflag' not in response.cookies
 
-        superuser = get_user_model()(username='foo', is_superuser=True)
+        superuser = User(username='foo', is_superuser=True)
         request.user = superuser
         response = process_request(request, views.flag_in_view)
         self.assertEqual(b'on', response.content)
         assert 'dwf_myflag' not in response.cookies
 
-        non_superuser = get_user_model()(username='bar', is_superuser=False)
+        non_superuser = User(username='bar', is_superuser=False)
         non_superuser.save()
         request.user = non_superuser
         response = process_request(request, views.flag_in_view)
@@ -86,19 +81,19 @@ class WaffleTests(TestCase):
 
     def test_staff(self):
         """Test the staff switch."""
-        waffle.get_waffle_flag_model().objects.create(name='myflag', staff=True)
+        Flag.objects.create(name='myflag', staff=True)
         request = get()
         response = process_request(request, views.flag_in_view)
         self.assertEqual(b'off', response.content)
         assert 'dwf_myflag' not in response.cookies
 
-        staff = get_user_model()(username='foo', is_staff=True)
+        staff = User(username='foo', is_staff=True)
         request.user = staff
         response = process_request(request, views.flag_in_view)
         self.assertEqual(b'on', response.content)
         assert 'dwf_myflag' not in response.cookies
 
-        non_staff = get_user_model()(username='foo', is_staff=False)
+        non_staff = User(username='foo', is_staff=False)
         non_staff.save()
         request.user = non_staff
         response = process_request(request, views.flag_in_view)
@@ -106,7 +101,7 @@ class WaffleTests(TestCase):
         assert 'dwf_myflag' not in response.cookies
 
     def test_languages(self):
-        waffle.get_waffle_flag_model().objects.create(name='myflag', languages='en,fr')
+        Flag.objects.create(name='myflag', languages='en,fr')
         request = get()
         response = process_request(request, views.flag_in_view)
         self.assertEqual(b'off', response.content)
@@ -121,8 +116,8 @@ class WaffleTests(TestCase):
 
     def test_user(self):
         """Test the per-user switch."""
-        user = get_user_model().objects.create(username='foo')
-        flag = waffle.get_waffle_flag_model().objects.create(name='myflag')
+        user = User.objects.create(username='foo')
+        flag = Flag.objects.create(name='myflag')
         flag.users.add(user)
 
         request = get()
@@ -131,24 +126,18 @@ class WaffleTests(TestCase):
         self.assertEqual(b'on', response.content)
         assert 'dwf_myflag' not in response.cookies
 
-        request.user = get_user_model().objects.create(username='someone_else')
+        request.user = User.objects.create(username='someone_else')
         response = process_request(request, views.flag_in_view)
         self.assertEqual(b'off', response.content)
         assert 'dwf_myflag' not in response.cookies
 
-        # Unsetting the flag on a user should have an effect.
-        flag.users.remove(user)
-        request.user = user
-        response = process_request(request, views.flag_in_view)
-        self.assertEqual(b'off', response.content)
-
     def test_group(self):
         """Test the per-group switch."""
         group = Group.objects.create(name='foo')
-        user = get_user_model().objects.create(username='bar')
+        user = User.objects.create(username='bar')
         user.groups.add(group)
 
-        flag = waffle.get_waffle_flag_model().objects.create(name='myflag')
+        flag = Flag.objects.create(name='myflag')
         flag.groups.add(group)
 
         request = get()
@@ -157,36 +146,30 @@ class WaffleTests(TestCase):
         self.assertEqual(b'on', response.content)
         assert 'dwf_myflag' not in response.cookies
 
-        request.user = get_user_model()(username='someone_else')
+        request.user = User(username='someone_else')
         request.user.save()
         response = process_request(request, views.flag_in_view)
         self.assertEqual(b'off', response.content)
         assert 'dwf_myflag' not in response.cookies
 
-        # Unsetting the flag on a group should have an effect.
-        flag.groups.remove(group)
-        request.user = user
-        response = process_request(request, views.flag_in_view)
-        self.assertEqual(b'off', response.content)
-
     def test_authenticated(self):
         """Test the authenticated/anonymous switch."""
-        waffle.get_waffle_flag_model().objects.create(name='myflag', authenticated=True)
+        Flag.objects.create(name='myflag', authenticated=True)
 
         request = get()
         response = process_request(request, views.flag_in_view)
         self.assertEqual(b'off', response.content)
         assert 'dwf_myflag' not in response.cookies
 
-        request.user = get_user_model()(username='foo')
-        assert request.user.is_authenticated
+        request.user = User(username='foo')
+        assert request.user.is_authenticated()
         response = process_request(request, views.flag_in_view)
         self.assertEqual(b'on', response.content)
         assert 'dwf_myflag' not in response.cookies
 
     def test_everyone_on(self):
         """Test the 'everyone' switch on."""
-        waffle.get_waffle_flag_model().objects.create(name='myflag', everyone=True)
+        Flag.objects.create(name='myflag', everyone=True)
 
         request = get()
         request.COOKIES['dwf_myflag'] = 'False'
@@ -194,15 +177,16 @@ class WaffleTests(TestCase):
         self.assertEqual(b'on', response.content)
         assert 'dwf_myflag' not in response.cookies
 
-        request.user = get_user_model()(username='foo')
-        assert request.user.is_authenticated
+        request.user = User(username='foo')
+        assert request.user.is_authenticated()
         response = process_request(request, views.flag_in_view)
         self.assertEqual(b'on', response.content)
         assert 'dwf_myflag' not in response.cookies
 
     def test_everyone_off(self):
         """Test the 'everyone' switch off."""
-        waffle.get_waffle_flag_model().objects.create(name='myflag', everyone=False, authenticated=True)
+        Flag.objects.create(name='myflag', everyone=False,
+                            authenticated=True)
 
         request = get()
         request.COOKIES['dwf_myflag'] = 'True'
@@ -210,15 +194,15 @@ class WaffleTests(TestCase):
         self.assertEqual(b'off', response.content)
         assert 'dwf_myflag' not in response.cookies
 
-        request.user = get_user_model()(username='foo')
-        assert request.user.is_authenticated
+        request.user = User(username='foo')
+        assert request.user.is_authenticated()
         response = process_request(request, views.flag_in_view)
         self.assertEqual(b'off', response.content)
         assert 'dwf_myflag' not in response.cookies
 
     def test_percent(self):
         """If you have no cookie, you get a cookie!"""
-        waffle.get_waffle_flag_model().objects.create(name='myflag', percent='50.0')
+        Flag.objects.create(name='myflag', percent='50.0')
         request = get()
         response = process_request(request, views.flag_in_view)
         assert 'dwf_myflag' in response.cookies
@@ -227,7 +211,7 @@ class WaffleTests(TestCase):
     def test_reroll(self, uniform):
         """Even without a cookie, calling flag_is_active twice should return
         the same value."""
-        waffle.get_waffle_flag_model().objects.create(name='myflag', percent='50.0')
+        Flag.objects.create(name='myflag', percent='50.0')
         # Make sure we're not really random.
         request = get()  # Create a clean request.
         assert not hasattr(request, 'waffles')
@@ -256,11 +240,11 @@ class WaffleTests(TestCase):
                                'FLAG_CLASS': 'test_app.Flag',})
     def test_override(self):
         request = get(foo='1')
-        waffle.get_waffle_flag_model().objects.create(name='foo')  # Off for everyone.
+        Flag.objects.create(name='foo')  # Off for everyone.
         assert waffle.flag_is_active(request, 'foo')
 
     def test_testing_flag(self):
-        waffle.get_waffle_flag_model().objects.create(name='foo', testing=True)
+        Flag.objects.create(name='foo', testing=True)
         request = get(dwft_foo='1')
         assert waffle.flag_is_active(request, 'foo')
         assert 'foo' in request.waffle_tests
@@ -274,7 +258,7 @@ class WaffleTests(TestCase):
         assert not request.waffle_tests['foo']
 
     def test_testing_disabled_flag(self):
-        waffle.get_waffle_flag_model().objects.create(name='foo')
+        Flag.objects.create(name='foo')
         request = get(dwft_foo='1')
         assert not waffle.flag_is_active(request, 'foo')
         assert not hasattr(request, 'waffle_tests')
@@ -284,7 +268,7 @@ class WaffleTests(TestCase):
         assert not hasattr(request, 'waffle_tests')
 
     def test_set_then_unset_testing_flag(self):
-        waffle.get_waffle_flag_model().objects.create(name='myflag', testing=True)
+        Flag.objects.create(name='myflag', testing=True)
         response = self.client.get('/flag_in_view?dwft_myflag=1')
         self.assertEqual(b'on', response.content)
 
@@ -300,89 +284,8 @@ class WaffleTests(TestCase):
         response = self.client.get('/flag_in_view?dwft_myflag=1')
         self.assertEqual(b'on', response.content)
 
-    @override_settings(DATABASE_ROUTERS=['waffle.tests.base.ReplicationRouter'])
-    def test_everyone_on_read_from_write_db(self):
-        flag = waffle.get_waffle_flag_model().objects.create(name='myflag', everyone=True)
-
-        request = get()
-        response = process_request(request, views.flag_in_view)
-        # By default, flag_is_active should hit whatever it configured as the
-        # read DB (so values will be stale if replication is lagged).
-        self.assertEqual(b'off', response.content)
-
-        with override_settings(WAFFLE_READ_FROM_WRITE_DB=True):
-            # Save the flag again to flush the cache.
-            flag.save()
-
-            # The next read should now be directed to the write DB, ensuring
-            # the cache and DB are in sync.
-            response = process_request(request, views.flag_in_view)
-            self.assertEqual(b'on', response.content)
-
-    @override_settings(WAFFLE_FLAG_MODEL='test_app.CompanyAwareFlag', AUTH_USER_MODEL='test_app.CompanyUser')
-    def test_pluggable_model(self):
-        flag_model = waffle.get_waffle_flag_model()
-        self.assertEqual(CompanyAwareFlag, flag_model)
-
-        acme_company = Company.objects.create(name='Acme Ltd.')
-        feline_company = Company.objects.create(name='Feline LLC')
-
-        acme_company_flag = waffle.get_waffle_flag_model().objects.create(name='myflag', superusers=True)
-        acme_company_flag.companies.add(acme_company)
-
-        request = get()
-        response = process_request(request, views.flag_in_view)
-        self.assertEqual(b'off', response.content)
-        assert 'dwf_myflag' not in response.cookies
-
-        acme_user = get_user_model()(username='acme.mcfield', company=acme_company)
-        request.user = acme_user
-        response = process_request(request, views.flag_in_view)
-        self.assertEqual(b'on', response.content)
-        assert 'dwf_myflag' not in response.cookies
-
-        feline_user = get_user_model()(username='acme.mcfield', company=feline_company)
-        request.user = feline_user
-        response = process_request(request, views.flag_in_view)
-        self.assertEqual(b'off', response.content)
-        assert 'dwf_myflag' not in response.cookies
-
-    @override_settings(WAFFLE_CREATE_MISSING_FLAGS=True)
-    @override_settings(WAFFLE_FLAG_DEFAULT=False)
-    def test_flag_created_dynamically_default_false(self):
-        self.assert_flag_dynamically_created_with_value(False)
-
-    @override_settings(WAFFLE_CREATE_MISSING_FLAGS=True)
-    @override_settings(WAFFLE_FLAG_DEFAULT=True)
-    def test_flag_created_dynamically_default_true(self):
-        self.assert_flag_dynamically_created_with_value(True)
-
-    @mock.patch('waffle.models.logger')
-    def test_no_logging_missing_flag_by_default(self, mock_logger):
-        request = get()
-        waffle.flag_is_active(request, 'foo')
-        mock_logger.log.call_count == 0
-
-    @override_settings(WAFFLE_LOG_MISSING_FLAGS=logging.WARNING)
-    @mock.patch('waffle.models.logger')
-    def test_logging_missing_flag(self, mock_logger):
-        request = get()
-        waffle.flag_is_active(request, 'foo')
-        mock_logger.log.assert_called_with(level=logging.WARNING, msg=('Flag %s not found', 'foo'))
-
 
 class SwitchTests(TestCase):
-    def assert_switch_dynamically_created_with_value(self, expected_value):
-        SWITCH_NAME = 'my_dynamically_created_switch'
-
-        assert Switch.objects.count() == 0
-        assert expected_value == waffle.switch_is_active(SWITCH_NAME)
-        assert Switch.objects.count() == 1
-
-        switch = Switch.objects.get(name=SWITCH_NAME)
-        assert switch.name == SWITCH_NAME
-        assert expected_value == switch.active
-
     def test_switch_active(self):
         switch = Switch.objects.create(name='myswitch', active=True)
         assert waffle.switch_is_active(switch.name)
@@ -398,7 +301,7 @@ class SwitchTests(TestCase):
         assert waffle.switch_is_active(switch.name)
         queries = len(connection.queries)
         assert waffle.switch_is_active(switch.name)
-        self.assertEqual(queries, len(connection.queries))
+        self.assertEqual(queries, len(connection.queries), 'We should only make one query.')
 
     def test_switch_inactive_from_cache(self):
         """Do not make two queries for an existing inactive switch."""
@@ -407,7 +310,7 @@ class SwitchTests(TestCase):
         assert not waffle.switch_is_active(switch.name)
         queries = len(connection.queries)
         assert not waffle.switch_is_active(switch.name)
-        self.assertEqual(queries, len(connection.queries))
+        self.assertEqual(queries, len(connection.queries), 'We should only make one query.')
 
     def test_undefined(self):
         assert not waffle.switch_is_active('foo')
@@ -422,62 +325,13 @@ class SwitchTests(TestCase):
         assert not Switch.objects.filter(name='foo').exists()
         queries = len(connection.queries)
         assert not waffle.switch_is_active('foo')
-        assert len(connection.queries) > queries
+        assert len(connection.queries) > queries, 'We should make one query.'
         queries = len(connection.queries)
         assert not waffle.switch_is_active('foo')
-        self.assertEqual(queries, len(connection.queries))
-
-    @override_settings(DATABASE_ROUTERS=['waffle.tests.base.ReplicationRouter'])
-    def test_read_from_write_db(self):
-        switch = Switch.objects.create(name='switch', active=True)
-
-        # By default, switch_is_active should hit whatever it configured as the
-        # read DB (so values will be stale if replication is lagged).
-        assert not waffle.switch_is_active(switch.name)
-
-        with override_settings(WAFFLE_READ_FROM_WRITE_DB=True):
-            # Save the switch again to flush the cache.
-            switch.save()
-
-            # The next read should now be directed to the write DB, ensuring
-            # the cache and DB are in sync.
-            assert waffle.switch_is_active(switch.name)
-
-    @override_settings(WAFFLE_CREATE_MISSING_SWITCHES=True)
-    @override_settings(WAFFLE_SWITCH_DEFAULT=False)
-    def test_switch_created_dynamically_false(self):
-        self.assert_switch_dynamically_created_with_value(False)
-
-    @override_settings(WAFFLE_CREATE_MISSING_SWITCHES=True)
-    @override_settings(WAFFLE_SWITCH_DEFAULT=True)
-    def test_switch_created_dynamically_true(self):
-        self.assert_switch_dynamically_created_with_value(True)
-
-    @mock.patch('waffle.models.logger')
-    def test_no_logging_missing_switch_by_default(self, mock_logger):
-        waffle.switch_is_active('foo')
-        mock_logger.log.call_count == 0
-
-    @override_settings(WAFFLE_LOG_MISSING_SWITCHES=logging.WARNING)
-    @mock.patch('waffle.models.logger')
-    def test_logging_missing_switch(self, mock_logger):
-        waffle.switch_is_active('foo')
-        mock_logger.log.assert_called_with(level=logging.WARNING, msg=('Switch %s not found', 'foo'))
+        self.assertEqual(queries, len(connection.queries), 'We should only make one query.')
 
 
 class SampleTests(TestCase):
-    def assert_sample_dynamically_created_with_value(self, is_active, expected_value):
-        SAMPLE_NAME = 'my_dynamically_created_sample'
-
-        assert Sample.objects.count() == 0
-        assert is_active == waffle.sample_is_active(SAMPLE_NAME)
-        assert Sample.objects.count() == 1
-
-        sample = Sample.objects.get(name=SAMPLE_NAME)
-
-        assert sample.name == SAMPLE_NAME
-        assert sample.percent == expected_value
-
     def test_sample_100(self):
         sample = Sample.objects.create(name='sample', percent='100.0')
         assert waffle.sample_is_active(sample.name)
@@ -492,140 +346,3 @@ class SampleTests(TestCase):
     @override_settings(WAFFLE={'SAMPLE_DEFAULT': True})
     def test_undefined_default(self):
         assert waffle.sample_is_active('foo')
-
-    @override_settings(DATABASE_ROUTERS=['waffle.tests.base.ReplicationRouter'])
-    def test_read_from_write_db(self):
-        sample = Sample.objects.create(name='sample', percent='100.0')
-
-        # By default, sample_is_active should hit whatever it configured as the
-        # read DB (so values will be stale if replication is lagged).
-        assert not waffle.sample_is_active(sample.name)
-
-        with override_settings(WAFFLE_READ_FROM_WRITE_DB=True):
-            # Save the sample again to flush the cache.
-            sample.save()
-
-            # The next read should now be directed to the write DB, ensuring
-            # the cache and DB are in sync.
-            assert waffle.sample_is_active(sample.name)
-
-    @override_settings(WAFFLE_CREATE_MISSING_SAMPLES=True)
-    @override_settings(WAFFLE_SAMPLE_DEFAULT=False)
-    def test_sample_created_dynamically_default_false(self):
-        self.assert_sample_dynamically_created_with_value(False, 0.0)
-
-    @override_settings(WAFFLE_CREATE_MISSING_SAMPLES=True)
-    @override_settings(WAFFLE_SAMPLE_DEFAULT=True)
-    def test_sample_created_dynamically_default_true(self):
-        self.assert_sample_dynamically_created_with_value(True, 100.0)
-
-    @mock.patch('waffle.models.logger')
-    def test_no_logging_missing_sample_by_default(self, mock_logger):
-        waffle.switch_is_active('foo')
-        mock_logger.log.call_count == 0
-
-    @override_settings(WAFFLE_LOG_MISSING_SAMPLES=logging.WARNING)
-    @mock.patch('waffle.models.logger')
-    def test_logging_missing_sample(self, mock_logger):
-        waffle.sample_is_active('foo')
-        mock_logger.log.assert_called_with(level=logging.WARNING, msg=('Sample %s not found', 'foo'))
-
-
-class TransactionTestMixin(object):
-    """Mixin providing an abstract test case for writing in a transaction.
-    """
-    def create_toggle(self):
-        """Create an inactive feature toggle (i.e. flag, switch, sample)."""
-        raise NotImplementedError
-
-    def flip_toggle(self, toggle):
-        """Flip the toggle to an active state."""
-        raise NotImplementedError
-
-    def toggle_is_active(self, toggle):
-        """Use the built-in *_is_active helper to check the toggle's state."""
-        raise NotImplementedError
-
-    @unittest.skipIf('sqlite3' in settings.DATABASES['default']['ENGINE'],
-                     'This test uses threads, which the sqlite3 DB engine '
-                     'does not support.')
-    def test_flip_toggle_in_transaction(self):
-        """Wait to invalidate the cache until after the current transaction.
-
-        This test covers a potential race condition where, if the cache were
-        flushed in the middle of a transaction, the next read from the database
-        (before the transaction is committed) would get a stale value and cache
-        it. See #296 for more context.
-        """
-        toggle = self.create_toggle()
-        self.addCleanup(toggle.delete)
-
-        written_in_background_thread = threading.Event()
-        read_in_main_thread = threading.Event()
-
-        @transaction.atomic
-        def update_toggle():
-            self.flip_toggle(toggle)
-
-            # Signal to the main thread that the toggle has been updated, but
-            # the transaction is not yet committed.
-            written_in_background_thread.set()
-
-            # Pause here to allow the main thread to make an assertion.
-            read_in_main_thread.wait(timeout=1)
-
-        # Start a background thread to update the toggle in a transaction.
-        t = threading.Thread(target=update_toggle)
-        t.daemon = True
-        t.start()
-
-        # After the toggle is updated but before the transaction is committed,
-        # the cache will still have the previous value.
-        written_in_background_thread.wait(timeout=1)
-        assert not self.toggle_is_active(toggle)
-
-        # After the transaction is committed, the cache should have been
-        # invalidated, hence the next call to *_is_active should have the
-        # correct value.
-        read_in_main_thread.set()
-        t.join(timeout=1)
-        assert self.toggle_is_active(toggle)
-
-
-class FlagTransactionTests(TransactionTestMixin, TransactionTestCase):
-    def create_toggle(self):
-        return waffle.get_waffle_flag_model().objects.create(
-            name='transaction-flag-name', everyone=False
-        )
-
-    def flip_toggle(self, flag):
-        flag.everyone = True
-        flag.save()
-
-    def toggle_is_active(self, flag):
-        return waffle.flag_is_active(get(), flag.name)
-
-
-class SwitchTransactionTests(TransactionTestMixin, TransactionTestCase):
-    def create_toggle(self):
-        return Switch.objects.create(name='transaction-switch-name',
-                                     active=False)
-
-    def flip_toggle(self, switch):
-        switch.active = True
-        switch.save()
-
-    def toggle_is_active(self, switch):
-        return waffle.switch_is_active(switch.name)
-
-
-class SampleTransactionTests(TransactionTestMixin, TransactionTestCase):
-    def create_toggle(self):
-        return Sample.objects.create(name='transaction-sample-name', percent=0)
-
-    def flip_toggle(self, sample):
-        sample.percent = 100
-        sample.save()
-
-    def toggle_is_active(self, sample):
-        return waffle.sample_is_active(sample.name)

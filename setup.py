@@ -1,8 +1,8 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 setup(
     name='django-waffle',
-    version='0.15.1',
+    version='0.15.1ps',
     description='A feature flipper for Django.',
     long_description=open('README.rst').read(),
     author='James Socol',

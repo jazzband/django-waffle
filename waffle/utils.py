@@ -11,11 +11,20 @@ import waffle
 from waffle import defaults
 
 
-def get_setting(name, default=None):
+def get_setting(name):
     try:
-        return getattr(settings, 'WAFFLE_' + name)
-    except AttributeError:
-        return getattr(defaults, name, default)
+        waffle_settings = getattr(settings, 'WAFFLE')
+        return waffle_settings[name]
+    except (AttributeError, KeyError):
+        try:
+            setting = getattr(settings, 'WAFFLE_' + name)
+            warnings.warn(
+                'WAFFLE_[setting] is deprecated. '
+                'Use the WAFFLE dictionary instead',
+                DeprecationWarning)
+            return setting
+        except AttributeError:
+            return getattr(defaults, name)
 
 
 def keyfmt(k, v=None):

@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('waffle', '0002_auto_20161201_0958'),
+        ('waffle', '0001_initial'),
     ]
 
     operations = [
@@ -19,7 +19,12 @@ class Migration(migrations.Migration):
             model_name='flag',
             name='users',
         ),
-        migrations.DeleteModel(
-            name='Flag',
+        migrations.AlterField(
+            model_name='switch',
+            name='active',
+            field=models.BooleanField(default=False, help_text='Is this switch active?'),
         ),
+#         migrations.DeleteModel(
+#             name='Flag',
+#         ),
     ]

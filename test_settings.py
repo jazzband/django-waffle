@@ -93,15 +93,7 @@ TEMPLATES = [
     },
 ]
 
-WAFFLE_FLAG_DEFAULT = False
-WAFFLE_SWITCH_DEFAULT = False
-WAFFLE_SAMPLE_DEFAULT = False
-WAFFLE_READ_FROM_WRITE_DB = False
-WAFFLE_OVERRIDE = False
-WAFFLE_UNIQUE_FLAG_NAME = False
-WAFFLE_CACHE_PREFIX = 'test:'
-WAFFLE_FLAG_CLASS = 'test_app.models.Flag'
-WAFFLE_FLAG_MODEL = 'waffle.Flag'
+
 
 WAFFLE = {
     'FLAG_DEFAULT' : False,
@@ -112,5 +104,5 @@ WAFFLE = {
     'UNIQUE_FLAG_NAME': False,
     'CACHE_PREFIX' : 'test:',
     'FLAG_CLASS': 'test_app.models.Flag',
-    'FLAG_MODEL' : 'waffle.Flag',
+    'FLAG_MODEL' : 'test_app.Flag',
 }

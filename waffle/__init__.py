@@ -5,7 +5,7 @@ from django.core.exceptions import ImproperlyConfigured
 
 from waffle.utils import get_cache, get_flag_model, get_setting, keyfmt
 
-VERSION = (0, 15, 2)
+VERSION = (0, 15, 2, 'ps')
 __version__ = '.'.join(map(str, VERSION))
 default_app_config = 'waffle.apps.WaffleConfig'
 
@@ -36,7 +36,7 @@ def get_waffle_flag_model():
     # for everyone who upgrades.
     # At some point it would be helpful to require this to be defined explicitly,
     # but no for now, to remove pain form upgrading.
-    flag_model_name = get_setting('FLAG_MODEL', 'waffle.Flag')
+    flag_model_name = get_setting('FLAG_MODEL')
 
     try:
         return django_apps.get_model(flag_model_name)

@@ -101,7 +101,7 @@ class BaseModel(models.Model):
         cache.delete_many(keys)
 
     def save(self, *args, **kwargs):
-        self.modified = timezone.now()
+        self.modified = datetime.now()
         ret = super(BaseModel, self).save(*args, **kwargs)
         if hasattr(transaction, 'on_commit'):
             transaction.on_commit(self.flush)
@@ -180,6 +180,38 @@ class BaseFlag(BaseModel):
         cache = get_cache()
         keys = self.get_flush_keys()
         cache.delete_many(keys)
+
+    def _get_user_ids(self):
+        cache_key = keyfmt(get_setting('FLAG_USERS_CACHE_KEY'), self.name)
+        cached = cache.get(cache_key)
+        if cached == CACHE_EMPTY:
+            return set()
+        if cached:
+            return cached
+
+        user_ids = set(self.users.all().values_list('pk', flat=True))
+        if not user_ids:
+            cache.add(cache_key, CACHE_EMPTY)
+            return set()
+
+        cache.add(cache_key, user_ids)
+        return user_ids
+
+    def _get_group_ids(self):
+        cache_key = keyfmt(get_setting('FLAG_GROUPS_CACHE_KEY'), self.name)
+        cached = cache.get(cache_key)
+        if cached == CACHE_EMPTY:
+            return set()
+        if cached:
+            return cached
+
+        group_ids = set(self.groups.all().values_list('pk', flat=True))
+        if not group_ids:
+            cache.add(cache_key, CACHE_EMPTY)
+            return set()
+
+        cache.add(cache_key, group_ids)
+        return group_ids
 
     def get_flush_keys(self, flush_keys=None):
         flush_keys = flush_keys or []

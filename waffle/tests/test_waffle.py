@@ -23,6 +23,8 @@ from waffle.models import Sample, Switch
 from waffle.tests.base import TestCase
 
 
+DATABASES = {'default', 'readonly'}
+
 def get(**kw):
     request = RequestFactory().get('/foo', data=kw)
     request.user = AnonymousUser()
@@ -35,6 +37,8 @@ def process_request(request, view):
 
 
 class WaffleTests(TestCase):
+    databases = DATABASES
+
     def assert_flag_dynamically_created_with_value(self, expected_value):
         FLAG_NAME = 'my_dynamically_created_flag'
         flag_model = waffle.get_waffle_flag_model()
@@ -384,6 +388,8 @@ class WaffleTests(TestCase):
 
 
 class SwitchTests(TestCase):
+    databases = DATABASES
+
     def assert_switch_dynamically_created_with_value(self, expected_value):
         SWITCH_NAME = 'my_dynamically_created_switch'
 
@@ -478,6 +484,8 @@ class SwitchTests(TestCase):
 
 
 class SampleTests(TestCase):
+    databases = DATABASES
+
     def assert_sample_dynamically_created_with_value(self, is_active, expected_value):
         SAMPLE_NAME = 'my_dynamically_created_sample'
 

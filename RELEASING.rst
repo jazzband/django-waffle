@@ -7,6 +7,7 @@ These are the steps necessary to release a new version of Django Waffle.
 
     a. `setup.py`
     b. `docs/conf.py`
+    c. `waffle/__init__.py`
 
 2. Update the changelog in `CHANGES`.
 

@@ -17,7 +17,7 @@ shift
 
 case "$CMD" in
     "test" )
-        django-admin.py test waffle $@ ;;
+        DJANGO_SETTINGS_MODULE=test_settings django-admin.py test waffle $@ ;;
     "lint" )
         flake8 waffle $@ ;;
     "shell" )

@@ -9,10 +9,11 @@ python:
   - "3.4"
   - "3.5"
   - "3.6"
+  - "3.7"
 
 matrix:
   include:
-    - python: 3.6
+    - python: 3.7
       env: TOXENV=i18n
 
 install:
@@ -44,4 +45,5 @@ deploy:
   distributions: sdist bdist_wheel
   on:
     tags: true
-    python: 3.6
+    python: 3.7
+    env: TOXENV=i18n

@@ -1,8 +1,8 @@
 .. _usage-mixins:
 
-===========================
-Mixins for Class Base Views
-===========================
+============================
+Mixins for Class Based Views
+============================
 
 Waffle provides mixins to add to Class Based Views.
 

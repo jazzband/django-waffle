@@ -63,10 +63,10 @@ sample returns the :ref:`WAFFLE_SAMPLE_DEFAULT <starting-configuring>`
 value but does not create a sample in the database. If you'd like
 waffle to create missing samples in the database whenever it
 encounters a missing sample you can set
-:ref:`WAFFLE_CREATE_MISSING_SSAMPLES <starting-configuring>` to
-``True``. If :ref:`WAFFLE_SAMPLE_DEFAULT` is ``True`` then the
+:ref:`WAFFLE_CREATE_MISSING_SAMPLES <starting-configuring>` to
+``True``. If :ref:`WAFFLE_SAMPLE_DEFAULT <starting-configuring>` is ``True`` then the
 ``Percent`` attribute of the sample will be created as 100.0 (so that
-when the sample is checked it always evalues to 
+when the sample is checked it always evaluates to
 ``True``). Otherwise the value will be set to 0.0 so that the sample
 always evaluates to ``False``.
 

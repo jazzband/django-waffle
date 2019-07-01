@@ -11,9 +11,10 @@ JavaScript.
 
 .. toctree::
    :titlesonly:
-   
+
    views
    decorators
+   mixins
    templates
    javascript
    cli

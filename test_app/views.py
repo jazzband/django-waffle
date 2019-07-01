@@ -1,9 +1,11 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.template.loader import render_to_string
+from django.views.generic import View
 
 from waffle import flag_is_active
 from waffle.decorators import waffle_flag, waffle_switch
+from waffle.mixins import WaffleFlagMixin, WaffleSampleMixin, WaffleSwitchMixin
 
 
 def flag_in_view(request):
@@ -105,3 +107,32 @@ def flagged_view_with_args_with_valid_url_name(request, some_number):
 @waffle_flag('foo', redirect_to='invalid_view')
 def flagged_view_with_invalid_redirect(request):
     return HttpResponse('foo')
+
+
+class BaseWaffleView(View):
+    def get(self, request, *args, **kwargs):
+        return HttpResponse('foo')
+
+
+class FlagView(WaffleFlagMixin, BaseWaffleView):
+    waffle_flag = 'foo'
+
+
+class FlagOffView(WaffleFlagMixin, BaseWaffleView):
+    waffle_flag = '!foo'
+
+
+class SampleView(WaffleSampleMixin, BaseWaffleView):
+    waffle_sample = 'foo'
+
+
+class SampleOffView(WaffleSampleMixin, BaseWaffleView):
+    waffle_sample = '!foo'
+
+
+class SwitchView(WaffleSwitchMixin, BaseWaffleView):
+    waffle_switch = 'foo'
+
+
+class SwitchOffView(WaffleSwitchMixin, BaseWaffleView):
+    waffle_switch = '!foo'

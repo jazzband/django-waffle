@@ -2,6 +2,11 @@
 Waffle Changelog
 ================
 
+v0.17.0
+=======
+- Fixed documentation issues
+- Added class-based view mixins
+
 v0.16.0
 =======
 - Added support for Django 2.1 and 2.2

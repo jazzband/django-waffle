@@ -32,7 +32,7 @@ Settings
 ========
 
 Add ``waffle`` to the ``INSTALLED_APPS`` setting, and
-``waffle.middleware.WaffleMiddleware`` to ``MIDDLEWARE_CLASSES``, e.g.::
+``waffle.middleware.WaffleMiddleware`` to ``MIDDLEWARE``, e.g.::
 
     INSTALLED_APPS = (
         # ...
@@ -40,7 +40,7 @@ Add ``waffle`` to the ``INSTALLED_APPS`` setting, and
         # ...
     )
 
-    MIDDLEWARE_CLASSES = (
+    MIDDLEWARE = (
         # ...
         'waffle.middleware.WaffleMiddleware',
         # ...

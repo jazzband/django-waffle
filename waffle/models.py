@@ -377,9 +377,10 @@ class AbstractUserFlag(AbstractBaseFlag):
 
         if hasattr(user, 'groups'):
             group_ids = self._get_group_ids()
-            user_groups = set(user.groups.all().values_list('pk', flat=True))
-            if group_ids.intersection(user_groups):
-                return True
+            if group_ids:
+                user_groups = set(user.groups.all().values_list('pk', flat=True))
+                if group_ids.intersection(user_groups):
+                    return True
 
         return None
 

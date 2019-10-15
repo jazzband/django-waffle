@@ -384,7 +384,7 @@ class WaffleTests(TestCase):
     def test_logging_missing_flag(self, mock_logger):
         request = get()
         waffle.flag_is_active(request, 'foo')
-        mock_logger.log.assert_called_with(level=logging.WARNING, msg=('Flag %s not found', 'foo'))
+        mock_logger.log.assert_called_with(logging.WARNING, 'Flag %s not found', 'foo')
 
 
 class SwitchTests(TestCase):
@@ -480,7 +480,7 @@ class SwitchTests(TestCase):
     @mock.patch('waffle.models.logger')
     def test_logging_missing_switch(self, mock_logger):
         waffle.switch_is_active('foo')
-        mock_logger.log.assert_called_with(level=logging.WARNING, msg=('Switch %s not found', 'foo'))
+        mock_logger.log.assert_called_with(logging.WARNING, 'Switch %s not found', 'foo')
 
 
 class SampleTests(TestCase):
@@ -548,7 +548,7 @@ class SampleTests(TestCase):
     @mock.patch('waffle.models.logger')
     def test_logging_missing_sample(self, mock_logger):
         waffle.sample_is_active('foo')
-        mock_logger.log.assert_called_with(level=logging.WARNING, msg=('Sample %s not found', 'foo'))
+        mock_logger.log.assert_called_with(logging.WARNING, 'Sample %s not found', 'foo')
 
 
 class TransactionTestMixin(object):

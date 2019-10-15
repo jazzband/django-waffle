@@ -25,6 +25,7 @@ from waffle.tests.base import TestCase
 
 DATABASES = {'default', 'readonly'}
 
+
 def get(**kw):
     request = RequestFactory().get('/foo', data=kw)
     request.user = AnonymousUser()

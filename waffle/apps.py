@@ -6,4 +6,4 @@ class WaffleConfig(AppConfig):
     verbose_name = 'django-waffle'
 
     def ready(self):
-        import waffle.signals
+        import waffle.signals  # noqa: F401

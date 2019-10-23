@@ -57,6 +57,10 @@ enable_for_all.short_description = _('Enable selected flags for everyone')
 disable_for_all.short_description = _('Disable selected flags for everyone')
 delete_individually.short_description = _('Delete selected')
 
+enable_for_all.allowed_permissions = ('change',)
+disable_for_all.allowed_permissions = ('change',)
+delete_individually.allowed_permissions = ('delete',)
+
 
 class InformativeManyToManyRawIdWidget(ManyToManyRawIdWidget):
     """Widget for ManyToManyField to Users.
@@ -113,6 +117,9 @@ def disable_switches(ma, request, qs):
 
 enable_switches.short_description = _('Enable selected switches')
 disable_switches.short_description = _('Disable selected switches')
+
+enable_switches.allowed_permissions = ('change',)
+disable_switches.allowed_permissions = ('change',)
 
 
 class SwitchAdmin(BaseAdmin):

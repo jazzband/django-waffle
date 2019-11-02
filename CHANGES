@@ -2,6 +2,14 @@
 Waffle Changelog
 ================
 
+v0.18.0
+=======
+- Updated `MIDDLEWARE` setting name for Django 1.10+
+- Improved cache performance for `is_active_for_user`
+- Corrected log formatting
+- Added log entries for admin quick link actions
+- Added permissions for admin actions
+
 v0.17.0
 =======
 - Fixed documentation issues

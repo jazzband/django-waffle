@@ -8,9 +8,9 @@ from django.conf import settings
 from django.contrib.auth.models import Group
 from django.db import models, router, transaction
 from django.utils import timezone
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
+from six import python_2_unicode_compatible
 from waffle import managers, get_waffle_flag_model
 from waffle.utils import get_setting, keyfmt, get_cache
 

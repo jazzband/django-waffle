@@ -1,18 +1,17 @@
 from __future__ import unicode_literals
 
-from functools import wraps
+from functools import wraps, WRAPPER_ASSIGNMENTS
 
 from django.http import Http404
 from django.shortcuts import redirect
 from django.urls import reverse, NoReverseMatch
-from django.utils.decorators import available_attrs
 
 from waffle import flag_is_active, switch_is_active
 
 
 def waffle_flag(flag_name, redirect_to=None):
     def decorator(view):
-        @wraps(view, assigned=available_attrs(view))
+        @wraps(view, assigned=WRAPPER_ASSIGNMENTS)
         def _wrapped_view(request, *args, **kwargs):
             if flag_name.startswith('!'):
                 active = not flag_is_active(request, flag_name[1:])
@@ -33,7 +32,7 @@ def waffle_flag(flag_name, redirect_to=None):
 
 def waffle_switch(switch_name, redirect_to=None):
     def decorator(view):
-        @wraps(view, assigned=available_attrs(view))
+        @wraps(view, assigned=WRAPPER_ASSIGNMENTS)
         def _wrapped_view(request, *args, **kwargs):
             if switch_name.startswith('!'):
                 active = not switch_is_active(switch_name[1:])

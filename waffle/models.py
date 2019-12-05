@@ -8,7 +8,6 @@ from django.conf import settings
 from django.contrib.auth.models import Group
 from django.db import models, router, transaction
 from django.utils import timezone
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
 from waffle import managers, get_waffle_flag_model
@@ -19,7 +18,6 @@ logger = logging.getLogger('waffle')
 CACHE_EMPTY = '-'
 
 
-@python_2_unicode_compatible
 class BaseModel(models.Model):
     SINGLE_CACHE_KEY = ''
     ALL_CACHE_KEY = ''

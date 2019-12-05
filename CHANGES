@@ -4,6 +4,11 @@ Waffle Changelog
 
 v0.18.0
 =======
+- Added support for Django 3.0.
+- Dropped supoport for Django 2.1 and earlier.
+
+v0.18.0
+=======
 - Updated `MIDDLEWARE` setting name for Django 1.10+
 - Improved cache performance for `is_active_for_user`
 - Corrected log formatting

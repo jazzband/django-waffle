@@ -2,6 +2,10 @@
 Waffle Changelog
 ================
 
+v0.19.0
+=======
+- Made tests for jinja2 optional while waiting for django-jinja to be compatible with django 3.0.
+
 v0.18.0
 =======
 - Updated `MIDDLEWARE` setting name for Django 1.10+

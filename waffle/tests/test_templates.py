@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
+from unittest import skipUnless
 
+from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
 from django.template import Template
 from django.template.base import VariableNode
@@ -54,6 +56,10 @@ class WaffleTemplateTests(TestCase):
         assert 'switch off' in content
         assert 'sample' in content
 
+    @skipUnless(
+        settings.JINJA_INSTALLED,
+        "django-jinja is currently unmaintained and uncompatible with django >= 3.0"
+    )
     def test_jinja_tags(self):
         request = get()
         response = process_request(request, views.flag_in_jinja)

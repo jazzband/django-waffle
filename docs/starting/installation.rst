@@ -52,6 +52,10 @@ Add ``waffle`` to the ``INSTALLED_APPS`` setting, and
 Jinja Templates
 ---------------
 
+.. versionchanged:: 0.19
+If you are using Jinja2 templates, the ``django-jinja`` dependency is currently
+unavailable with django 3.0 and greater; 2.x versions are compatible as well as 1.11.
+
 .. versionchanged:: 0.11
 
 If you're using Jinja2 templates, Waffle provides a Jinja2 extension

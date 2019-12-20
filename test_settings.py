@@ -1,6 +1,13 @@
 import os
 
 
+try:
+    import django_jinja
+    JINJA_INSTALLED = True
+except ImportError:
+    JINJA_INSTALLED = False
+
+
 # Make filepaths relative to settings.
 ROOT = os.path.dirname(os.path.abspath(__file__))
 path = lambda *a: os.path.join(ROOT, *a)
@@ -66,24 +73,31 @@ _CONTEXT_PROCESSORS = (
     'django.contrib.messages.context_processors.messages',
 )
 
-TEMPLATES = [
-    {
-        'BACKEND': 'django_jinja.backend.Jinja2',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'match_regex': r'jinja.*',
-            'match_extension': '',
-            'newstyle_gettext': True,
-            'context_processors': _CONTEXT_PROCESSORS,
-            'undefined': 'jinja2.Undefined',
-            'extensions': [
-                'jinja2.ext.i18n',
-                'jinja2.ext.autoescape',
-                'waffle.jinja.WaffleExtension',
-            ],
+
+if JINJA_INSTALLED:
+    TEMPLATES = [
+        {
+            'BACKEND': 'django_jinja.backend.Jinja2',
+            'DIRS': [],
+            'APP_DIRS': True,
+            'OPTIONS': {
+                'match_regex': r'jinja.*',
+                'match_extension': '',
+                'newstyle_gettext': True,
+                'context_processors': _CONTEXT_PROCESSORS,
+                'undefined': 'jinja2.Undefined',
+                'extensions': [
+                    'jinja2.ext.i18n',
+                    'jinja2.ext.autoescape',
+                    'waffle.jinja.WaffleExtension',
+                ],
+            }
         }
-    },
+    ]
+else:
+    TEMPLATES = []
+
+TEMPLATES.append(
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [],
@@ -92,8 +106,9 @@ TEMPLATES = [
             'debug': DEBUG,
             'context_processors': _CONTEXT_PROCESSORS,
         }
-    },
-]
+    }
+)
+
 
 WAFFLE_FLAG_DEFAULT = False
 WAFFLE_SWITCH_DEFAULT = False

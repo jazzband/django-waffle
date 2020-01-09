@@ -1,6 +1,7 @@
 # These are required to run the tests.
 Django
 flake8
+six
 
 # Everything else is in a Django-version-free version
 # for TravisCI.

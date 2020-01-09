@@ -2,7 +2,7 @@ language: python
 
 sudo: false
 
-dist: xenial
+dist: bionic
 
 matrix:
   include:

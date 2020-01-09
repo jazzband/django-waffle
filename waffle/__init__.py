@@ -5,7 +5,7 @@ from django.core.exceptions import ImproperlyConfigured
 from waffle.utils import get_setting
 from django.apps import apps as django_apps
 
-VERSION = (0, 18, 0)
+VERSION = (0, 19, 0)
 __version__ = '.'.join(map(str, VERSION))
 default_app_config = 'waffle.apps.WaffleConfig'
 

@@ -4,7 +4,7 @@ Waffle Changelog
 
 v0.19.0
 =======
-- Dropped support for Django 2.1 and 2.2, and Python 3.4
+- Dropped support for Django 2.0, 2.1, and Python 3.4.
 - Made tests for Jinja2 optional while waiting for django-jinja to be compatible with Django 3.0.
 - Add support for Django 3.0 by removing use of deprecated functionality from Django 2.2.
 

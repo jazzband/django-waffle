@@ -76,7 +76,7 @@ always evaluates to ``False``.
 Log Missing
 ===================
 
-Wether or not you enabled :ref:`Auto Create Missing Sample <types-sample-auto-create-missing>`,
+Whether or not you enabled :ref:`Auto Create Missing Sample <types-sample-auto-create-missing>`,
 it can be practical to be informed that a sample was or is missing.
 If you'd like waffle to log a warning, error, ... you can set :ref:`WAFFLE_LOG_MISSING_SAMPLES
 <starting-configuring>` to any level known by Python default logger.

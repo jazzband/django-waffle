@@ -47,7 +47,7 @@ Flags can be administered through the Django `admin site`_ or the
     The name of the flag. Will be used to identify the flag everywhere.
 :Everyone:
     Globally set the Flag, **overriding all other criteria**. Leave as
-    *Unknown* to use other critera.
+    *Unknown* to use other criteria.
 :Testing:
     Can the flag be specified via a querystring parameter? :ref:`See
     below <types-flag-testing>`.
@@ -231,7 +231,7 @@ auto-created database record.
 Log Missing
 ===================
 
-Wether or not you enabled :ref:`Auto Create Missing Flags <types-flag-auto-create-missing>`,
+Whether or not you enabled :ref:`Auto Create Missing Flags <types-flag-auto-create-missing>`,
 it can be practical to be informed that a flag was or is missing.
 If you'd like waffle to log a warning, error, ... you can set :ref:`WAFFLE_LOG_MISSING_FLAGS
 <starting-configuring>` to any level known by Python default logger.

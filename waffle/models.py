@@ -4,11 +4,15 @@ import random
 from decimal import Decimal
 import logging
 
+import six
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.db import models, router, transaction
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
+if six.PY2:
+    from django.utils.translation import ugettext_lazy as _
+else:
+    from django.utils.translation import gettext_lazy as _
 
 from six import python_2_unicode_compatible
 from waffle import managers, get_waffle_flag_model

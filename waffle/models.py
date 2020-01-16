@@ -137,6 +137,12 @@ class AbstractBaseFlag(BaseModel):
         help_text=_('The human/computer readable name.'),
         verbose_name=_('Name'),
     )
+    category = models.CharField(
+        max_length=100,
+        help_text=_('Category label used to filter flags.'),
+        verbose_name=_('Category'),
+        blank=True
+    )
     everyone = models.NullBooleanField(
         blank=True,
         help_text=_(
@@ -414,6 +420,12 @@ class Switch(BaseModel):
         unique=True,
         help_text=_('The human/computer readable name.'),
         verbose_name=_('Name'),
+    )
+    category = models.CharField(
+        max_length=100,
+        help_text=_('Category label used to filter switches.'),
+        verbose_name=_('Category'),
+        blank=True
     )
     active = models.BooleanField(
         default=False,

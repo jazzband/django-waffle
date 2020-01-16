@@ -89,8 +89,8 @@ class InformativeManyToManyRawIdWidget(ManyToManyRawIdWidget):
 class FlagAdmin(BaseAdmin):
     actions = [enable_for_all, disable_for_all, delete_individually]
     list_display = ('name', 'note', 'everyone', 'percent', 'superusers',
-                    'staff', 'authenticated', 'languages')
-    list_filter = ('everyone', 'superusers', 'staff', 'authenticated')
+                    'staff', 'authenticated', 'languages', 'category')
+    list_filter = ('everyone', 'superusers', 'staff', 'authenticated', 'category')
     raw_id_fields = ('users', )
     ordering = ('-id',)
 
@@ -128,8 +128,8 @@ disable_switches.allowed_permissions = ('change',)
 
 class SwitchAdmin(BaseAdmin):
     actions = [enable_switches, disable_switches, delete_individually]
-    list_display = ('name', 'active', 'note', 'created', 'modified')
-    list_filter = ('active',)
+    list_display = ('name', 'active', 'note', 'created', 'modified', 'category')
+    list_filter = ('active', 'category')
     ordering = ('-id',)
 
 

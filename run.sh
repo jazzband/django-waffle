@@ -22,8 +22,16 @@ case "$CMD" in
         flake8 waffle $@ ;;
     "shell" )
         django-admin.py shell $@ ;;
+    "createsuperuser" )
+        django-admin.py createsuperuser $@ ;;
+    "collectstatic" )
+        django-admin.py collectstatic $@ ;;
+    "migrate" )
+        django-admin.py migrate $@ ;;
     "makemigrations" )
         django-admin.py makemigrations waffle $@ ;;
+    "runserver" )
+        django-admin.py runserver $@ ;;
     "makemessages" )
         export DJANGO_SETTINGS_MODULE= && cd waffle && django-admin.py makemessages && cd - ;;
     "compilemessages" )

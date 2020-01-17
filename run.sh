@@ -9,6 +9,10 @@ usage() {
     echo "  lint - run flake8"
     echo "  shell - open the Django shell"
     echo "  makemigrations - create a schema migration"
+    echo "  makemessages - recreate .po language files"
+    echo "  compilemessages - compile .po language files"
+    echo "  find_uncommitted_translations - find uncommitted .po changes"
+    echo "  manage - run any 'python manage.py' command"
     exit 1
 }
 
@@ -22,16 +26,10 @@ case "$CMD" in
         flake8 waffle $@ ;;
     "shell" )
         django-admin.py shell $@ ;;
-    "createsuperuser" )
-        django-admin.py createsuperuser $@ ;;
-    "collectstatic" )
-        django-admin.py collectstatic $@ ;;
-    "migrate" )
-        django-admin.py migrate $@ ;;
+    "manage" )
+        django-admin.py $@ ;;
     "makemigrations" )
         django-admin.py makemigrations waffle $@ ;;
-    "runserver" )
-        django-admin.py runserver $@ ;;
     "makemessages" )
         export DJANGO_SETTINGS_MODULE= && cd waffle && django-admin.py makemessages && cd - ;;
     "compilemessages" )

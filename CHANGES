@@ -4,7 +4,8 @@ Waffle Changelog
 
 v0.19.1
 =======
-- Removed deprection warnings for ugettext.
+- Dropped support for Python 2.7
+- Removed deprecation warnings for ugettext.
 
 v0.19.0
 =======

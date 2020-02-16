@@ -1,6 +1,5 @@
-from __future__ import unicode_literals
+import io
 
-import six
 from django.core.management import call_command, CommandError
 from django.contrib.auth.models import Group, User
 
@@ -114,7 +113,7 @@ class WaffleFlagManagementCommandTests(TestCase):
 
     def test_list(self):
         """ The command should list all flags."""
-        stdout = six.StringIO()
+        stdout = io.StringIO()
         get_waffle_flag_model().objects.create(name='test')
 
         call_command('waffle_flag', list_flags=True, stdout=stdout)
@@ -223,7 +222,7 @@ class WaffleSampleManagementCommandTests(TestCase):
 
     def test_list(self):
         """ The command should list all samples."""
-        stdout = six.StringIO()
+        stdout = io.StringIO()
         Sample.objects.create(name='test', percent=34)
 
         call_command('waffle_sample', list_samples=True, stdout=stdout)
@@ -268,7 +267,7 @@ class WaffleSwitchManagementCommandTests(TestCase):
 
     def test_list(self):
         """ The command should list all switches."""
-        stdout = six.StringIO()
+        stdout = io.StringIO()
         Switch.objects.create(name='switch1', active=True)
         Switch.objects.create(name='switch2', active=False)
 

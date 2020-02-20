@@ -39,4 +39,4 @@ WaffleSampleMixin
     from waffle.mixins import WaffleSampleMixin
 
     class MyClass(WaffleSampleMixin, View):
-        waffle_switch= "my_sample"
+        waffle_sample= "my_sample"

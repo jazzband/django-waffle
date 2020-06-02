@@ -11,6 +11,10 @@ behavior.
     The format for the cookies Waffle sets. Must contain ``%s``.
     Defaults to ``dwf_%s``.
 
+``WAFFLE_TEST_COOKIE``
+    The format for the cookies Waffle sets for user testing. Must contain ``%s``.
+    Defaults to ``dwft_%s``.
+
 ``WAFFLE_FLAG_DEFAULT``
     When a Flag is undefined in the database, Waffle considers it
     ``False``.  Set this to ``True`` to make Waffle consider undefined

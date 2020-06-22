@@ -2,6 +2,12 @@
 Waffle Changelog
 ================
 
+v1.0.0
+======
+- Removed Python 2.7 compatibility code
+- Fixed typo in docs example
+- Documented WAFFLE_TEST_COOKIE
+
 v0.20.0
 =======
 - Dropped support for Python 2.7

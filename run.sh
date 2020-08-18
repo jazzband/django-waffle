@@ -25,7 +25,7 @@ case "$CMD" in
     "makemigrations" )
         django-admin.py makemigrations waffle $@ ;;
     "makemessages" )
-        export DJANGO_SETTINGS_MODULE= && cd waffle && django-admin.py makemessages && cd - ;;
+        export DJANGO_SETTINGS_MODULE= && cd waffle && django-admin.py makemessages --all && cd - ;;
     "compilemessages" )
         export DJANGO_SETTINGS_MODULE= && cd waffle && django-admin.py compilemessages && cd - ;;
     "find_uncommitted_translations" )

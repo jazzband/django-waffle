@@ -245,12 +245,14 @@ class AbstractBaseFlag(BaseModel):
             if log_level:
                 logger.log(log_level, 'Flag %s not found', self.name)
             if get_setting('CREATE_MISSING_FLAGS'):
-                get_waffle_flag_model().objects.get_or_create(
+                flag, _created = get_waffle_flag_model().objects.get_or_create(
                     name=self.name,
                     defaults={
                         'everyone': get_setting('FLAG_DEFAULT')
                     }
                 )
+                cache = get_cache()
+                cache.add(self._cache_key(self.name), flag)
 
             return get_setting('FLAG_DEFAULT')
 
@@ -444,12 +446,14 @@ class Switch(BaseModel):
             if log_level:
                 logger.log(log_level, 'Switch %s not found', self.name)
             if get_setting('CREATE_MISSING_SWITCHES'):
-                Switch.objects.get_or_create(
+                switch, _created = Switch.objects.get_or_create(
                     name=self.name,
                     defaults={
                         'active': get_setting('SWITCH_DEFAULT')
                     }
                 )
+                cache = get_cache()
+                cache.add(self._cache_key(self.name), switch)
 
             return get_setting('SWITCH_DEFAULT')
 
@@ -512,12 +516,14 @@ class Sample(BaseModel):
 
                 default_percent = 100 if get_setting('SAMPLE_DEFAULT') else 0
 
-                Sample.objects.get_or_create(
+                sample, _created = Sample.objects.get_or_create(
                     name=self.name,
                     defaults={
                         'percent': default_percent
                     }
                 )
+                cache = get_cache()
+                cache.add(self._cache_key(self.name), sample)
 
             return get_setting('SAMPLE_DEFAULT')
         return Decimal(str(random.uniform(0, 100))) <= self.percent

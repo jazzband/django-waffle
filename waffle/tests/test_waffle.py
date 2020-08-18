@@ -51,7 +51,10 @@ class WaffleTests(TestCase):
         flag = flag_model.objects.get(name=FLAG_NAME)
         assert flag.name == FLAG_NAME
 
-        return flag
+        # We assert no queries are made to ensure flags created when the
+        # `CREATE_MISSING_FLAGS` setting is active are properly cached.
+        with self.assertNumQueries(0):
+            assert expected_value == waffle.flag_is_active(get(), FLAG_NAME)
 
     def test_persist_active_flag(self):
         waffle.get_waffle_flag_model().objects.create(name='myflag', percent='0.1')
@@ -402,6 +405,11 @@ class SwitchTests(TestCase):
         assert switch.name == SWITCH_NAME
         assert expected_value == switch.active
 
+        # We assert no queries are made to ensure switches created when the
+        # `CREATE_MISSING_SWITCHES` setting is active are properly cached.
+        with self.assertNumQueries(0):
+            assert expected_value == waffle.switch_is_active(SWITCH_NAME)
+
     def test_switch_active(self):
         switch = Switch.objects.create(name='myswitch', active=True)
         assert waffle.switch_is_active(switch.name)
@@ -498,6 +506,11 @@ class SampleTests(TestCase):
 
         assert sample.name == SAMPLE_NAME
         assert sample.percent == expected_value
+
+        # We assert no queries are made to ensure samples created when the
+        # `CREATE_MISSING_SAMPLES` setting is active are properly cached.
+        with self.assertNumQueries(0):
+            assert is_active == waffle.sample_is_active(SAMPLE_NAME)
 
     def test_sample_100(self):
         sample = Sample.objects.create(name='sample', percent='100.0')

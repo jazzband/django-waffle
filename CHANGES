@@ -2,6 +2,11 @@
 Waffle Changelog
 ================
 
+v1.1.0
+======
+- Add support for Django 3.1
+- Remove support for Django 1.11, 2.0, 2.1
+
 v1.0.0
 ======
 - Removed Python 2.7 compatibility code
@@ -56,7 +61,7 @@ v0.15.0
 =======
 - Dropped support for Django < 1.11
 - Dropped support for Python 3.3
-- Added settings `WAFFLE_CREATE_MISSING_(FLAG|SWITCHES|SAMPLES)` to optionally 
+- Added settings `WAFFLE_CREATE_MISSING_(FLAG|SWITCHES|SAMPLES)` to optionally
   create missing objects in the database automatically
 - Allow serializing/de-serializing waffle models by natural key
 - Added pluggable Flag model

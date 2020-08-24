@@ -128,8 +128,9 @@ class AbstractBaseFlag(BaseModel):
         help_text=_('The human/computer readable name.'),
         verbose_name=_('Name'),
     )
-    everyone = models.NullBooleanField(
+    everyone = models.BooleanField(
         blank=True,
+        null=True,
         help_text=_(
             'Flip this flag on (Yes) or off (No) for everyone, overriding all '
             'other settings. Leave as Unknown to use normally.'),

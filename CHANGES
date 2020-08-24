@@ -2,7 +2,7 @@
 Waffle Changelog
 ================
 
-v1.1.0
+v2.0.0
 ======
 - Add support for Django 3.1
 - Remove support for Django 1.11, 2.0, 2.1

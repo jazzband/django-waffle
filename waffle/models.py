@@ -252,7 +252,7 @@ class AbstractBaseFlag(BaseModel):
                     }
                 )
                 cache = get_cache()
-                cache.add(self._cache_key(self.name), flag)
+                cache.set(self._cache_key(self.name), flag)
 
             return get_setting('FLAG_DEFAULT')
 
@@ -453,7 +453,7 @@ class Switch(BaseModel):
                     }
                 )
                 cache = get_cache()
-                cache.add(self._cache_key(self.name), switch)
+                cache.set(self._cache_key(self.name), switch)
 
             return get_setting('SWITCH_DEFAULT')
 
@@ -523,7 +523,7 @@ class Sample(BaseModel):
                     }
                 )
                 cache = get_cache()
-                cache.add(self._cache_key(self.name), sample)
+                cache.set(self._cache_key(self.name), sample)
 
             return get_setting('SAMPLE_DEFAULT')
         return Decimal(str(random.uniform(0, 100))) <= self.percent

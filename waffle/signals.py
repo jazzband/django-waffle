@@ -8,4 +8,8 @@ from waffle import get_waffle_flag_model
 @receiver(m2m_changed, sender=get_waffle_flag_model().groups.through)
 def flag_membership_changed(sender, instance, action, **kwargs):
     if action in ('post_add', 'post_remove'):
-        instance.flush()
+        try:
+            instance.flush()
+        except AttributeError:
+            for flag in get_waffle_flag_model().objects.filter(pk__in=kwargs['pk_set']):
+                flag.flush()

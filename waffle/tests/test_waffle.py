@@ -161,6 +161,29 @@ class WaffleTests(TestCase):
         response = process_request(request, views.flag_in_view)
         self.assertEqual(b'off', response.content)
 
+    def test_remove_from_user(self):
+        """Same operation of `test_user` but performed with reverse relation"""
+        user = get_user_model().objects.create(username='foo')
+        flag = waffle.get_waffle_flag_model().objects.create(name='myflag')
+        flag.users.add(user)
+
+        request = get()
+        request.user = user
+        response = process_request(request, views.flag_in_view)
+        self.assertEqual(b'on', response.content)
+        assert 'dwf_myflag' not in response.cookies
+
+        request.user = get_user_model().objects.create(username='someone_else')
+        response = process_request(request, views.flag_in_view)
+        self.assertEqual(b'off', response.content)
+        assert 'dwf_myflag' not in response.cookies
+
+        # Unsetting the flag on a user should have an effect.
+        user.flag_set.remove(flag)
+        request.user = user
+        response = process_request(request, views.flag_in_view)
+        self.assertEqual(b'off', response.content)
+
     def test_group(self):
         """Test the per-group switch."""
         group = Group.objects.create(name='foo')
@@ -184,6 +207,33 @@ class WaffleTests(TestCase):
 
         # Unsetting the flag on a group should have an effect.
         flag.groups.remove(group)
+        request.user = user
+        response = process_request(request, views.flag_in_view)
+        self.assertEqual(b'off', response.content)
+
+    def test_remove_from_group(self):
+        """Same operation of `test_group` but performed with reverse relation"""
+        group = Group.objects.create(name='foo')
+        user = get_user_model().objects.create(username='bar')
+        user.groups.add(group)
+
+        flag = waffle.get_waffle_flag_model().objects.create(name='myflag')
+        flag.groups.add(group)
+
+        request = get()
+        request.user = user
+        response = process_request(request, views.flag_in_view)
+        self.assertEqual(b'on', response.content)
+        assert 'dwf_myflag' not in response.cookies
+
+        request.user = get_user_model()(username='someone_else')
+        request.user.save()
+        response = process_request(request, views.flag_in_view)
+        self.assertEqual(b'off', response.content)
+        assert 'dwf_myflag' not in response.cookies
+
+        # Unsetting the flag on a group should have an effect.
+        group.flag_set.remove(flag)
         request.user = user
         response = process_request(request, views.flag_in_view)
         self.assertEqual(b'off', response.content)

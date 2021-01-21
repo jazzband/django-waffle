@@ -2,6 +2,12 @@
 Waffle Changelog
 ================
 
+v2.1.0
+======
+- Added test support for PowerPC
+- Fixed caching of auto-created missing flags
+- Fix bug in flag_membership_changed signal handler
+
 v2.0.0
 ======
 - Add support for Django 3.1

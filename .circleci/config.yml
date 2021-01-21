@@ -1,5 +1,8 @@
 version: 2.1
 
+# TODO Add additional Python versions
+# TODO Add additional Django versions
+# TODO Add additional architectures
 orbs:
   python: circleci/python@0.2.1
 
@@ -10,12 +13,17 @@ jobs:
       - checkout
       - python/load-cache
       - python/install-deps
+      - run:
+          command: pip install tox
+          name: Install tox
       - python/save-cache
       - run:
-          command: ./manage.py test
+          command: tox
           name: Test
 
 workflows:
   main:
     jobs:
       - build-and-test
+
+# TODO Add deploy support

@@ -1,0 +1,3 @@
+flake8
+mock==4.0.3
+tox

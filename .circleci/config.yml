@@ -13,6 +13,7 @@ jobs:
     steps:
       - checkout
       - python/load-cache
+      - tox/install-tox
       - python/install-deps
       - python/save-cache
       - tox/tox:

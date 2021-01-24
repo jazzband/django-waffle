@@ -1,7 +1,8 @@
-# These are required to run the tests.
 Django
-flake8
+django-jinja>=2.4.1,<3
+Jinja2>=2.7.1
+transifex-client
 
-# Everything else is in a Django-version-free version
-# for TravisCI.
--r travis.txt
+flake8
+mock==1.3.0
+tox

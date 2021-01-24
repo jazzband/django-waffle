@@ -4,16 +4,20 @@ version: 2.1
 # TODO Add additional Django versions
 # TODO Add additional architectures
 orbs:
-  python: rohanpm/python@1.3.0
+  python: circleci/python@0.2.1
+  tox: rohanpm/python@1.3.0
 
 jobs:
   build-and-test:
     executor: python/default
     steps:
       - checkout
+      - python/load-cache
       - python/install-deps
-      - tox:
+      - python/save-cache
+      - tox/tox:
           toxenv: py35-django22
+
 
 workflows:
   main:

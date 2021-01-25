@@ -6,9 +6,9 @@ Django Waffle is (yet another) feature flipper for Django. You can
 define the conditions for which a flag should be active, and use it in
 a number of ways.
 
-.. image:: https://travis-ci.org/django-waffle/django-waffle.svg?branch=master
-   :target: https://travis-ci.org/django-waffle/django-waffle
-   :alt: Travis-CI Build Status
+.. image:: https://github.com/django-waffle/django-waffle/workflows/Python%20package/badge.svg?branch=master
+   :target: https://github.com/django-waffle/django-waffle/actions
+   :alt: Build Status
 .. image:: https://badge.fury.io/py/django-waffle.svg
    :target: https://badge.fury.io/py/django-waffle
    :alt: PyPI status badge

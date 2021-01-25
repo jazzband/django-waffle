@@ -56,7 +56,7 @@ To be mergable, patches must:
 
 - be rebased onto the latest master,
 - be automatically mergeable,
-- not break existing tests (TravisCI_ will run them, too),
+- not break existing tests,
 - not change existing tests without a *very* good reason,
 - add tests for new code (bug fixes should include regression tests, new
   features should have relevant tests),
@@ -70,6 +70,5 @@ with it.
 
 .. _open a new issue: https://github.com/django-waffle/django-waffle/issues/new
 .. _Fork: https://github.com/django-waffle/django-waffle/fork
-.. _TravisCI: https://travis-ci.org/django-waffle/django-waffle
 .. _flake8: https://pypi.python.org/pypi/flake8
 .. _good commit message: http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html

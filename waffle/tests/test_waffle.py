@@ -4,16 +4,14 @@ import logging
 import random
 import threading
 import unittest
+from unittest import mock
 
-from django.contrib.auth import get_user_model
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser, Group
 from django.db import connection, transaction
 from django.test import RequestFactory, TransactionTestCase
-
 from django.test.utils import override_settings
-
-import mock
 
 import waffle
 from test_app import views
@@ -21,7 +19,6 @@ from test_app.models import CompanyAwareFlag, Company
 from waffle.middleware import WaffleMiddleware
 from waffle.models import Sample, Switch
 from waffle.tests.base import TestCase
-
 
 DATABASES = {'default', 'readonly'}
 
@@ -618,6 +615,7 @@ class SampleTests(TestCase):
 class TransactionTestMixin(object):
     """Mixin providing an abstract test case for writing in a transaction.
     """
+
     def create_toggle(self):
         """Create an inactive feature toggle (i.e. flag, switch, sample)."""
         raise NotImplementedError

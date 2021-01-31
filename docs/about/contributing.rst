@@ -17,11 +17,11 @@ Set Up
 ======
 
 Setting up an environment is easy! You'll want ``virtualenv`` and
-``pip``, then just create a new virtual environment and install the
+``poetry``, then just create a new virtual environment and install the
 requirements::
 
     $ mkvirtualenv waffle
-    $ pip install -r requirements.txt
+    $ poetry install
 
 Done!
 

@@ -22,17 +22,21 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - uses: actions/cache@v2
+      - name: Install Poetry
+        uses: snok/install-poetry@v1.1.1
         with:
-          path: ~/.cache/pip
-          key: ${{ matrix.python-version }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ matrix.python-version }}-pip-
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+      - name: Cache Poetry virtualenv
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install tox-gh-actions
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install --upgrade pip
+          pip install tox-gh-actions
+          poetry install
       - name: Test
         run: |
           tox
@@ -43,19 +47,24 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
-      - uses: actions/cache@v2
+      - name: Install Poetry
+        uses: snok/install-poetry@v1.1.1
         with:
-          path: ~/.cache/pip
-          key: ${{ matrix.python-version }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ matrix.python-version }}-pip-
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+      - name: Cache Poetry virtualenv
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install tox-gh-actions
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install --upgrade pip
+          pip install tox-gh-actions
+          poetry install
       - name: Lint
         run: |
+          source .venv/bin/activate
           # stop the build if there are Python syntax errors or undefined names
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
@@ -67,20 +76,24 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
-      - uses: actions/cache@v2
-        with:
-          path: ~/.cache/pip
-          key: ${{ matrix.python-version }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ matrix.python-version }}-pip-
       - name: Install gettext
         run: |
           sudo apt-get install -y gettext-base gettext
+      - name: Install Poetry
+        uses: snok/install-poetry@v1.1.1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+      - name: Cache Poetry virtualenv
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install django
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install --upgrade pip
+          pip install tox-gh-actions
+          poetry install
       - name: i18n validation
         run: |
           tox -e i18n

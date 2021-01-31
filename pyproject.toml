@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "django-waffle"
+version = "2.1.0"
+description = "A feature flipper for Django"
+authors = [
+    "James Socol <me@jamessocol.com>",
+    "Clinton Blackburn <clinton.blackburn@gmail.com>",
+]
+license = "BSD-3-Clause-Clear"
+packages = [
+    { include = "waffle" },
+    { include = "waffle/**/*.py" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.5"
+Django = ">=2.2,<3.2"
+
+[tool.poetry.dev-dependencies]
+flake8 = "^3.8.4"
+tox = "^3.21.3"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

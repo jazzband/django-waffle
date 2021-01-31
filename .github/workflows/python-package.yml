@@ -47,6 +47,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
+        with:
+          # NOTE: flake8 doesn't seem to work with Python 3.9
+          python-version: 3.8
       - name: Install Poetry
         uses: snok/install-poetry@v1.1.1
         with:

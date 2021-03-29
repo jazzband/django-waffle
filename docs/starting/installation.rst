@@ -91,6 +91,8 @@ With jingo_, add it to the ``JINJA_CONFIG['extensions']`` list::
     }
 
 
+.. _installation-settings-migrations:
+
 Database Schema
 ===============
 

@@ -96,7 +96,7 @@ jobs:
       - uses: casperdcl/deploy-pypi@v2
         with:
           url: https://test.pypi.org/legacy/
-          password: "${{ secrets.TEST_PYPI_API_TOKEN }}"
+          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
           build: true
           skip_existing: true
 

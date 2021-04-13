@@ -111,6 +111,10 @@ The custom Flag model must inherit from `waffle.models.AbstractBaseFlag`. If you
 ``User`` and ``Group`` based flagging and would like to add more entities to it,
 you may extend `waffle.models.AbstractUserFlag`.
 
+If you use a custom flag model to apply to models beyond Users and Groups, you must run Django's
+``makemigrations`` before running migrations as outlined in the :ref:`installation docs
+<installation-settings-migrations>`.
+
 If you need to reference the class that is being used as the `Flag` model in your project, use the
 ``get_waffle_flag_model()`` method. If you reference the Flag a lot, it may be convenient to add
 ``Flag = get_waffle_flag_model()`` right below your imports and reference the Flag model as if it had
@@ -124,6 +128,9 @@ Example:
     WAFFLE_FLAG_MODEL = 'myapp.Flag'
 
     # models.py
+    from waffle.models import AbstractUserFlag, CACHE_EMPTY
+    from waffle.utils import get_setting, keyfmt, get_cache
+
     class Flag(AbstractUserFlag):
         FLAG_COMPANIES_CACHE_KEY = 'FLAG_COMPANIES_CACHE_KEY'
         FLAG_COMPANIES_CACHE_KEY_DEFAULT = 'flag:%s:companies'
@@ -173,7 +180,7 @@ Example:
     from waffle.admin import FlagAdmin as WaffleFlagAdmin
 
     class FlagAdmin(WaffleFlagAdmin):
-        raw_id_fields = tuple(list(WaffleFlagAdmin.raw_id_fields)  ['companies'])
+        raw_id_fields = tuple(list(WaffleFlagAdmin.raw_id_fields) + ['companies'])
     admin.site.register(Flag, FlagAdmin)
 
 

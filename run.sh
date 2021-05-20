@@ -17,17 +17,17 @@ shift
 
 case "$CMD" in
     "test" )
-        DJANGO_SETTINGS_MODULE=test_settings django-admin.py test waffle $@ ;;
+        DJANGO_SETTINGS_MODULE=test_settings django-admin test waffle $@ ;;
     "lint" )
         flake8 waffle $@ ;;
     "shell" )
-        django-admin.py shell $@ ;;
+        django-admin shell $@ ;;
     "makemigrations" )
-        django-admin.py makemigrations waffle $@ ;;
+        django-admin makemigrations waffle $@ ;;
     "makemessages" )
-        export DJANGO_SETTINGS_MODULE= && cd waffle && django-admin.py makemessages --all && cd - ;;
+        export DJANGO_SETTINGS_MODULE= && cd waffle && django-admin makemessages --all && cd - ;;
     "compilemessages" )
-        export DJANGO_SETTINGS_MODULE= && cd waffle && django-admin.py compilemessages && cd - ;;
+        export DJANGO_SETTINGS_MODULE= && cd waffle && django-admin compilemessages && cd - ;;
     "find_uncommitted_translations" )
         git diff --exit-code -G "^(msgid|msgstr)" || (echo "Please run ./run.sh makemessages and commit the updated django.po file." && false) ;;
     * )

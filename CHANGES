@@ -2,6 +2,12 @@
 Waffle Changelog
 ================
 
+v2.2.0
+======
+- Added support for Django 3.2
+- Updated documentation for custom flag models
+- Updated Russian translations
+
 v2.1.0
 ======
 - Added test support for PowerPC

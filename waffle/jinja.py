@@ -1,18 +1,24 @@
 from __future__ import unicode_literals
 
-import jinja2
 from jinja2.ext import Extension
 
 from waffle import flag_is_active, sample_is_active, switch_is_active
 from waffle.views import _generate_waffle_js
 
 
-@jinja2.contextfunction
+try:
+    from jinja2 import pass_context
+except ImportError:
+    # NOTE(willkg): We can get rid of this when we stop supporting Jinja2 < 3.
+    from jinja2 import contextfunction as pass_context
+
+
+@pass_context
 def flag_helper(context, flag_name):
     return flag_is_active(context['request'], flag_name)
 
 
-@jinja2.contextfunction
+@pass_context
 def inline_wafflejs_helper(context):
     return _generate_waffle_js(context['request'])
 

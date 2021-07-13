@@ -9,7 +9,7 @@ from waffle.views import _generate_waffle_js
 try:
     from jinja2 import pass_context
 except ImportError:
-    # NOTE(willkg): We can get rid of this when we stop supporting Jinja2 < 3.
+    # NOTE: We can get rid of this when we stop supporting Jinja2 < 3.
     from jinja2 import contextfunction as pass_context
 
 

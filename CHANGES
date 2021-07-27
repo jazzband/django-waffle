@@ -2,6 +2,38 @@
 Waffle Changelog
 ================
 
+v0.15.1
+=======
+- Optionally logging missing flags, samples, and switches
+- Added --users option to waffle_flag management command
+- Updated testutils to flush caches
+- Improved admin site for users and groups
+- Fixed global cache thread safety issues
+
+v0.15.0
+=======
+- Dropped support for Django < 1.11
+- Dropped support for Python 3.3
+- Added settings `WAFFLE_CREATE_MISSING_(FLAG|SWITCHES|SAMPLES)` to optionally 
+  create missing objects in the database automatically
+- Allow serializing/de-serializing waffle models by natural key
+- Added pluggable Flag model
+
+v0.14.0
+=======
+- Added i18n support
+- Added Russian translations
+- Add management command to delete waffle data
+
+v0.13
+=====
+- Added support for Django 2.0.
+- Added support for search the name and notes fields in Django admin.
+- Fixed small bugs in management commands.
+- Fixed small documentation issues.
+- Updated `waffle_flag` management command to accept user groups.
+- Added setting `WAFFLE_READ_FROM_WRITE_DB` to read from write DB on cache miss.
+
 dev
 ====
 

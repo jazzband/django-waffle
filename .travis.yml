@@ -1,21 +1,41 @@
 language: python
+
 sudo: false
+
 python:
- - "2.7"
- - "3.3"
- - "3.4"
- - "3.5"
- - "pypy"
-env:
- - DJANGO_VERSION="1.8"
- - DJANGO_VERSION="1.9"
+  - "2.7"
+  - "3.4"
+  - "3.5"
+  - "3.6"
+
 install:
- - pip install -q "Django>=${DJANGO_VERSION},<${DJANGO_VERSION}.99" -r travis.txt
-script: coverage run run.py test
-matrix:
-  exclude:
-    - python: "3.3"
-      env: DJANGO_VERSION="1.9"
+  - pip install tox tox-travis
+
+# Some tests may require accessing the database from multiple threads
+# (see #296), which isn't supported by the sqlite3 engine. Run the tests with
+# Postgres in CI to allow full test coverage.
+services:
+  postgresql
+
+before_script:
+  - psql -c 'create database waffle_test;' -U postgres
+
+env:
+  - DATABASE_URL=postgres://postgres@localhost:5432/waffle_test
+
+script:
+  - tox
+
+deploy:
+  provider: pypi
+  user: django-waffle
+  password:
+    secure: sQzN+jn7JdkIJbXsjS1uRueNVo2AsPh2iJChDAisWu8qFRMFREbHCKRu33+WZ9Vbw0NuRC2Wl2DknPTKYBtMq+4YzbKyRLAXvf/qAzWwcbjQsPAz1bQnfDBbOhcewiltfVf3AEbsq97NdKhOS4+T0R3/eqMhbAM9PVP2WO78cvA=
+  distributions: sdist bdist_wheel
+  on:
+    tags: true
+    python: 3.6
+
 after_success:
  - coveralls
  - codecov

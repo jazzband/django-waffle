@@ -1,13 +1,13 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 setup(
     name='django-waffle',
-    version='0.12.0a1',
+    version='0.15.1ps',
     description='A feature flipper for Django.',
     long_description=open('README.rst').read(),
     author='James Socol',
     author_email='me@jamessocol.com',
-    url='http://github.com/jsocol/django-waffle',
+    url='http://github.com/django-waffle/django-waffle',
     license='BSD',
     packages=find_packages(exclude=['test_app', 'test_settings']),
     include_package_data=True,
@@ -20,13 +20,17 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
+        'Framework :: Django',
+        'Framework :: Django :: 1.11',
+        'Framework :: Django :: 2.0',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ]
 )

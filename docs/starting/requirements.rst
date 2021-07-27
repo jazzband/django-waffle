@@ -39,7 +39,7 @@ processor`_::
 
     TEMPLATE_CONTEXT_PROCESSORS = (
         # ...
-        'django.core.context_processors.request',
+        'django.template.context_processors.request',
         # ...
 
 .. _template context processor: https://docs.djangoproject.com/en/dev/ref/settings/#template-context-processors

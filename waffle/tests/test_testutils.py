@@ -3,12 +3,12 @@ from __future__ import unicode_literals
 from decimal import Decimal
 
 from django.contrib.auth.models import AnonymousUser
-from django.test import TestCase, RequestFactory
+from django.test import RequestFactory, TestCase
 
 import waffle
 from test_app.models import Flag
-from waffle.models import Switch, Sample
-from waffle.testutils import override_switch, override_flag, override_sample
+from waffle.models import Sample, Switch
+from waffle.testutils import override_flag, override_sample, override_switch
 
 
 class OverrideSwitchTests(TestCase):

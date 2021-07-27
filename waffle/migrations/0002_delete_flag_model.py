@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
             name='active',
             field=models.BooleanField(default=False, help_text='Is this switch active?'),
         ),
-        migrations.DeleteModel(
-            name='Flag',
-        ),
+#         migrations.DeleteModel(
+#             name='Flag',
+#         ),
     ]

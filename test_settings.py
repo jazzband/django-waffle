@@ -1,4 +1,5 @@
 import os
+
 import django
 
 # Make filepaths relative to settings.
@@ -6,7 +7,6 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 path = lambda *a: os.path.join(ROOT, *a)
 
 DEBUG = True
-TEMPLATE_DEBUG = True
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 JINJA_CONFIG = {}
@@ -20,8 +20,24 @@ DATABASES = {
     'default': {
         'NAME': 'test.db',
         'ENGINE': 'django.db.backends.sqlite3',
+    },
+
+    # Provide a readonly DB for testing DB replication scenarios.
+    'readonly': {
+        'NAME': 'test.readonly.db',
+        'ENGINE': 'django.db.backends.sqlite3',
     }
 }
+
+# if 'DATABASE_URL' in os.environ:
+#     try:
+#         import dj_database_url
+#         import psycopg2
+#         DATABASES['default'] = dj_database_url.config()
+#     except ImportError:
+#         raise ImportError('Using the DATABASE_URL variable requires '
+#                           'dj-database-url and psycopg2. Try:\n\npip install '
+#                           '-r travis.txt')
 
 INSTALLED_APPS = (
     'django.contrib.admin',
@@ -33,18 +49,19 @@ INSTALLED_APPS = (
     'test_app',
 )
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'waffle.middleware.WaffleMiddleware',
 )
 
+
 ROOT_URLCONF = 'test_app.urls'
 
 _CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
-    'django.core.context_processors.request',
+    'django.template.context_processors.request',
 )
 
 TEMPLATES = [
@@ -76,12 +93,16 @@ TEMPLATES = [
     },
 ]
 
+
+
 WAFFLE = {
     'FLAG_DEFAULT' : False,
     'SWITCH_DEFAULT' : False,
     'SAMPLE_DEFAULT' : False,
+    'READ_FROM_WRITE_DB' : False,
     'OVERRIDE' : False,
     'UNIQUE_FLAG_NAME': False,
     'CACHE_PREFIX' : 'test:',
     'FLAG_CLASS': 'test_app.models.Flag',
+    'FLAG_MODEL' : 'test_app.Flag',
 }

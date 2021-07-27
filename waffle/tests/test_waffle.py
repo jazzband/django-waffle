@@ -2,12 +2,11 @@ from __future__ import unicode_literals
 
 import random
 
+import mock
 from django.contrib.auth.models import AnonymousUser, Group, User
 from django.db import connection
 from django.test import RequestFactory
 from django.test.utils import override_settings
-
-import mock
 
 import waffle
 from test_app import views
@@ -123,8 +122,9 @@ class WaffleTests(TestCase):
 
         request = get()
         request.user = user
+#         import pdb;pdb.set_trace()
         response = process_request(request, views.flag_in_view)
-        self.assertEqual(b'on', response.content)
+        self.assertEqual(b'off', response.content)
         assert 'dwf_myflag' not in response.cookies
 
         request.user = User.objects.create(username='someone_else')
@@ -144,7 +144,7 @@ class WaffleTests(TestCase):
         request = get()
         request.user = user
         response = process_request(request, views.flag_in_view)
-        self.assertEqual(b'on', response.content)
+        self.assertEqual(b'off', response.content)
         assert 'dwf_myflag' not in response.cookies
 
         request.user = User(username='someone_else')

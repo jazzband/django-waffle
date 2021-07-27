@@ -1,39 +1,49 @@
 from __future__ import print_function
 
-from optparse import make_option
-
 from django.core.management.base import BaseCommand, CommandError
 
 from waffle.models import Sample
 
 
 class Command(BaseCommand):
-    option_list = BaseCommand.option_list + (
-        make_option('-l', '--list',
-            action='store_true', dest='list_sample', default=False,
-            help='List existing samples.'),
-        make_option('--create',
+    def add_arguments(self, parser):
+        parser.add_argument(
+            'name',
+            nargs='?',
+            help='The name of the sample.')
+        parser.add_argument(
+            'percent',
+            nargs='?',
+            type=int,
+            help='The percentage of the time this sample will be active.')
+        parser.add_argument(
+            '-l', '--list',
+            action='store_true', dest='list_samples', default=False,
+            help='List existing samples.')
+        parser.add_argument(
+            '--create',
             action='store_true',
             dest='create',
             default=False,
-            help="If the sample doesn't exist, create it."),
-    )
+            help='If the sample does not exist, create it.')
 
     help = 'Change percentage of a sample.'
-    args = '<sample_name> <percent>'
 
-    def handle(self, sample_name=None, percent=None, *args, **options):
-        list_sample = options['list_sample']
-
-        if list_sample:
-            print('Samples:')
+    def handle(self, *args, **options):
+        if options['list_samples']:
+            self.stdout.write('Samples:')
             for sample in Sample.objects.iterator():
-                print('%s: %s%%' % (sample.name, sample.percent))
+                self.stdout.write('%s: %.1f%%' % (sample.name, sample.percent))
+            self.stdout.write('')
             return
 
+        sample_name = options['name']
+        percent = options['percent']
+
         if not (sample_name and percent):
-            raise CommandError('You need to specify a sample '
-                               'name and percentage.')
+            raise CommandError(
+                'You need to specify a sample name and percentage.'
+            )
 
         try:
             percent = float(percent)
@@ -46,7 +56,7 @@ class Command(BaseCommand):
             sample, created = Sample.objects.get_or_create(
                 name=sample_name, defaults={'percent': 0})
             if created:
-                print('Creating sample: %s' % sample_name)
+                self.stdout.write('Creating sample: %s' % sample_name)
         else:
             try:
                 sample = Sample.objects.get(name=sample_name)

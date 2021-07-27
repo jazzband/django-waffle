@@ -16,7 +16,7 @@ Use ``manage.py`` to change the values of your flags::
 
     $ ./manage.py waffle_flag name-of-my-flag --everyone --percent=47
 
-Use ``--everyone`` to turn on and ``--deactive`` to turn off the flag.
+Use ``--everyone`` to turn on and ``--deactivate`` to turn off the flag.
 Set a percentage with ``--percent`` or ``-p``. Set the flag on for
 superusers (``--superusers``), staff (``--staff``) or authenticated
 (``--authenticated``) users. Set the rollout mode on with ``--rollout``
@@ -71,3 +71,13 @@ To list all the existing samples, use ``-l``::
     $ ./manage.py waffle_sample -l
     Samples:
     name-of-my-sample: 50%
+
+
+Deleting Data
+=============
+
+Use ``manage.py`` to delete a batch of flags, switches, and/or samples::
+
+    $ ./manage.py waffle_delete --switches switch_name_0 switch_name_1 --flags flag_name_0 flag_name_1 --samples sample_name_0 sample_name_1
+
+Pass a list of switch, flag, or sample names to the command as keyword arguments and they will be deleted from the database.

@@ -1,24 +1,25 @@
 from __future__ import unicode_literals
 
-from decimal import Decimal
+import logging
 import random
+from decimal import Decimal
+
+from django.conf import settings
+from django.contrib.auth.models import Group
+from django.db import models, router, transaction
+from django.utils import timezone
+from django.utils.encoding import python_2_unicode_compatible
+from django.utils.translation import ugettext_lazy as _
+
+from waffle import managers
+from waffle.utils import get_cache, get_setting, keyfmt
 
 try:
     from django.utils import timezone as datetime
 except ImportError:
     from datetime import datetime
+logger = logging.getLogger('waffle')
 
-from django.conf import settings
-from django.contrib.auth.models import Group
-from django.db import models
-from django.db.models.signals import post_save, post_delete, m2m_changed
-from django.utils.encoding import python_2_unicode_compatible
-
-from waffle import managers
-from waffle.utils import get_setting, keyfmt, get_cache
-
-
-cache = get_cache()
 CACHE_EMPTY = '-'
 
 
@@ -33,30 +34,42 @@ class BaseModel(models.Model):
     def __str__(self):
         return self.name
 
+    def natural_key(self):
+        return (self.name,)
+
     @classmethod
     def _cache_key(cls, name):
         return keyfmt(get_setting(cls.SINGLE_CACHE_KEY), name)
 
     @classmethod
     def get(cls, name):
+        cache = get_cache()
         cache_key = cls._cache_key(name)
         cached = cache.get(cache_key)
         if cached == CACHE_EMPTY:
-            return cls()
+            return cls(name=name)
         if cached:
             return cached
 
         try:
-            obj = cls.objects.get(name=name)
+            obj = cls.get_from_db(name)
         except cls.DoesNotExist:
             cache.add(cache_key, CACHE_EMPTY)
-            return cls()
+            return cls(name=name)
 
         cache.add(cache_key, obj)
         return obj
 
     @classmethod
+    def get_from_db(cls, name):
+        objects = cls.objects
+        if get_setting('READ_FROM_WRITE_DB'):
+            objects = objects.using(router.db_for_write(cls))
+        return objects.get(name=name)
+
+    @classmethod
     def get_all(cls):
+        cache = get_cache()
         cache_key = get_setting(cls.ALL_CACHE_KEY)
         cached = cache.get(cache_key)
         if cached == CACHE_EMPTY:
@@ -64,7 +77,7 @@ class BaseModel(models.Model):
         if cached:
             return cached
 
-        objs = list(cls.objects.all())
+        objs = cls.get_all_from_db()
         if not objs:
             cache.add(cache_key, CACHE_EMPTY)
             return []
@@ -72,7 +85,15 @@ class BaseModel(models.Model):
         cache.add(cache_key, objs)
         return objs
 
+    @classmethod
+    def get_all_from_db(cls):
+        objects = cls.objects
+        if get_setting('READ_FROM_WRITE_DB'):
+            objects = objects.using(router.db_for_write(cls))
+        return list(objects.all())
+
     def flush(self):
+        cache = get_cache()
         keys = [
             self._cache_key(self.name),
             get_setting(self.ALL_CACHE_KEY),
@@ -82,12 +103,18 @@ class BaseModel(models.Model):
     def save(self, *args, **kwargs):
         self.modified = datetime.now()
         ret = super(BaseModel, self).save(*args, **kwargs)
-        self.flush()
+        if hasattr(transaction, 'on_commit'):
+            transaction.on_commit(self.flush)
+        else:
+            self.flush()
         return ret
 
     def delete(self, *args, **kwargs):
         ret = super(BaseModel, self).delete(*args, **kwargs)
-        self.flush()
+        if hasattr(transaction, 'on_commit'):
+            transaction.on_commit(self.flush)
+        else:
+            self.flush()
         return ret
 
 
@@ -98,12 +125,14 @@ def set_flag(request, flag_name, active=True, session_only=False):
     request.waffles[flag_name] = [active, session_only]
 
 
+
 class BaseFlag(BaseModel):
     """A feature flag.
 
     Flags are active (or not) on a per-request basis.
 
     """
+
     name = models.CharField(max_length=100, unique=get_setting('UNIQUE_FLAG_NAME'),
                             help_text='The human/computer readable name.')
     everyone = models.NullBooleanField(blank=True, help_text=(
@@ -144,15 +173,12 @@ class BaseFlag(BaseModel):
 
     class Meta:
         abstract = True
-
+        verbose_name = _('Flag')
+        verbose_name_plural = _('Flags')
 
     def flush(self):
-        keys = [
-            self._cache_key(self.name),
-            keyfmt(get_setting('FLAG_USERS_CACHE_KEY'), self.name),
-            keyfmt(get_setting('FLAG_GROUPS_CACHE_KEY'), self.name),
-            get_setting('ALL_FLAGS_CACHE_KEY'),
-        ]
+        cache = get_cache()
+        keys = self.get_flush_keys()
         cache.delete_many(keys)
 
     def _get_user_ids(self):
@@ -187,9 +213,16 @@ class BaseFlag(BaseModel):
         cache.add(cache_key, group_ids)
         return group_ids
 
+    def get_flush_keys(self, flush_keys=None):
+        flush_keys = flush_keys or []
+        flush_keys.extend([
+            self._cache_key(self.name),
+            get_setting('ALL_FLAGS_CACHE_KEY'),
+        ])
+        return flush_keys
+
     def is_active_for_user(self, user):
-        authed = getattr(user, 'is_authenticated', lambda: False)()
-        if self.authenticated and authed:
+        if self.authenticated and user.is_authenticated:
             return True
 
         if self.staff and getattr(user, 'is_staff', False):
@@ -198,15 +231,6 @@ class BaseFlag(BaseModel):
         if self.superusers and getattr(user, 'is_superuser', False):
             return True
 
-        user_ids = self._get_user_ids()
-        if hasattr(user, 'pk') and user.pk in user_ids:
-            return True
-
-        if hasattr(user, 'groups'):
-            group_ids = self._get_group_ids()
-            user_groups = set(user.groups.all().values_list('pk', flat=True))
-            if group_ids.intersection(user_groups):
-                return True
         return None
 
     def _is_active_for_user(self, request):
@@ -222,6 +246,16 @@ class BaseFlag(BaseModel):
 
     def is_active(self, request):
         if not self.pk:
+            if get_setting('LOG_MISSING_FLAGS'):
+                logger.log(level=get_setting('LOG_MISSING_FLAGS'), msg=("Flag %s not found", self.name))
+            if get_setting('CREATE_MISSING_FLAGS'):
+                get_waffle_flag_model().objects.get_or_create(
+                    name=self.name,
+                    defaults={
+                        'everyone': get_setting('FLAG_DEFAULT')
+                    }
+                )
+
             return get_setting('FLAG_DEFAULT')
 
         if get_setting('OVERRIDE'):
@@ -272,22 +306,119 @@ class BaseFlag(BaseModel):
         return False
 
 
+class AbstractUserFlag(BaseFlag):
+    groups = models.ManyToManyField(
+        Group,
+        blank=True,
+        help_text=_('Activate this flag for these user groups.'),
+        verbose_name=_('Groups'),
+    )
+    users = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        help_text=_('Activate this flag for these users.'),
+        verbose_name=_('Users'),
+    )
+
+    class Meta(BaseFlag.Meta):
+        abstract = True
+        verbose_name = _('Flag')
+        verbose_name_plural = _('Flags')
+
+    def get_flush_keys(self, flush_keys=None):
+        flush_keys = super(AbstractUserFlag, self).get_flush_keys(flush_keys)
+        flush_keys.extend([
+            keyfmt(get_setting('FLAG_USERS_CACHE_KEY'), self.name),
+            keyfmt(get_setting('FLAG_GROUPS_CACHE_KEY'), self.name),
+        ])
+        return flush_keys
+
+    def _get_user_ids(self):
+        cache = get_cache()
+        cache_key = keyfmt(get_setting('FLAG_USERS_CACHE_KEY'), self.name)
+        cached = cache.get(cache_key)
+        if cached == CACHE_EMPTY:
+            return set()
+        if cached:
+            return cached
+
+        user_ids = set(self.users.all().values_list('pk', flat=True))
+        if not user_ids:
+            cache.add(cache_key, CACHE_EMPTY)
+            return set()
+
+        cache.add(cache_key, user_ids)
+        return user_ids
+
+    def _get_group_ids(self):
+        cache = get_cache()
+        cache_key = keyfmt(get_setting('FLAG_GROUPS_CACHE_KEY'), self.name)
+        cached = cache.get(cache_key)
+        if cached == CACHE_EMPTY:
+            return set()
+        if cached:
+            return cached
+
+        group_ids = set(self.groups.all().values_list('pk', flat=True))
+        if not group_ids:
+            cache.add(cache_key, CACHE_EMPTY)
+            return set()
+
+        cache.add(cache_key, group_ids)
+        return group_ids
+
+    def is_active_for_user(self, user):
+        is_active = super(AbstractUserFlag, self).is_active_for_user(user)
+        if is_active:
+            return is_active
+
+        user_ids = self._get_user_ids()
+        if hasattr(user, 'pk') and user.pk in user_ids:
+            return True
+
+        if hasattr(user, 'groups'):
+            group_ids = self._get_group_ids()
+            user_groups = set(user.groups.all().values_list('pk', flat=True))
+            if group_ids.intersection(user_groups):
+                return True
+
+        return None
+
+
 class Switch(BaseModel):
     """A feature switch.
 
     Switches are active, or inactive, globally.
 
     """
-    name = models.CharField(max_length=100, unique=True,
-                            help_text='The human/computer readable name.')
-    active = models.BooleanField(default=False, help_text=(
-        'Is this switch active?'))
-    note = models.TextField(blank=True, help_text=(
-        'Note where this Switch is used.'))
-    created = models.DateTimeField(default=datetime.now, db_index=True,
-        help_text=('Date when this Switch was created.'))
-    modified = models.DateTimeField(default=datetime.now, help_text=(
-        'Date when this Switch was last modified.'))
+
+    name = models.CharField(
+        max_length=100,
+        unique=True,
+        help_text=_('The human/computer readable name.'),
+        verbose_name=_('Name'),
+    )
+    active = models.BooleanField(
+        default=False,
+        help_text=_('Is this switch active?'),
+        verbose_name=_('Active'),
+    )
+    note = models.TextField(
+        blank=True,
+        help_text=_('Note where this Switch is used.'),
+        verbose_name=_('Note'),
+    )
+    created = models.DateTimeField(
+        default=timezone.now,
+        db_index=True,
+        help_text=_('Date when this Switch was created.'),
+        verbose_name=_('Created'),
+    )
+    modified = models.DateTimeField(
+        default=timezone.now,
+        help_text=_('Date when this Switch was last modified.'),
+        verbose_name=_('Modified'),
+    )
 
     objects = managers.SwitchManager()
 
@@ -295,36 +426,87 @@ class Switch(BaseModel):
     ALL_CACHE_KEY = 'ALL_SWITCHES_CACHE_KEY'
 
     class Meta:
-        verbose_name_plural = 'Switches'
+        verbose_name = _('Switch')
+        verbose_name_plural = _('Switches')
 
     def is_active(self):
         if not self.pk:
+            if get_setting('LOG_MISSING_SWITCHES'):
+                logger.log(level=get_setting('LOG_MISSING_SWITCHES'), msg=("Switch %s not found", self.name))
+            if get_setting('CREATE_MISSING_SWITCHES'):
+                Switch.objects.get_or_create(
+                    name=self.name,
+                    defaults={
+                        'active': get_setting('SWITCH_DEFAULT')
+                    }
+                )
+
             return get_setting('SWITCH_DEFAULT')
+
         return self.active
 
 
 class Sample(BaseModel):
-    """A sample is true some percentage of the time, but is not connected
+    """A sample of users.
+
+    A sample is true some percentage of the time, but is not connected
     to users or requests.
+
     """
-    name = models.CharField(max_length=100, unique=True,
-                            help_text='The human/computer readable name.')
-    percent = models.DecimalField(max_digits=4, decimal_places=1, help_text=(
-        'A number between 0.0 and 100.0 to indicate a percentage of the time '
-        'this sample will be active.'))
-    note = models.TextField(blank=True, help_text=(
-        'Note where this Sample is used.'))
-    created = models.DateTimeField(default=datetime.now, db_index=True,
-        help_text=('Date when this Sample was created.'))
-    modified = models.DateTimeField(default=datetime.now, help_text=(
-        'Date when this Sample was last modified.'))
+
+    name = models.CharField(
+        max_length=100,
+        unique=True,
+        help_text=_('The human/computer readable name.'),
+        verbose_name=_('Name'),
+    )
+    percent = models.DecimalField(
+        max_digits=4,
+        decimal_places=1,
+        help_text=_('A number between 0.0 and 100.0 to indicate a percentage of the time '
+                    'this sample will be active.'),
+        verbose_name=_('Percent'),
+    )
+    note = models.TextField(
+        blank=True,
+        help_text=_('Note where this Sample is used.'),
+        verbose_name=_('Note'),
+    )
+    created = models.DateTimeField(
+        default=timezone.now,
+        db_index=True,
+        help_text=_('Date when this Sample was created.'),
+        verbose_name=_('Created'),
+    )
+    modified = models.DateTimeField(
+        default=timezone.now,
+        help_text=_('Date when this Sample was last modified.'),
+        verbose_name=_('Modified'),
+    )
 
     objects = managers.SampleManager()
 
     SINGLE_CACHE_KEY = 'SAMPLE_CACHE_KEY'
     ALL_CACHE_KEY = 'ALL_SAMPLES_CACHE_KEY'
 
+    class Meta:
+        verbose_name = _('Sample')
+        verbose_name_plural = _('Samples')
+
     def is_active(self):
         if not self.pk:
+            if get_setting('LOG_MISSING_SAMPLES'):
+                logger.log(level=get_setting('LOG_MISSING_SAMPLES'), msg=("Sample %s not found", self.name))
+            if get_setting('CREATE_MISSING_SAMPLES'):
+
+                default_percent = 100 if get_setting('SAMPLE_DEFAULT') else 0
+
+                Sample.objects.get_or_create(
+                    name=self.name,
+                    defaults={
+                        'percent': default_percent
+                    }
+                )
+
             return get_setting('SAMPLE_DEFAULT')
         return Decimal(str(random.uniform(0, 100))) <= self.percent

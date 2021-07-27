@@ -1,11 +1,12 @@
 from __future__ import unicode_literals
 
+from django.utils.deprecation import MiddlewareMixin
 from django.utils.encoding import smart_str
 
 from waffle.utils import get_setting
 
 
-class WaffleMiddleware(object):
+class WaffleMiddleware(MiddlewareMixin):
     def process_response(self, request, response):
         secure = get_setting('SECURE')
         max_age = get_setting('MAX_AGE')

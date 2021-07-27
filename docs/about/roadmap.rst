@@ -42,20 +42,22 @@ support for Django 1.9 without deprecating any other versions.
 0.12_ includes a couple of significant refactors designed to pay down
 some of the debt that's accrued in the past few years.
 
-0.12 drops support for all versions of Django prior to 1.8, including
-dropping South migrations (and finally being rid of the old issues with
-them). Along with that, it changes the way settings are configured to be
-more modern.
-
-It also includes finally making a decision about
-auto-create/data-in-settings.
+It also includes support for Django 1.10 and above.
 
 
 0.13
 ----
 
-0.13_ is about closing some long-standing feature gaps, like segmenting
+0.13_ drops support for all versions of Django prior to 1.8, including
+dropping South migrations (and finally being rid of the old issues with
+them). Along with that, it changes the way settings are configured to be
+more modern.
+
+0.13 is about closing some long-standing feature gaps, like segmenting
 by IP and User-Agent.
+
+It also includes finally making a decision about
+auto-create/data-in-settings.
 
 
 Toward 1.0
@@ -117,10 +119,10 @@ scratch today with slightly different goals, like extensibility. Beyond
 kind of overhaul.
 
 
-.. _milestones: https://github.com/jsocol/django-waffle/milestones
-.. _0.10.2: https://github.com/jsocol/django-waffle/milestones/0.10.2
-.. _0.11: https://github.com/jsocol/django-waffle/milestones/0.11
-.. _0.11.x: https://github.com/jsocol/django-waffle/milestones/0.11.x
-.. _0.12: https://github.com/jsocol/django-waffle/milestones/0.12
-.. _0.13: https://github.com/jsocol/django-waffle/milestones/0.13
+.. _milestones: https://github.com/django-waffle/django-waffle/milestones
+.. _0.10.2: https://github.com/django-waffle/django-waffle/milestones/0.10.2
+.. _0.11: https://github.com/django-waffle/django-waffle/milestones/0.11
+.. _0.11.x: https://github.com/django-waffle/django-waffle/milestones/0.11.x
+.. _0.12: https://github.com/django-waffle/django-waffle/milestones/0.12
+.. _0.13: https://github.com/django-waffle/django-waffle/milestones/0.13
 .. _Gargoyle: https://github.com/disqus/gargoyle

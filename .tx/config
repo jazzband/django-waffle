@@ -1,0 +1,9 @@
+[main]
+host = https://www.transifex.com
+
+[django-waffle.django-po]
+file_filter = waffle/locale/<lang>/LC_MESSAGES/django.po
+minimum_perc = 0
+source_file = waffle/locale/en_US/LC_MESSAGES/django.po
+source_lang = en
+type = PO

@@ -19,6 +19,9 @@ There are two ways to control a flag for an individual user:
 - add their account to the flag's list of users, or
 - use testing mode.
 
+Querystring Parameter
+---------------------
+
 Testing mode makes it possible to enable a flag via a querystring
 parameter (like ``WAFFLE_OVERRIDE``) but is unique for two reasons:
 
@@ -43,6 +46,32 @@ mode is deactivated, they will call back to normal behavior.
 For a small group, like a company or team, it may be worth creating a
 Django group and adding or removing the group from the flag.
 
+HTTP Header
+-----------
+
+In some cases, such as a backend API, it may be easier for a client to provide
+an HTTP header instead of a querystring parameter.
+
+When a flag, ``foo``, is in testing mode, simply provide the HTTP header
+``DWFT-Foo: 1`` (or ``0``) to turn the flag on (or off).
+
+This feature can also allow for a downstream service to make the decison of
+enabling/disabling a flag, and then propagating that decision to other upsteam
+services, allowing for a more complete testing of more complex microservice
+infrastructures.
+
+Order of Precedence
+-------------------
+
+Since there are multiple controls to explicitly enable and disable flags in
+testing mode, it's important to understand the order of precedence used to
+determine when a flag is enabled/disabled when multiple controls are present at
+once. If any one of these controls is present at all, the subsequent controls
+will not be checked.
+
+1. Querystring Parameter
+2. HTTP Header
+3. Cookie
 
 Large-scale tests
 =================

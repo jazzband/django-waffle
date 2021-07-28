@@ -353,6 +353,22 @@ class WaffleTests(TestCase):
         assert not waffle.flag_is_active(request, 'foo')
         assert not hasattr(request, 'waffle_tests')
 
+    def test_testing_flag_header(self):
+        waffle.get_waffle_flag_model().objects.create(name='foo', testing=True)
+        request = RequestFactory().get('/foo', HTTP_DWFT_FOO='1')
+        request.user = AnonymousUser()
+        assert waffle.flag_is_active(request, 'foo')
+        assert 'foo' in request.waffle_tests
+        assert request.waffle_tests['foo']
+
+        # header should override cookie
+        request = RequestFactory().get('/foo', HTTP_DWFT_FOO='0')
+        request.user = AnonymousUser()
+        request.COOKIES['dwft_foo'] = 'True'
+        assert not waffle.flag_is_active(request, 'foo')
+        assert 'foo' in request.waffle_tests
+        assert not request.waffle_tests['foo']
+
     def test_set_then_unset_testing_flag(self):
         waffle.get_waffle_flag_model().objects.create(name='myflag', testing=True)
         response = self.client.get('/flag_in_view?dwft_myflag=1')

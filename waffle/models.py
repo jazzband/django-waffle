@@ -267,8 +267,13 @@ class AbstractBaseFlag(BaseModel):
 
         if self.testing:  # Testing mode is on.
             tc = get_setting('TEST_COOKIE') % self.name
+            th = tc.replace('_', '-')
+            on = None
             if tc in request.GET:
                 on = request.GET[tc] == '1'
+            elif th in request.headers:
+                on = request.headers[th] == '1'
+            if on is not None:
                 if not hasattr(request, 'waffle_tests'):
                     request.waffle_tests = {}
                 request.waffle_tests[self.name] = on

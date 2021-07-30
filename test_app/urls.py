@@ -1,6 +1,6 @@
-from django.conf.urls import url, include
 from django.contrib import admin
 from django.http import HttpResponseNotFound, HttpResponseServerError
+from django.urls import path, include
 
 from test_app import views
 
@@ -16,33 +16,33 @@ def handler500(r, exception=None):
 admin.autodiscover()
 
 urlpatterns = [
-    url(r'^flag_in_view', views.flag_in_view, name='flag_in_view'),
-    url(r'^switch-on', views.switched_view),
-    url(r'^switch-off', views.switched_off_view),
-    url(r'^flag-on', views.flagged_view),
-    url(r'^foo_view', views.foo_view, name='foo_view'),
-    url(r'^foo_view_with_args/(?P<some_number>\d+)/', views.foo_view_with_args, name='foo_view_with_args'),
-    url(r'^switched_view_with_valid_redirect',
+    path('flag_in_view', views.flag_in_view, name='flag_in_view'),
+    path('switch-on', views.switched_view),
+    path('switch-off', views.switched_off_view),
+    path('flag-on', views.flagged_view),
+    path('foo_view', views.foo_view, name='foo_view'),
+    path('foo_view_with_args/<some_number>/', views.foo_view_with_args, name='foo_view_with_args'),
+    path('switched_view_with_valid_redirect',
         views.switched_view_with_valid_redirect),
-    url(r'^switched_view_with_valid_url_name',
+    path('switched_view_with_valid_url_name',
         views.switched_view_with_valid_url_name),
-    url(r'^switched_view_with_args_with_valid_redirect/(?P<some_number>\d+)/',
+    path('switched_view_with_args_with_valid_redirect/<some_number>/',
         views.switched_view_with_args_with_valid_redirect),
-    url(r'^switched_view_with_args_with_valid_url_name/(?P<some_number>\d+)/',
+    path('switched_view_with_args_with_valid_url_name/<some_number>/',
         views.switched_view_with_args_with_valid_url_name),
-    url(r'^switched_view_with_invalid_redirect',
+    path('switched_view_with_invalid_redirect',
         views.switched_view_with_invalid_redirect),
-    url(r'^flagged_view_with_valid_redirect',
+    path('flagged_view_with_valid_redirect',
         views.flagged_view_with_valid_redirect),
-    url(r'^flagged_view_with_valid_url_name',
+    path('flagged_view_with_valid_url_name',
         views.flagged_view_with_valid_url_name),
-    url(r'^flagged_view_with_args_with_valid_redirect/(?P<some_number>\d+)/',
+    path('flagged_view_with_args_with_valid_redirect/<some_number>/',
         views.flagged_view_with_args_with_valid_redirect),
-    url(r'^flagged_view_with_args_with_valid_url_name/(?P<some_number>\d+)/',
+    path('flagged_view_with_args_with_valid_url_name/<some_number>/',
         views.flagged_view_with_args_with_valid_url_name),
-    url(r'^flagged_view_with_invalid_redirect',
+    path('flagged_view_with_invalid_redirect',
         views.flagged_view_with_invalid_redirect),
-    url(r'^flag-off', views.flagged_off_view),
-    url(r'^', include('waffle.urls')),
-    url(r'^admin/', admin.site.urls),
+    path('flag-off', views.flagged_off_view),
+    path('', include('waffle.urls')),
+    path('admin/', admin.site.urls),
 ]

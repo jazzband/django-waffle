@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+import django
 from django.core.exceptions import ImproperlyConfigured
 
 from waffle.utils import get_setting
@@ -7,7 +8,9 @@ from django.apps import apps as django_apps
 
 VERSION = (2, 2, 1)
 __version__ = '.'.join(map(str, VERSION))
-default_app_config = 'waffle.apps.WaffleConfig'
+
+if django.VERSION < (3, 2):
+    default_app_config = 'waffle.apps.WaffleConfig'
 
 
 def flag_is_active(request, flag_name):

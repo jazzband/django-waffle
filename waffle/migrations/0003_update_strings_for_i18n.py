@@ -37,7 +37,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='flag',
             name='everyone',
-            field=models.NullBooleanField(help_text='Flip this flag on (Yes) or off (No) for everyone, overriding all other settings. Leave as Unknown to use normally.', verbose_name='Everyone'),
+            field=models.BooleanField(help_text='Flip this flag on (Yes) or off (No) for everyone, overriding all other settings. Leave as Unknown to use normally.', null=True, verbose_name='Everyone'),
         ),
         migrations.AlterField(
             model_name='flag',

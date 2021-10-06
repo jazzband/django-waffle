@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(help_text='The human/computer readable name.', unique=True, max_length=100)),
-                ('everyone', models.NullBooleanField(help_text='Flip this flag on (Yes) or off (No) for everyone, overriding all other settings. Leave as Unknown to use normally.')),
+                ('everyone', models.BooleanField(help_text='Flip this flag on (Yes) or off (No) for everyone, overriding all other settings. Leave as Unknown to use normally.', null=True)),
                 ('percent', models.DecimalField(help_text='A number between 0.0 and 99.9 to indicate a percentage of users for whom this flag will be active.', null=True, max_digits=3, decimal_places=1, blank=True)),
                 ('testing', models.BooleanField(default=False, help_text='Allow this flag to be set for a session for user testing.')),
                 ('superusers', models.BooleanField(default=True, help_text='Flag always active for superusers?')),

@@ -158,6 +158,7 @@ Example:
                     return True
 
         def _get_company_ids(self):
+            cache = get_cache()
             cache_key = keyfmt(
                 get_setting(Flag.FLAG_COMPANIES_CACHE_KEY, Flag.FLAG_COMPANIES_CACHE_KEY_DEFAULT),
                 self.name

@@ -33,7 +33,7 @@ class WaffleFlagManagementCommandTests(TestCase):
         not set.
         """
         name = 'test'
-        with self.assertRaisesRegexp(CommandError, 'This flag does not exist.'):
+        with self.assertRaisesRegex(CommandError, 'This flag does not exist.'):
             call_command('waffle_flag', name, everyone=True, percent=20,
                          superusers=True, staff=True, authenticated=True,
                          rollout=True)
@@ -204,7 +204,7 @@ class WaffleSampleManagementCommandTests(TestCase):
         not set.
         """
         name = 'test'
-        with self.assertRaisesRegexp(CommandError, 'This sample does not exist'):
+        with self.assertRaisesRegex(CommandError, 'This sample does not exist'):
             call_command('waffle_sample', name, '20')
         self.assertFalse(Sample.objects.filter(name=name).exists())
 
@@ -248,7 +248,7 @@ class WaffleSwitchManagementCommandTests(TestCase):
         not set.
         """
         name = 'test'
-        with self.assertRaisesRegexp(CommandError, 'This switch does not exist.'):
+        with self.assertRaisesRegex(CommandError, 'This switch does not exist.'):
             call_command('waffle_switch', name, 'on')
         self.assertFalse(Switch.objects.filter(name=name).exists())
 

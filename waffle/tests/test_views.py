@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django.urls import reverse
 
 from waffle import get_waffle_flag_model

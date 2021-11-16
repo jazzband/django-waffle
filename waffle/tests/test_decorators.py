@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from waffle import get_waffle_flag_model
 from waffle.models import Switch
 from waffle.tests.base import TestCase

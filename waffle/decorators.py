@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from functools import wraps, WRAPPER_ASSIGNMENTS
 
 from django.http import Http404

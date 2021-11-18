@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django.utils.deprecation import MiddlewareMixin
 from django.utils.encoding import smart_str
 

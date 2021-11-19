@@ -1,6 +1,3 @@
-from __future__ import unicode_literals
-
-
 COOKIE = 'dwf_%s'
 TEST_COOKIE = 'dwft_%s'
 SECURE = True

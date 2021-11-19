@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 from django.core.management.base import BaseCommand
 
 from waffle import get_waffle_flag_model

@@ -1,7 +1,7 @@
-from django.conf.urls import url
+from django.urls import path
 
 from waffle.views import wafflejs
 
 urlpatterns = [
-    url(r'^wafflejs$', wafflejs, name='wafflejs'),
+    path('wafflejs', wafflejs, name='wafflejs'),
 ]

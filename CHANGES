@@ -2,6 +2,10 @@
 Waffle Changelog
 ================
 
+v2.3.0
+======
+- Added support for Django 4.0
+
 v2.2.1
 ======
 - Resolved deprecation warning when using Jinja2 >= 3

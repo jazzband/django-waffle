@@ -229,7 +229,10 @@ class AbstractBaseFlag(BaseModel):
         return None
 
     def _is_active_for_user(self, request):
-        return self.is_active_for_user(request.user)
+        user = getattr(request, "user", None)
+        if user:
+            return self.is_active_for_user(user)
+        return False
 
     def _is_active_for_language(self, request):
         if self.languages:

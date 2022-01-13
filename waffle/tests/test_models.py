@@ -17,3 +17,7 @@ class ModelsTests(TestCase):
         self.assertEqual(get_waffle_flag_model().objects.get_by_natural_key('test-flag'), flag)
         self.assertEqual(Switch.objects.get_by_natural_key('test-switch'), switch)
         self.assertEqual(Sample.objects.get_by_natural_key('test-sample'), sample)
+
+    def test_flag_is_not_active_for_none_requests(self):
+        flag = get_waffle_flag_model().objects.create(name='test-flag')
+        self.assertEqual(flag.is_active(None), False)

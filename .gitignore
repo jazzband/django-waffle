@@ -16,3 +16,4 @@ docs/_*
 
 # Visual Studio Code config files
 .vscode
+.venv/

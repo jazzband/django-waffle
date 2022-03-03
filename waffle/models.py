@@ -56,6 +56,13 @@ class BaseModel(models.Model):
         objects = cls.objects
         if get_setting('READ_FROM_WRITE_DB'):
             objects = objects.using(router.db_for_write(cls))
+
+        if get_setting('CREATE_MISSING_FLAGS'):
+            flag, _created = objects.get_or_create(
+                name=name, defaults={'everyone': get_setting('FLAG_DEFAULT')}
+            )
+            return flag
+
         return objects.get(name=name)
 
     @classmethod
@@ -247,16 +254,6 @@ class AbstractBaseFlag(BaseModel):
             log_level = get_setting('LOG_MISSING_FLAGS')
             if log_level:
                 logger.log(log_level, 'Flag %s not found', self.name)
-            if get_setting('CREATE_MISSING_FLAGS'):
-                flag, _created = get_waffle_flag_model().objects.get_or_create(
-                    name=self.name,
-                    defaults={
-                        'everyone': get_setting('FLAG_DEFAULT')
-                    }
-                )
-                cache = get_cache()
-                cache.set(self._cache_key(self.name), flag)
-
             return get_setting('FLAG_DEFAULT')
 
         if get_setting('OVERRIDE'):

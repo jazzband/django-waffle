@@ -8,6 +8,7 @@ v2.4.0
 - Creating missing flags for all attempts to access the missing flag
 - Added Italian translations
 - Removed universal wheel
+- Added support for Python 3.10
 
 v2.3.0
 ======

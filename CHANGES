@@ -2,6 +2,13 @@
 Waffle Changelog
 ================
 
+v2.4.0
+======
+- Preventing exceptions for template use cases where a request is not available
+- Creating missing flags for all attempts to access the missing flag
+- Added Italian translations
+- Removed universal wheel
+
 v2.3.0
 ======
 - Added support for Django 4.0

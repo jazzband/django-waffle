@@ -2,6 +2,10 @@
 Waffle Changelog
 ================
 
+v2.4.1
+======
+- Added support for Python 3.10
+
 v2.4.0
 ======
 - Preventing exceptions for template use cases where a request is not available

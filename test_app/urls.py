@@ -1,4 +1,8 @@
-from django.conf.urls import url, include
+try:
+    from django.conf.urls import url, include
+except ImportError:
+    from django.urls import re_path as url, include
+
 from django.contrib import admin
 from django.http import HttpResponseNotFound, HttpResponseServerError
 

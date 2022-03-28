@@ -441,16 +441,6 @@ class WaffleTests(TestCase):
     def test_flag_created_dynamically_default_true(self):
         self.assert_flag_dynamically_created_with_value(True)
 
-    @override_settings(WAFFLE_CREATE_MISSING_FLAGS=True)
-    @override_settings(WAFFLE_FLAG_DEFAULT=True)
-    def test_flag_created_dynamically_upon_retrieval(self):
-        FLAG_NAME = 'myflag'
-        flag_model = waffle.get_waffle_flag_model()
-        flag = flag_model.get(FLAG_NAME)
-
-        assert flag.is_active(get())
-        assert flag_model.objects.filter(name=FLAG_NAME).exists()
-
     @mock.patch('waffle.models.logger')
     def test_no_logging_missing_flag_by_default(self, mock_logger):
         request = get()

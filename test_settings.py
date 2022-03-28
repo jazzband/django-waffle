@@ -80,7 +80,6 @@ if JINJA_INSTALLED:
                 'undefined': 'jinja2.Undefined',
                 'extensions': [
                     'jinja2.ext.i18n',
-                    'jinja2.ext.autoescape',
                     'waffle.jinja.WaffleExtension',
                 ],
             }

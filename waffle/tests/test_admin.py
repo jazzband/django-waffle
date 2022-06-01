@@ -9,11 +9,13 @@ from django.contrib.admin.models import LogEntry, CHANGE, DELETION
 from django.contrib.admin.sites import AdminSite
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
+from django.test.utils import override_settings
 from waffle import get_waffle_flag_model
 from waffle.admin import (FlagAdmin, SwitchAdmin, InformativeManyToManyRawIdWidget, enable_for_all,
                           disable_for_all, delete_individually, enable_switches, disable_switches)
 from waffle.models import Switch
 from waffle.tests.base import TestCase
+from waffle.utils import get_setting
 
 
 django_version = tuple(int(d) for d in django.get_version().split("."))
@@ -111,6 +113,17 @@ class FlagAdminTests(TestCase):
 
         self.assertEqual(actions.keys(), {"delete_individually"})
 
+    def test_model_can_be_registered_by_default(self):
+        config = get_setting("ADMIN_PAGES_ARE_ENABLED")
+        _register_model_to_admin_site(admin_site=self.site, config_setting=config, model=Flag)
+        self.assertTrue(self.site.is_registered(Flag))
+
+    @override_settings(WAFFLE_ADMIN_PAGES_ARE_ENABLED=False)
+    def test_admin_page_can_be_disabled(self):
+        config = get_setting("ADMIN_PAGES_ARE_ENABLED")
+        _register_model_to_admin_site(admin_site=self.site, config_setting=config, model=Flag)
+        self.assertFalse(self.site.is_registered(Flag))
+
 
 class SwitchAdminTests(TestCase):
     def setUp(self):
@@ -163,3 +176,19 @@ class SwitchAdminTests(TestCase):
         actions = self.switch_admin.get_actions(request)
 
         self.assertEqual(actions.keys(), {"delete_individually"})
+
+    def test_model_can_be_registered_by_default(self):
+        config = get_setting("ADMIN_PAGES_ARE_ENABLED")
+        _register_model_to_admin_site(admin_site=self.site, config_setting=config, model=Switch)
+        self.assertTrue(self.site.is_registered(Switch))
+
+    @override_settings(WAFFLE_ADMIN_PAGES_ARE_ENABLED=False)
+    def test_admin_page_can_be_disabled(self):
+        config = get_setting("ADMIN_PAGES_ARE_ENABLED")
+        _register_model_to_admin_site(admin_site=self.site, config_setting=config, model=Switch)
+        self.assertFalse(self.site.is_registered(Switch))
+
+
+def _register_model_to_admin_site(admin_site, config_setting, model):
+    if config_setting:
+        admin_site.register(model)

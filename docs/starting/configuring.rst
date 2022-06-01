@@ -101,3 +101,6 @@ behavior.
     e.g. ``logging.WARNING``.
     Defaults to ``None``.
     
+
+``WAFFLE_ADMIN_PAGES_ARE_ENABLED``
+    Admin pages can be disabled via this configuration. It is True by default.

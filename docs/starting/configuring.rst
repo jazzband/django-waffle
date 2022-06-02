@@ -102,5 +102,6 @@ behavior.
     Defaults to ``None``.
     
 
-``WAFFLE_ADMIN_PAGES_ARE_ENABLED``
-    Admin pages can be disabled via this configuration. It is True by default.
+``WAFFLE_ENABLE_ADMIN_PAGES``
+    Enables the default admin pages for Waffle models. This is True by default,
+    but can be disabled to override or customize the pages.

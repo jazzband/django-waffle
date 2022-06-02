@@ -114,13 +114,13 @@ class FlagAdminTests(TestCase):
         self.assertEqual(actions.keys(), {"delete_individually"})
 
     def test_model_can_be_registered_by_default(self):
-        config = get_setting("ADMIN_PAGES_ARE_ENABLED")
+        config = get_setting("ENABLE_ADMIN_PAGES")
         _register_model_to_admin_site(admin_site=self.site, config_setting=config, model=Flag)
         self.assertTrue(self.site.is_registered(Flag))
 
-    @override_settings(WAFFLE_ADMIN_PAGES_ARE_ENABLED=False)
+    @override_settings(WAFFLE_ENABLE_ADMIN_PAGES=False)
     def test_admin_page_can_be_disabled(self):
-        config = get_setting("ADMIN_PAGES_ARE_ENABLED")
+        config = get_setting("ENABLE_ADMIN_PAGES")
         _register_model_to_admin_site(admin_site=self.site, config_setting=config, model=Flag)
         self.assertFalse(self.site.is_registered(Flag))
 
@@ -178,13 +178,13 @@ class SwitchAdminTests(TestCase):
         self.assertEqual(actions.keys(), {"delete_individually"})
 
     def test_model_can_be_registered_by_default(self):
-        config = get_setting("ADMIN_PAGES_ARE_ENABLED")
+        config = get_setting("ENABLE_ADMIN_PAGES")
         _register_model_to_admin_site(admin_site=self.site, config_setting=config, model=Switch)
         self.assertTrue(self.site.is_registered(Switch))
 
-    @override_settings(WAFFLE_ADMIN_PAGES_ARE_ENABLED=False)
+    @override_settings(WAFFLE_ENABLE_ADMIN_PAGES=False)
     def test_admin_page_can_be_disabled(self):
-        config = get_setting("ADMIN_PAGES_ARE_ENABLED")
+        config = get_setting("ENABLE_ADMIN_PAGES")
         _register_model_to_admin_site(admin_site=self.site, config_setting=config, model=Switch)
         self.assertFalse(self.site.is_registered(Switch))
 

@@ -134,7 +134,7 @@ class SampleAdmin(BaseAdmin):
     ordering = ('-id',)
 
 
-if get_setting('ADMIN_PAGES_ARE_ENABLED'):
+if get_setting('ENABLE_ADMIN_PAGES'):
     admin.site.register(Flag, FlagAdmin)
     admin.site.register(Sample, SampleAdmin)
     admin.site.register(Switch, SwitchAdmin)

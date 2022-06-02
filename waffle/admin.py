@@ -6,6 +6,7 @@ from django.utils.html import escape
 from django.utils.translation import gettext_lazy as _
 
 from waffle.models import Flag, Sample, Switch
+from waffle.utils import get_setting
 
 
 class BaseAdmin(admin.ModelAdmin):
@@ -133,6 +134,7 @@ class SampleAdmin(BaseAdmin):
     ordering = ('-id',)
 
 
-admin.site.register(Flag, FlagAdmin)
-admin.site.register(Sample, SampleAdmin)
-admin.site.register(Switch, SwitchAdmin)
+if get_setting('ENABLE_ADMIN_PAGES'):
+    admin.site.register(Flag, FlagAdmin)
+    admin.site.register(Sample, SampleAdmin)
+    admin.site.register(Switch, SwitchAdmin)

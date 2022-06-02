@@ -101,3 +101,7 @@ behavior.
     e.g. ``logging.WARNING``.
     Defaults to ``None``.
     
+
+``WAFFLE_ENABLE_ADMIN_PAGES``
+    Enables the default admin pages for Waffle models. This is True by default,
+    but can be disabled to override or customize the pages.

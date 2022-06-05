@@ -2,6 +2,12 @@
 Waffle Changelog
 ================
 
+
+v2.5.0
+======
+- Corrected error in docs
+- Added setting to support disabling admin pages
+
 v2.4.1
 ======
 - Reverted: Creating missing flags for all attempts to access the missing flag

@@ -4,7 +4,7 @@ from django.core.exceptions import ImproperlyConfigured
 from waffle.utils import get_setting
 from django.apps import apps as django_apps
 
-VERSION = (2, 4, 1)
+VERSION = (2, 5, 0)
 __version__ = '.'.join(map(str, VERSION))
 
 if django.VERSION < (3, 2):

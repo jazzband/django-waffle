@@ -21,6 +21,7 @@ admin.autodiscover()
 
 urlpatterns = [
     url(r'^flag_in_view', views.flag_in_view, name='flag_in_view'),
+    url(r'^flag_in_view_readonly', views.flag_in_view_readonly, name='flag_in_view_readonly'),
     url(r'^switch-on', views.switched_view),
     url(r'^switch-off', views.switched_off_view),
     url(r'^flag-on', views.flagged_view),

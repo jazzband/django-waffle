@@ -731,3 +731,26 @@ class SampleTransactionTests(TransactionTestMixin, TransactionTestCase):
 
     def toggle_is_active(self, sample):
         return waffle.sample_is_active(sample.name)
+
+
+class FunctionTests(TestCase):
+    @mock.patch.object(random, 'uniform')
+    def test_percent(self, uniform):
+        """If you have no cookie, you get a cookie!"""
+        uniform.return_value = '10'
+        waffle.get_waffle_flag_model().objects.create(name='myflag', percent='50.0')
+        request = get()
+        response = process_request(request, views.flag_in_view)
+        assert 'dwf_myflag' in response.cookies
+        self.assertEqual('True', response.cookies['dwf_myflag'].value)
+        self.assertEqual(b'on', response.content)
+
+    @mock.patch.object(random, 'uniform')
+    def test_percent_readonly(self, uniform):
+        uniform.return_value = '10'
+        """If you have no cookie, you do not get a cookie if we just have a question!"""
+        waffle.get_waffle_flag_model().objects.create(name='myflag', percent='50.0')
+        request = get()
+        response = process_request(request, views.flag_in_view_readonly)
+        assert 'dwf_myflag' not in response.cookies
+        self.assertEqual(b'off', response.content)

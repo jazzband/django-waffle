@@ -242,7 +242,7 @@ class AbstractBaseFlag(BaseModel):
                 return True
         return None
 
-    def is_active(self, request):
+    def is_active(self, request, read_only=False):
         if not self.pk:
             log_level = get_setting('LOG_MISSING_FLAGS')
             if log_level:
@@ -300,14 +300,19 @@ class AbstractBaseFlag(BaseModel):
 
             cookie = get_setting('COOKIE') % self.name
             if cookie in request.COOKIES:
-                flag_active = (request.COOKIES[cookie] == 'True')
-                set_flag(request, self.name, flag_active, self.rollout)
+                flag_active = request.COOKIES[cookie] == 'True'
+                if not read_only:
+                    set_flag(request, self.name, flag_active, self.rollout)
                 return flag_active
 
-            if Decimal(str(random.uniform(0, 100))) <= self.percent:
-                set_flag(request, self.name, True, self.rollout)
-                return True
-            set_flag(request, self.name, False, self.rollout)
+            if not read_only:
+                if Decimal(str(random.uniform(0, 100))) <= self.percent:
+                    set_flag(request, self.name, True, self.rollout)
+                    return True
+                set_flag(request, self.name, False, self.rollout)
+
+            else:
+                return None
 
         return False
 

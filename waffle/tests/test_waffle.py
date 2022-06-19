@@ -30,9 +30,13 @@ def get(**kw):
     return request
 
 
+def get_response(request):
+    return 'hello'
+
+
 def process_request(request, view):
     response = view(request)
-    return WaffleMiddleware().process_response(request, response)
+    return WaffleMiddleware(get_response).process_response(request, response)
 
 
 class WaffleTests(TestCase):

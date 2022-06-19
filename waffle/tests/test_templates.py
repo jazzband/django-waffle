@@ -17,13 +17,16 @@ def get():
     return request
 
 
+def get_response(request):
+    return 'hello'
+
+
 def process_request(request, view):
     response = view(request)
-    return WaffleMiddleware().process_response(request, response)
+    return WaffleMiddleware(get_response).process_response(request, response)
 
 
 class WaffleTemplateTests(TestCase):
-
     def test_django_tags(self):
         request = get()
         response = process_request(request, views.flag_in_django)

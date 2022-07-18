@@ -15,7 +15,7 @@ import mock
 
 import waffle
 from test_app import views
-from test_app.models import CompanyAwareFlag, Company
+from test_app.models import CompanyAwareFlag, CustomSample, CustomSwitch, Company
 from waffle.middleware import WaffleMiddleware
 from waffle.models import Sample, Switch
 from waffle.tests.base import TestCase
@@ -408,7 +408,7 @@ class WaffleTests(TestCase):
             self.assertEqual(b'on', response.content)
 
     @override_settings(WAFFLE_FLAG_MODEL='test_app.CompanyAwareFlag', AUTH_USER_MODEL='test_app.CompanyUser')
-    def test_pluggable_model(self):
+    def test_pluggable_flag_model(self):
         flag_model = waffle.get_waffle_flag_model()
         self.assertEqual(CompanyAwareFlag, flag_model)
 
@@ -538,6 +538,17 @@ class SwitchTests(TestCase):
             # the cache and DB are in sync.
             assert waffle.switch_is_active(switch.name)
 
+    @override_settings(WAFFLE_SWITCH_MODEL='test_app.CustomSwitch')
+    def test_pluggable_switch_model(self):
+        switch_model = waffle.get_waffle_model('SWITCH_MODEL')
+        self.assertEqual(CustomSwitch, switch_model)
+
+        switch_model.objects.create(name='test_switch_off', active=False)
+        switch_model.objects.create(name='test_switch_on', active=True)
+
+        assert not waffle.switch_is_active('test_switch_off')
+        assert waffle.switch_is_active('test_switch_on')
+
     @override_settings(WAFFLE_CREATE_MISSING_SWITCHES=True)
     @override_settings(WAFFLE_SWITCH_DEFAULT=False)
     def test_switch_created_dynamically_false(self):
@@ -631,6 +642,17 @@ class SampleTests(TestCase):
     def test_logging_missing_sample(self, mock_logger):
         waffle.sample_is_active('foo')
         mock_logger.log.assert_called_with(logging.WARNING, 'Sample %s not found', 'foo')
+
+    @override_settings(WAFFLE_SAMPLE_MODEL='test_app.CustomSample')
+    def test_pluggable_sample_model(self):
+        sample_model = waffle.get_waffle_model('SAMPLE_MODEL')
+        self.assertEqual(CustomSample, sample_model)
+
+        sample_model.objects.create(name='test_sample_off', percent=0)
+        sample_model.objects.create(name='test_sample_on', percent=100)
+
+        assert not waffle.sample_is_active('test_sample_off')
+        assert waffle.sample_is_active('test_sample_on')
 
 
 class TransactionTestMixin(object):

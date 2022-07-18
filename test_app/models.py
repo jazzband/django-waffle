@@ -8,7 +8,7 @@ try:
 except ImportError:
     from django.utils.translation import gettext_lazy as _
 
-from waffle.models import AbstractUserFlag, CACHE_EMPTY
+from waffle.models import AbstractBaseSample, AbstractBaseSwitch, AbstractUserFlag, CACHE_EMPTY
 from waffle.utils import get_setting, keyfmt, get_cache
 
 cache = get_cache()
@@ -29,6 +29,14 @@ class CompanyUser(AbstractBaseUser):
     username = models.CharField(
         max_length=100,
     )
+
+
+class CustomSwitch(AbstractBaseSwitch):
+    """Demonstrates custom switch behavior."""
+
+
+class CustomSample(AbstractBaseSample):
+    """Demonstrates custom switch behavior."""
 
 
 class CompanyAwareFlag(AbstractUserFlag):

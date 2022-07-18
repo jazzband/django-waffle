@@ -404,7 +404,7 @@ class Flag(AbstractUserFlag):
         verbose_name_plural = _('Flags')
 
 
-class Switch(BaseModel):
+class AbstractBaseSwitch(BaseModel):
     """A feature switch.
 
     Switches are active, or inactive, globally.
@@ -445,6 +445,7 @@ class Switch(BaseModel):
     ALL_CACHE_KEY = 'ALL_SWITCHES_CACHE_KEY'
 
     class Meta:
+        abstract = True
         verbose_name = _('Switch')
         verbose_name_plural = _('Switches')
 
@@ -468,7 +469,7 @@ class Switch(BaseModel):
         return self.active
 
 
-class Sample(BaseModel):
+class AbstractBaseSample(BaseModel):
     """A sample of users.
 
     A sample is true some percentage of the time, but is not connected
@@ -512,6 +513,7 @@ class Sample(BaseModel):
     ALL_CACHE_KEY = 'ALL_SAMPLES_CACHE_KEY'
 
     class Meta:
+        abstract = True
         verbose_name = _('Sample')
         verbose_name_plural = _('Samples')
 
@@ -535,3 +537,28 @@ class Sample(BaseModel):
 
             return get_setting('SAMPLE_DEFAULT')
         return Decimal(str(random.uniform(0, 100))) <= self.percent
+
+
+class Switch(AbstractBaseSwitch):
+    """A feature switch.
+
+    Switches are active, or inactive, globally.
+
+    """
+    class Meta(AbstractBaseSwitch.Meta):
+        swappable = 'WAFFLE_SWITCH_MODEL'
+        verbose_name = _('Switch')
+        verbose_name_plural = _('Switches')
+
+
+class Sample(AbstractBaseSample):
+    """A sample of users.
+
+    A sample is true some percentage of the time, but is not connected
+    to users or requests.
+
+    """
+    class Meta(AbstractBaseSample.Meta):
+        swappable = 'WAFFLE_SAMPLE_MODEL'
+        verbose_name = _('Sample')
+        verbose_name_plural = _('Samples')

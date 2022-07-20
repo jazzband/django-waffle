@@ -4,7 +4,7 @@ from django.core.exceptions import ImproperlyConfigured
 from waffle.utils import get_setting
 from django.apps import apps as django_apps
 
-VERSION = (2, 5, 0)
+VERSION = (2, 6, 0)
 __version__ = '.'.join(map(str, VERSION))
 
 if django.VERSION < (3, 2):
@@ -28,6 +28,7 @@ def sample_is_active(sample_name):
 
 def get_waffle_flag_model():
     return get_waffle_model('FLAG_MODEL')
+
 
 def get_waffle_model(setting_name):
     """

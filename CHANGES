@@ -3,6 +3,13 @@ Waffle Changelog
 ================
 
 
+v2.6.0
+======
+- Fixed Django 4.0 compatibility
+- Added support for custom Sample and Switch models
+- Added ability to determine if flag is active without persisting new state
+- Added support for Python 3.10
+
 v2.5.0
 ======
 - Corrected error in docs

@@ -12,41 +12,49 @@ if django.VERSION < (3, 2):
 
 
 def flag_is_active(request, flag_name, read_only=False):
-    flag = get_waffle_flag_model().get(flag_name)
+    flag = get_waffle_model('FLAG_MODEL').get(flag_name)
     return flag.is_active(request, read_only=read_only)
 
 
 def switch_is_active(switch_name):
-    from .models import Switch
-
-    switch = Switch.get(switch_name)
+    switch = get_waffle_model('SWITCH_MODEL').get(switch_name)
     return switch.is_active()
 
 
 def sample_is_active(sample_name):
-    from .models import Sample
-
-    sample = Sample.get(sample_name)
+    sample = get_waffle_model('SAMPLE_MODEL').get(sample_name)
     return sample.is_active()
 
 
 def get_waffle_flag_model():
+    return get_waffle_model('FLAG_MODEL')
+
+def get_waffle_model(setting_name):
     """
     Returns the waffle Flag model that is active in this project.
     """
-    # Add backwards compatibility by not requiring adding of WAFFLE_FLAG_MODEL
-    # for everyone who upgrades.
-    # At some point it would be helpful to require this to be defined explicitly,
-    # but no for now, to remove pain form upgrading.
-    flag_model_name = get_setting('FLAG_MODEL', 'waffle.Flag')
+    default_model = {
+        'FLAG_MODEL': 'waffle.Flag',
+        'SWITCH_MODEL': 'waffle.Switch',
+        'SAMPLE_MODEL': 'waffle.Sample',
+    }
+
+    # Add backwards compatibility by not requiring adding of model setting
+    # for everyone who upgrades.  At some point it would be helpful to
+    # require this to be defined explicitly, but no for now, to remove
+    # pain from upgrading.
+    default = default_model[setting_name]
+    flag_model_name = get_setting(setting_name, default)
 
     try:
         return django_apps.get_model(flag_model_name)
     except ValueError:
-        raise ImproperlyConfigured("WAFFLE_FLAG_MODEL must be of the form 'app_label.model_name'")
+        raise ImproperlyConfigured("WAFFLE_{} must be of the form 'app_label.model_name'".format(
+            setting_name
+        ))
     except LookupError:
         raise ImproperlyConfigured(
-            "WAFFLE_FLAG_MODEL refers to model '{}' that has not been installed".format(
-                flag_model_name
+            "WAFFLE_{} refers to model '{}' that has not been installed".format(
+                setting_name, flag_model_name
             )
         )

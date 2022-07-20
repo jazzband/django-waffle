@@ -11,9 +11,9 @@ if django.VERSION < (3, 2):
     default_app_config = 'waffle.apps.WaffleConfig'
 
 
-def flag_is_active(request, flag_name):
+def flag_is_active(request, flag_name, read_only=False):
     flag = get_waffle_model('FLAG_MODEL').get(flag_name)
-    return flag.is_active(request)
+    return flag.is_active(request, read_only=read_only)
 
 
 def switch_is_active(switch_name):

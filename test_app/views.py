@@ -14,6 +14,12 @@ def flag_in_view(request):
     return HttpResponse('off')
 
 
+def flag_in_view_readonly(request):
+    if flag_is_active(request, 'myflag', read_only=True):
+        return HttpResponse('on')
+    return HttpResponse('off')
+
+
 def flag_in_jinja(request):
     return render(request, 'jinja/jinja.html')
 

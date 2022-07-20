@@ -87,28 +87,13 @@ jobs:
         run: |
           tox -e i18n
 
-  release-test:
-    runs-on: ubuntu-latest
-
-    needs: [test, lint, i18n]
-
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-      - uses: casperdcl/deploy-pypi@v2
-        with:
-          url: https://test.pypi.org/legacy/
-          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-          build: true
-          skip_existing: true
-
   release-production:
     # Only upload if a tag is pushed (otherwise just build & check)
     if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
 
     runs-on: ubuntu-latest
 
-    needs: [test, lint, i18n, release-test]
+    needs: [test, lint, i18n]
 
     steps:
       - uses: actions/checkout@v2

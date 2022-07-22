@@ -1,6 +1,6 @@
 from django.urls import reverse
 
-from waffle import get_waffle_model, get_waffle_flag_model
+from waffle import get_waffle_flag_model, get_waffle_sample_model, get_waffle_switch_model
 from waffle.models import Sample, Switch
 from waffle.tests.base import TestCase
 
@@ -23,12 +23,12 @@ class WaffleViewTests(TestCase):
         self.assertIn('max-age=0', cache_control)
 
     def test_waffle_status_response(self):
-        get_waffle_model('FLAG_MODEL').objects.create(name='test_flag_active', everyone=True)
-        get_waffle_model('FLAG_MODEL').objects.create(name='test_flag_inactive', everyone=False)
-        get_waffle_model('SWITCH_MODEL').objects.create(name='test_switch_active', active=True)
-        get_waffle_model('SWITCH_MODEL').objects.create(name='test_switch_inactive', active=False)
-        get_waffle_model('SAMPLE_MODEL').objects.create(name='test_sample_active', percent=100)
-        get_waffle_model('SAMPLE_MODEL').objects.create(name='test_sample_inactive', percent=0)
+        get_waffle_flag_model().objects.create(name='test_flag_active', everyone=True)
+        get_waffle_flag_model().objects.create(name='test_flag_inactive', everyone=False)
+        get_waffle_switch_model().objects.create(name='test_switch_active', active=True)
+        get_waffle_switch_model().objects.create(name='test_switch_inactive', active=False)
+        get_waffle_sample_model().objects.create(name='test_sample_active', percent=100)
+        get_waffle_sample_model().objects.create(name='test_sample_inactive', percent=0)
         response = self.client.get(reverse('waffle_status'))
         self.assertEqual(200, response.status_code)
         content = response.json()

@@ -17,4 +17,5 @@ JavaScript.
    mixins
    templates
    javascript
+   json
    cli

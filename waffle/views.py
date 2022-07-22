@@ -39,34 +39,31 @@ def waffle_json(request):
 
 def _generate_waffle_json(request):
     flags = get_waffle_flag_model().get_all()
-    flag_values = [
-        {
-            'name': f.name,
+    flag_values = {
+        f.name: {
             'is_active': f.is_active(request),
             'last_modified': f.modified,
         }
         for f in flags
-    ]
+    }
 
     switches = get_waffle_switch_model().get_all()
-    switch_values = [
-        {
-            'name': s.name,
+    switch_values = {
+        s.name: {
             'is_active': s.is_active(),
             'last_modified': s.modified,
         }
         for s in switches
-    ]
+    }
 
     samples = get_waffle_sample_model().get_all()
-    sample_values = [
-        {
-            'name': s.name,
+    sample_values = {
+        s.name: {
             'is_active': s.is_active(),
             'last_modified': s.modified,
         }
         for s in samples
-    ]
+    }
 
     return {
         'flags': flag_values,

@@ -29,33 +29,25 @@ class WaffleViewTests(TestCase):
         get_waffle_switch_model().objects.create(name='test_switch_inactive', active=False)
         get_waffle_sample_model().objects.create(name='test_sample_active', percent=100)
         get_waffle_sample_model().objects.create(name='test_sample_inactive', percent=0)
+
         response = self.client.get(reverse('waffle_status'))
         self.assertEqual(200, response.status_code)
         content = response.json()
-        assert any(
-            f for f in content['flags']
-            if f['name'] == 'test_flag_active' and f['is_active']
-        )
-        assert any(
-            f for f in content['flags']
-            if f['name'] == 'test_flag_inactive' and not f['is_active']
-        )
-        assert any(
-            s for s in content['switches']
-            if s['name'] == 'test_switch_active' and s['is_active']
-        )
-        assert any(
-            s for s in content['switches']
-            if s['name'] == 'test_switch_inactive' and not s['is_active']
-        )
-        assert any(
-            s for s in content['samples']
-            if s['name'] == 'test_sample_active' and s['is_active']
-        )
-        assert any(
-            s for s in content['samples']
-            if s['name'] == 'test_sample_inactive' and not s['is_active']
-        )
+
+        assert 'test_flag_active' in content['flags'].keys()
+        assert content['flags']['test_flag_active']['is_active']
+        assert 'test_flag_inactive' in content['flags'].keys()
+        assert not content['flags']['test_flag_inactive']['is_active']
+
+        assert 'test_switch_active' in content['switches'].keys()
+        assert content['switches']['test_switch_active']['is_active']
+        assert 'test_switch_inactive' in content['switches'].keys()
+        assert not content['switches']['test_switch_inactive']['is_active']
+
+        assert 'test_sample_active' in content['samples'].keys()
+        assert content['samples']['test_sample_active']['is_active']
+        assert 'test_sample_inactive' in content['samples'].keys()
+        assert not content['samples']['test_sample_inactive']['is_active']
 
     def test_flush_all_flags(self):
         """Test the 'FLAGS_ALL' list gets invalidated correctly."""

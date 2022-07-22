@@ -29,40 +29,34 @@ status of each flag, switch, and sample as JSON, with the following structure:
 .. code-block:: json
 
     {
-        "flags": [
-            {
-                "name": "flag_active",
+        "flags": {
+            "flag_active": {
                 "is_active": true,
                 "last_modified": "2020-01-01T12:00:00.000"
             },
-            {
-                "name": "flag_inactive",
+            "flag_inactive": {
                 "is_active": false,
                 "last_modified": "2020-01-01T12:00:00.000"
             }
-        ],
-        "switches": [
-            {
-                "name": "switch_active",
+        },
+        "switches": {
+            "switch_active": {
                 "is_active": true,
                 "last_modified": "2020-01-01T12:00:00.000"
             },
-            {
-                "name": "switch_inactive",
+            "switch_inactive": {
                 "is_active": false,
                 "last_modified": "2020-01-01T12:00:00.000"
             }
-        ],
-        "samples": [
-            {
-                "name": "sample_active",
+        },
+        "samples": {
+            "sample_active": {
                 "is_active": true,
                 "last_modified": "2020-01-01T12:00:00.000"
             },
-            {
-                "name": "sample_inactive",
+            "sample_inactive": {
                 "is_active": false,
                 "last_modified": "2020-01-01T12:00:00.000"
             }
-        ]
+        }
     }

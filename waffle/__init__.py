@@ -12,22 +12,30 @@ if django.VERSION < (3, 2):
 
 
 def flag_is_active(request, flag_name, read_only=False):
-    flag = get_waffle_model('FLAG_MODEL').get(flag_name)
+    flag = get_waffle_flag_model().get(flag_name)
     return flag.is_active(request, read_only=read_only)
 
 
 def switch_is_active(switch_name):
-    switch = get_waffle_model('SWITCH_MODEL').get(switch_name)
+    switch = get_waffle_switch_model().get(switch_name)
     return switch.is_active()
 
 
 def sample_is_active(sample_name):
-    sample = get_waffle_model('SAMPLE_MODEL').get(sample_name)
+    sample = get_waffle_sample_model().get(sample_name)
     return sample.is_active()
 
 
 def get_waffle_flag_model():
     return get_waffle_model('FLAG_MODEL')
+
+
+def get_waffle_switch_model():
+    return get_waffle_model('SWITCH_MODEL')
+
+
+def get_waffle_sample_model():
+    return get_waffle_model('SAMPLE_MODEL')
 
 
 def get_waffle_model(setting_name):

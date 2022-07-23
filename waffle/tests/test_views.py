@@ -1,6 +1,6 @@
 from django.urls import reverse
 
-from waffle import get_waffle_flag_model
+from waffle import get_waffle_flag_model, get_waffle_sample_model, get_waffle_switch_model
 from waffle.models import Sample, Switch
 from waffle.tests.base import TestCase
 
@@ -13,6 +13,41 @@ class WaffleViewTests(TestCase):
         cache_control = [control.strip()
                          for control in response['cache-control'].split(',')]
         self.assertIn('max-age=0', cache_control)
+
+    def test_waffle_status(self):
+        response = self.client.get(reverse('waffle_status'))
+        self.assertEqual(200, response.status_code)
+        self.assertEqual('application/json', response['content-type'])
+        cache_control = [control.strip()
+                         for control in response['cache-control'].split(',')]
+        self.assertIn('max-age=0', cache_control)
+
+    def test_waffle_status_response(self):
+        get_waffle_flag_model().objects.create(name='test_flag_active', everyone=True)
+        get_waffle_flag_model().objects.create(name='test_flag_inactive', everyone=False)
+        get_waffle_switch_model().objects.create(name='test_switch_active', active=True)
+        get_waffle_switch_model().objects.create(name='test_switch_inactive', active=False)
+        get_waffle_sample_model().objects.create(name='test_sample_active', percent=100)
+        get_waffle_sample_model().objects.create(name='test_sample_inactive', percent=0)
+
+        response = self.client.get(reverse('waffle_status'))
+        self.assertEqual(200, response.status_code)
+        content = response.json()
+
+        assert 'test_flag_active' in content['flags'].keys()
+        assert content['flags']['test_flag_active']['is_active']
+        assert 'test_flag_inactive' in content['flags'].keys()
+        assert not content['flags']['test_flag_inactive']['is_active']
+
+        assert 'test_switch_active' in content['switches'].keys()
+        assert content['switches']['test_switch_active']['is_active']
+        assert 'test_switch_inactive' in content['switches'].keys()
+        assert not content['switches']['test_switch_inactive']['is_active']
+
+        assert 'test_sample_active' in content['samples'].keys()
+        assert content['samples']['test_sample_active']['is_active']
+        assert 'test_sample_inactive' in content['samples'].keys()
+        assert not content['samples']['test_sample_inactive']['is_active']
 
     def test_flush_all_flags(self):
         """Test the 'FLAGS_ALL' list gets invalidated correctly."""

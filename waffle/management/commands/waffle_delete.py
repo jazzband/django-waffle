@@ -1,7 +1,10 @@
 from django.core.management.base import BaseCommand
 
-from waffle import get_waffle_flag_model
-from waffle.models import Sample, Switch
+from waffle import (
+    get_waffle_flag_model,
+    get_waffle_switch_model,
+    get_waffle_sample_model,
+)
 
 
 class Command(BaseCommand):
@@ -37,14 +40,16 @@ class Command(BaseCommand):
 
         switches = options['switch_names']
         if switches:
-            switches_queryset = Switch.objects.filter(name__in=switches)
+            switches_queryset = get_waffle_switch_model().objects.filter(
+                name__in=switches
+            )
             switch_count = switches_queryset.count()
             switches_queryset.delete()
             self.stdout.write('Deleted %s Switches' % switch_count)
 
         samples = options['sample_names']
         if samples:
-            sample_queryset = Sample.objects.filter(name__in=samples)
+            sample_queryset = get_waffle_sample_model().objects.filter(name__in=samples)
             sample_count = sample_queryset.count()
             sample_queryset.delete()
             self.stdout.write('Deleted %s Samples' % sample_count)

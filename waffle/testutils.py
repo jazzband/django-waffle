@@ -1,6 +1,10 @@
 from django.test.utils import TestContextDecorator
 
-from waffle import get_waffle_flag_model
+from waffle import (
+    get_waffle_flag_model,
+    get_waffle_sample_model,
+    get_waffle_switch_model,
+)
 from waffle.models import Switch, Sample
 
 
@@ -58,7 +62,7 @@ class override_switch(_overrider):
             ...
 
     """
-    cls = Switch
+    cls = get_waffle_switch_model()
 
     def update(self, active):
         obj = self.cls.objects.get(pk=self.obj.pk)
@@ -84,7 +88,7 @@ class override_flag(_overrider):
 
 
 class override_sample(_overrider):
-    cls = Sample
+    cls = get_waffle_sample_model()
 
     def get(self):
         try:

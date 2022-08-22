@@ -1,7 +1,10 @@
 from django.urls import reverse
 
-from waffle import get_waffle_flag_model, get_waffle_sample_model, get_waffle_switch_model
-from waffle.models import Sample, Switch
+from waffle import (
+    get_waffle_flag_model,
+    get_waffle_sample_model,
+    get_waffle_switch_model,
+)
 from waffle.tests.base import TestCase
 
 
@@ -63,7 +66,7 @@ class WaffleViewTests(TestCase):
 
     def test_flush_all_switches(self):
         """Test the 'SWITCHES_ALL' list gets invalidated correctly."""
-        switch = Switch.objects.create(name='myswitch', active=True)
+        switch = get_waffle_switch_model().objects.create(name='myswitch', active=True)
         response = self.client.get(reverse('wafflejs'))
         self.assertEqual(200, response.status_code)
         assert ('myswitch', True) in response.context['switches']
@@ -76,12 +79,12 @@ class WaffleViewTests(TestCase):
 
     def test_flush_all_samples(self):
         """Test the 'SAMPLES_ALL' list gets invalidated correctly."""
-        Sample.objects.create(name='sample1', percent='100.0')
+        get_waffle_sample_model().objects.create(name='sample1', percent='100.0')
         response = self.client.get(reverse('wafflejs'))
         self.assertEqual(200, response.status_code)
         assert ('sample1', True) in response.context['samples']
 
-        Sample.objects.create(name='sample2', percent='100.0')
+        get_waffle_sample_model().objects.create(name='sample2', percent='100.0')
 
         response = self.client.get(reverse('wafflejs'))
         self.assertEqual(200, response.status_code)

@@ -3,8 +3,11 @@ import io
 from django.core.management import call_command, CommandError
 from django.contrib.auth.models import Group, User
 
-from waffle import get_waffle_flag_model
-from waffle.models import Sample, Switch
+from waffle import (
+    get_waffle_flag_model,
+    get_waffle_switch_model,
+    get_waffle_sample_model,
+)
 from waffle.tests.base import TestCase
 
 
@@ -196,7 +199,7 @@ class WaffleSampleManagementCommandTests(TestCase):
         percent = 20
         call_command('waffle_sample', name, str(percent), create=True)
 
-        sample = Sample.objects.get(name=name)
+        sample = get_waffle_sample_model().objects.get(name=name)
         self.assertEqual(sample.percent, percent)
 
     def test_not_create(self):
@@ -206,12 +209,12 @@ class WaffleSampleManagementCommandTests(TestCase):
         name = 'test'
         with self.assertRaisesRegex(CommandError, 'This sample does not exist'):
             call_command('waffle_sample', name, '20')
-        self.assertFalse(Sample.objects.filter(name=name).exists())
+        self.assertFalse(get_waffle_sample_model().objects.filter(name=name).exists())
 
     def test_update(self):
         """ The command should update an existing sample. """
         name = 'test'
-        sample = Sample.objects.create(name=name, percent=0)
+        sample = get_waffle_sample_model().objects.create(name=name, percent=0)
         self.assertEqual(sample.percent, 0)
 
         percent = 50
@@ -223,7 +226,7 @@ class WaffleSampleManagementCommandTests(TestCase):
     def test_list(self):
         """ The command should list all samples."""
         stdout = io.StringIO()
-        Sample.objects.create(name='test', percent=34)
+        get_waffle_sample_model().objects.create(name='test', percent=34)
 
         call_command('waffle_sample', list_samples=True, stdout=stdout)
         expected = 'Samples:\ntest: 34.0%'
@@ -237,11 +240,11 @@ class WaffleSwitchManagementCommandTests(TestCase):
         name = 'test'
 
         call_command('waffle_switch', name, 'on', create=True)
-        switch = Switch.objects.get(name=name, active=True)
+        switch = get_waffle_switch_model().objects.get(name=name, active=True)
         switch.delete()
 
         call_command('waffle_switch', name, 'off', create=True)
-        Switch.objects.get(name=name, active=False)
+        get_waffle_switch_model().objects.get(name=name, active=False)
 
     def test_not_create(self):
         """ The command shouldn't create a new switch if the create flag is
@@ -250,12 +253,12 @@ class WaffleSwitchManagementCommandTests(TestCase):
         name = 'test'
         with self.assertRaisesRegex(CommandError, 'This switch does not exist.'):
             call_command('waffle_switch', name, 'on')
-        self.assertFalse(Switch.objects.filter(name=name).exists())
+        self.assertFalse(get_waffle_switch_model().objects.filter(name=name).exists())
 
     def test_update(self):
         """ The command should update an existing switch. """
         name = 'test'
-        switch = Switch.objects.create(name=name, active=True)
+        switch = get_waffle_switch_model().objects.create(name=name, active=True)
 
         call_command('waffle_switch', name, 'off')
         switch.refresh_from_db()
@@ -268,8 +271,8 @@ class WaffleSwitchManagementCommandTests(TestCase):
     def test_list(self):
         """ The command should list all switches."""
         stdout = io.StringIO()
-        Switch.objects.create(name='switch1', active=True)
-        Switch.objects.create(name='switch2', active=False)
+        get_waffle_switch_model().objects.create(name='switch1', active=True)
+        get_waffle_switch_model().objects.create(name='switch2', active=False)
 
         call_command('waffle_switch', list_switches=True, stdout=stdout)
         expected = 'Switches:\nswitch1: on\nswitch2: off'
@@ -289,31 +292,31 @@ class WaffleDeleteManagementCommandTests(TestCase):
     def test_delete_swtich(self):
         """ The command should delete a switch. """
         name = 'test_switch'
-        Switch.objects.create(name=name)
+        get_waffle_switch_model().objects.create(name=name)
 
         call_command('waffle_delete', switch_names=[name])
-        self.assertEqual(Switch.objects.count(), 0)
+        self.assertEqual(get_waffle_switch_model().objects.count(), 0)
 
     def test_delete_sample(self):
         """ The command should delete a sample. """
         name = 'test_sample'
-        Sample.objects.create(name=name, percent=0)
+        get_waffle_sample_model().objects.create(name=name, percent=0)
 
         call_command('waffle_delete', sample_names=[name])
-        self.assertEqual(Sample.objects.count(), 0)
+        self.assertEqual(get_waffle_sample_model().objects.count(), 0)
 
     def test_delete_mix_of_types(self):
         """ The command should delete different types of records. """
         name = 'test'
         get_waffle_flag_model().objects.create(name=name)
-        Switch.objects.create(name=name)
-        Sample.objects.create(name=name, percent=0)
+        get_waffle_switch_model().objects.create(name=name)
+        get_waffle_sample_model().objects.create(name=name, percent=0)
         call_command('waffle_delete', switch_names=[name], flag_names=[name],
                      sample_names=[name])
 
         self.assertEqual(get_waffle_flag_model().objects.count(), 0)
-        self.assertEqual(Switch.objects.count(), 0)
-        self.assertEqual(Sample.objects.count(), 0)
+        self.assertEqual(get_waffle_switch_model().objects.count(), 0)
+        self.assertEqual(get_waffle_sample_model().objects.count(), 0)
 
     def test_delete_some_but_not_all_records(self):
         """ The command should delete specified records, but leave records

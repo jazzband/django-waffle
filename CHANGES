@@ -2,6 +2,9 @@
 Waffle Changelog
 ================
 
+v2.7.0
+======
+- Exposed JSON endpoint for Waffle flag/switch/sample state
 
 v2.6.0
 ======

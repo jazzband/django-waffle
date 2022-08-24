@@ -23,10 +23,8 @@ class WaffleNode(template.Node):
         return '<Waffle node: %s>' % self.name
 
     def __iter__(self):
-        for node in self.nodelist_true:
-            yield node
-        for node in self.nodelist_false:
-            yield node
+        yield from self.nodelist_true
+        yield from self.nodelist_false
 
     def render(self, context):
         try:

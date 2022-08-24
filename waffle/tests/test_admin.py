@@ -1,5 +1,5 @@
 try:
-    import mock
+    from unittest import mock
 except ImportError:
     import unittest.mock as mock
 import unittest

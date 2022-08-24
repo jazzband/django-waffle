@@ -167,7 +167,7 @@ class Command(BaseCommand):
                 # for user in user_hash:
                 flag.users.add(*[user.id for user in user_hash])
             elif hasattr(flag, option):
-                self.stdout.write('Setting %s: %s' % (option, options[option]))
+                self.stdout.write('Setting {}: {}'.format(option, options[option]))
                 setattr(flag, option, options[option])
 
         flag.save()

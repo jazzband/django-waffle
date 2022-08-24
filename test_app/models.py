@@ -2,11 +2,7 @@ from django.contrib.auth.base_user import AbstractBaseUser
 from django.db import models
 from django.db.models import CASCADE
 
-# ugettext variants removed in Django 4.0. Only gettext now available
-try:
-    from django.utils.translation import ugettext_lazy as _
-except ImportError:
-    from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from waffle.models import AbstractBaseSample, AbstractBaseSwitch, AbstractUserFlag, CACHE_EMPTY
 from waffle.utils import get_setting, keyfmt, get_cache

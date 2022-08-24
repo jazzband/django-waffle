@@ -1,7 +1,7 @@
 from argparse import ArgumentTypeError
 from django.core.management.base import BaseCommand, CommandError
 
-from waffle.models import Switch
+from waffle import get_waffle_switch_model
 
 
 def on_off_bool(string):
@@ -40,7 +40,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if options['list_switches']:
             self.stdout.write('Switches:')
-            for switch in Switch.objects.iterator():
+            for switch in get_waffle_switch_model().objects.iterator():
                 self.stdout.write(
                     '%s: %s' % (switch.name, 'on' if switch.active else 'off')
                 )
@@ -53,14 +53,16 @@ class Command(BaseCommand):
         if not (switch_name and state is not None):
             raise CommandError('You need to specify a switch name and state.')
 
-        if options['create']:
-            switch, created = Switch.objects.get_or_create(name=switch_name)
+        if options["create"]:
+            switch, created = get_waffle_switch_model().objects.get_or_create(
+                name=switch_name
+            )
             if created:
                 self.stdout.write('Creating switch: %s' % switch_name)
         else:
             try:
-                switch = Switch.objects.get(name=switch_name)
-            except Switch.DoesNotExist:
+                switch = get_waffle_switch_model().objects.get(name=switch_name)
+            except get_waffle_switch_model().DoesNotExist:
                 raise CommandError('This switch does not exist.')
 
         switch.active = state

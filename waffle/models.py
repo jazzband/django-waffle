@@ -8,7 +8,12 @@ from django.db import models, router, transaction
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from waffle import managers, get_waffle_flag_model
+from waffle import (
+    get_waffle_sample_model,
+    get_waffle_switch_model,
+    get_waffle_flag_model,
+    managers,
+)
 from waffle.utils import get_setting, keyfmt, get_cache
 
 logger = logging.getLogger('waffle')
@@ -460,11 +465,8 @@ class AbstractBaseSwitch(BaseModel):
             if log_level:
                 logger.log(log_level, 'Switch %s not found', self.name)
             if get_setting('CREATE_MISSING_SWITCHES'):
-                switch, _created = Switch.objects.get_or_create(
-                    name=self.name,
-                    defaults={
-                        'active': get_setting('SWITCH_DEFAULT')
-                    }
+                switch, _created = get_waffle_switch_model().objects.get_or_create(
+                    name=self.name, defaults={"active": get_setting("SWITCH_DEFAULT")}
                 )
                 cache = get_cache()
                 cache.set(self._cache_key(self.name), switch)
@@ -531,11 +533,8 @@ class AbstractBaseSample(BaseModel):
 
                 default_percent = 100 if get_setting('SAMPLE_DEFAULT') else 0
 
-                sample, _created = Sample.objects.get_or_create(
-                    name=self.name,
-                    defaults={
-                        'percent': default_percent
-                    }
+                sample, _created = get_waffle_sample_model().objects.get_or_create(
+                    name=self.name, defaults={"percent": default_percent}
                 )
                 cache = get_cache()
                 cache.set(self._cache_key(self.name), sample)

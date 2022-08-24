@@ -1,7 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 
-from waffle.models import Sample
-
+from waffle import get_waffle_sample_model
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
@@ -30,7 +29,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if options['list_samples']:
             self.stdout.write('Samples:')
-            for sample in Sample.objects.iterator():
+            for sample in get_waffle_sample_model().objects.iterator():
                 self.stdout.write('%s: %.1f%%' % (sample.name, sample.percent))
             self.stdout.write('')
             return
@@ -51,14 +50,14 @@ class Command(BaseCommand):
             raise CommandError('You need to enter a valid percentage value.')
 
         if options['create']:
-            sample, created = Sample.objects.get_or_create(
+            sample, created = get_waffle_sample_model().objects.get_or_create(
                 name=sample_name, defaults={'percent': 0})
             if created:
                 self.stdout.write('Creating sample: %s' % sample_name)
         else:
             try:
-                sample = Sample.objects.get(name=sample_name)
-            except Sample.DoesNotExist:
+                sample = get_waffle_sample_model().objects.get(name=sample_name)
+            except get_waffle_sample_model().DoesNotExist:
                 raise CommandError('This sample does not exist.')
 
         sample.percent = percent

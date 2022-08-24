@@ -17,7 +17,6 @@ import waffle
 from test_app import views
 from test_app.models import CompanyAwareFlag, CustomSample, CustomSwitch, Company
 from waffle.middleware import WaffleMiddleware
-from waffle.models import Sample, Switch
 from waffle.tests.base import TestCase
 
 
@@ -276,7 +275,9 @@ class WaffleTests(TestCase):
 
     def test_everyone_off(self):
         """Test the 'everyone' switch off."""
-        waffle.get_waffle_flag_model().objects.create(name='myflag', everyone=False, authenticated=True)
+        waffle.get_waffle_flag_model().objects.create(
+            name="myflag", everyone=False, authenticated=True
+        )
 
         request = get()
         request.COOKIES['dwf_myflag'] = 'True'
@@ -407,7 +408,10 @@ class WaffleTests(TestCase):
             response = process_request(request, views.flag_in_view)
             self.assertEqual(b'on', response.content)
 
-    @override_settings(WAFFLE_FLAG_MODEL='test_app.CompanyAwareFlag', AUTH_USER_MODEL='test_app.CompanyUser')
+    @override_settings(
+        WAFFLE_FLAG_MODEL="test_app.CompanyAwareFlag",
+        AUTH_USER_MODEL="test_app.CompanyUser",
+    )
     def test_pluggable_flag_model(self):
         flag_model = waffle.get_waffle_flag_model()
         self.assertEqual(CompanyAwareFlag, flag_model)
@@ -415,7 +419,9 @@ class WaffleTests(TestCase):
         acme_company = Company.objects.create(name='Acme Ltd.')
         feline_company = Company.objects.create(name='Feline LLC')
 
-        acme_company_flag = waffle.get_waffle_flag_model().objects.create(name='myflag', superusers=True)
+        acme_company_flag = waffle.get_waffle_flag_model().objects.create(
+            name="myflag", superusers=True
+        )
         acme_company_flag.companies.add(acme_company)
 
         request = get()
@@ -465,11 +471,11 @@ class SwitchTests(TestCase):
     def assert_switch_dynamically_created_with_value(self, expected_value):
         SWITCH_NAME = 'my_dynamically_created_switch'
 
-        assert Switch.objects.count() == 0
+        assert waffle.get_waffle_switch_model().objects.count() == 0
         assert expected_value == waffle.switch_is_active(SWITCH_NAME)
-        assert Switch.objects.count() == 1
+        assert waffle.get_waffle_switch_model().objects.count() == 1
 
-        switch = Switch.objects.get(name=SWITCH_NAME)
+        switch = waffle.get_waffle_switch_model().objects.get(name=SWITCH_NAME)
         assert switch.name == SWITCH_NAME
         assert expected_value == switch.active
 
@@ -479,16 +485,22 @@ class SwitchTests(TestCase):
             assert expected_value == waffle.switch_is_active(SWITCH_NAME)
 
     def test_switch_active(self):
-        switch = Switch.objects.create(name='myswitch', active=True)
+        switch = waffle.get_waffle_switch_model().objects.create(
+            name="myswitch", active=True
+        )
         assert waffle.switch_is_active(switch.name)
 
     def test_switch_inactive(self):
-        switch = Switch.objects.create(name='myswitch', active=False)
+        switch = waffle.get_waffle_switch_model().objects.create(
+            name="myswitch", active=False
+        )
         assert not waffle.switch_is_active(switch.name)
 
     def test_switch_active_from_cache(self):
         """Do not make two queries for an existing active switch."""
-        switch = Switch.objects.create(name='myswitch', active=True)
+        switch = waffle.get_waffle_switch_model().objects.create(
+            name="myswitch", active=True
+        )
         # Get the value once so that it will be put into the cache
         assert waffle.switch_is_active(switch.name)
         queries = len(connection.queries)
@@ -497,7 +509,9 @@ class SwitchTests(TestCase):
 
     def test_switch_inactive_from_cache(self):
         """Do not make two queries for an existing inactive switch."""
-        switch = Switch.objects.create(name='myswitch', active=False)
+        switch = waffle.get_waffle_switch_model().objects.create(
+            name="myswitch", active=False
+        )
         # Get the value once so that it will be put into the cache
         assert not waffle.switch_is_active(switch.name)
         queries = len(connection.queries)
@@ -514,7 +528,7 @@ class SwitchTests(TestCase):
     @override_settings(DEBUG=True)
     def test_no_query(self):
         """Do not make two queries for a non-existent switch."""
-        assert not Switch.objects.filter(name='foo').exists()
+        assert not waffle.get_waffle_switch_model().objects.filter(name='foo').exists()
         queries = len(connection.queries)
         assert not waffle.switch_is_active('foo')
         assert len(connection.queries) > queries
@@ -524,7 +538,9 @@ class SwitchTests(TestCase):
 
     @override_settings(DATABASE_ROUTERS=['waffle.tests.base.ReplicationRouter'])
     def test_read_from_write_db(self):
-        switch = Switch.objects.create(name='switch', active=True)
+        switch = waffle.get_waffle_switch_model().objects.create(
+            name="switch", active=True
+        )
 
         # By default, switch_is_active should hit whatever it configured as the
         # read DB (so values will be stale if replication is lagged).
@@ -567,8 +583,10 @@ class SwitchTests(TestCase):
     @override_settings(WAFFLE_LOG_MISSING_SWITCHES=logging.WARNING)
     @mock.patch('waffle.models.logger')
     def test_logging_missing_switch(self, mock_logger):
-        waffle.switch_is_active('foo')
-        mock_logger.log.assert_called_with(logging.WARNING, 'Switch %s not found', 'foo')
+        waffle.switch_is_active("foo")
+        mock_logger.log.assert_called_with(
+            logging.WARNING, "Switch %s not found", "foo"
+        )
 
 
 class SampleTests(TestCase):
@@ -577,11 +595,11 @@ class SampleTests(TestCase):
     def assert_sample_dynamically_created_with_value(self, is_active, expected_value):
         SAMPLE_NAME = 'my_dynamically_created_sample'
 
-        assert Sample.objects.count() == 0
+        assert waffle.get_waffle_sample_model().objects.count() == 0
         assert is_active == waffle.sample_is_active(SAMPLE_NAME)
-        assert Sample.objects.count() == 1
+        assert waffle.get_waffle_sample_model().objects.count() == 1
 
-        sample = Sample.objects.get(name=SAMPLE_NAME)
+        sample = waffle.get_waffle_sample_model().objects.get(name=SAMPLE_NAME)
 
         assert sample.name == SAMPLE_NAME
         assert sample.percent == expected_value
@@ -592,11 +610,15 @@ class SampleTests(TestCase):
             assert is_active == waffle.sample_is_active(SAMPLE_NAME)
 
     def test_sample_100(self):
-        sample = Sample.objects.create(name='sample', percent='100.0')
+        sample = waffle.get_waffle_sample_model().objects.create(
+            name="sample", percent="100.0"
+        )
         assert waffle.sample_is_active(sample.name)
 
     def test_sample_0(self):
-        sample = Sample.objects.create(name='sample', percent='0.0')
+        sample = waffle.get_waffle_sample_model().objects.create(
+            name="sample", percent="0.0"
+        )
         assert not waffle.sample_is_active(sample.name)
 
     def test_undefined(self):
@@ -608,7 +630,9 @@ class SampleTests(TestCase):
 
     @override_settings(DATABASE_ROUTERS=['waffle.tests.base.ReplicationRouter'])
     def test_read_from_write_db(self):
-        sample = Sample.objects.create(name='sample', percent='100.0')
+        sample = waffle.get_waffle_sample_model().objects.create(
+            name="sample", percent="100.0"
+        )
 
         # By default, sample_is_active should hit whatever it configured as the
         # read DB (so values will be stale if replication is lagged).
@@ -732,8 +756,9 @@ class FlagTransactionTests(TransactionTestMixin, TransactionTestCase):
 
 class SwitchTransactionTests(TransactionTestMixin, TransactionTestCase):
     def create_toggle(self):
-        return Switch.objects.create(name='transaction-switch-name',
-                                     active=False)
+        return waffle.get_waffle_switch_model().objects.create(
+            name="transaction-switch-name", active=False
+        )
 
     def flip_toggle(self, switch):
         switch.active = True
@@ -745,7 +770,9 @@ class SwitchTransactionTests(TransactionTestMixin, TransactionTestCase):
 
 class SampleTransactionTests(TransactionTestMixin, TransactionTestCase):
     def create_toggle(self):
-        return Sample.objects.create(name='transaction-sample-name', percent=0)
+        return waffle.get_waffle_sample_model().objects.create(
+            name="transaction-sample-name", percent=0
+        )
 
     def flip_toggle(self, sample):
         sample.percent = 100

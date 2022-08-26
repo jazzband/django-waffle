@@ -42,7 +42,7 @@ class Command(BaseCommand):
             self.stdout.write('Switches:')
             for switch in get_waffle_switch_model().objects.iterator():
                 self.stdout.write(
-                    '%s: %s' % (switch.name, 'on' if switch.active else 'off')
+                    '{}: {}'.format(switch.name, 'on' if switch.active else 'off')
                 )
             self.stdout.write('')
             return

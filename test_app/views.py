@@ -62,7 +62,7 @@ def foo_view(request):
 
 
 def foo_view_with_args(request, some_number):
-    return HttpResponse('redirected with {}'.format(some_number))
+    return HttpResponse(f'redirected with {some_number}')
 
 
 @waffle_switch('foo', redirect_to=foo_view)
@@ -77,12 +77,12 @@ def switched_view_with_valid_url_name(request):
 
 @waffle_switch('foo', redirect_to=foo_view_with_args)
 def switched_view_with_args_with_valid_redirect(request, some_number):
-    return HttpResponse('foo with {}'.format(some_number))
+    return HttpResponse(f'foo with {some_number}')
 
 
 @waffle_switch('foo', redirect_to='foo_view_with_args')
 def switched_view_with_args_with_valid_url_name(request, some_number):
-    return HttpResponse('foo with {}'.format(some_number))
+    return HttpResponse(f'foo with {some_number}')
 
 
 @waffle_switch('foo', redirect_to='invalid_view')
@@ -102,12 +102,12 @@ def flagged_view_with_valid_url_name(request):
 
 @waffle_flag('foo', redirect_to=foo_view_with_args)
 def flagged_view_with_args_with_valid_redirect(request, some_number):
-    return HttpResponse('foo with {}'.format(some_number))
+    return HttpResponse(f'foo with {some_number}')
 
 
 @waffle_flag('foo', redirect_to='foo_view_with_args')
 def flagged_view_with_args_with_valid_url_name(request, some_number):
-    return HttpResponse('foo with {}'.format(some_number))
+    return HttpResponse(f'foo with {some_number}')
 
 
 @waffle_flag('foo', redirect_to='invalid_view')

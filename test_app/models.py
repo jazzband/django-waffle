@@ -50,14 +50,14 @@ class CompanyAwareFlag(AbstractUserFlag):
     )
 
     def get_flush_keys(self, flush_keys=None):
-        flush_keys = super(CompanyAwareFlag, self).get_flush_keys(flush_keys)
+        flush_keys = super().get_flush_keys(flush_keys)
         companies_cache_key = get_setting(CompanyAwareFlag.FLAG_COMPANIES_CACHE_KEY,
                                           CompanyAwareFlag.FLAG_COMPANIES_CACHE_KEY_DEFAULT)
         flush_keys.append(keyfmt(companies_cache_key, self.name))
         return flush_keys
 
     def is_active_for_user(self, user):
-        is_active = super(CompanyAwareFlag, self).is_active_for_user(user)
+        is_active = super().is_active_for_user(user)
         if is_active:
             return is_active
 

@@ -11,7 +11,7 @@ from django.test import RequestFactory, TransactionTestCase
 
 from django.test.utils import override_settings
 
-import mock
+from unittest import mock
 
 import waffle
 from test_app import views
@@ -679,7 +679,7 @@ class SampleTests(TestCase):
         assert waffle.sample_is_active('test_sample_on')
 
 
-class TransactionTestMixin(object):
+class TransactionTestMixin:
     """Mixin providing an abstract test case for writing in a transaction.
     """
     def create_toggle(self):

@@ -5,7 +5,7 @@ from django.http import Http404
 from waffle import switch_is_active, flag_is_active, sample_is_active
 
 
-class BaseWaffleMixin(object):
+class BaseWaffleMixin:
 
     def validate_waffle(self, waffle, func):
         if waffle.startswith('!'):
@@ -33,7 +33,7 @@ class WaffleFlagMixin(BaseWaffleMixin):
         if not active:
             return self.invalid_waffle()
 
-        return super(WaffleFlagMixin, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
 
 class WaffleSampleMixin(BaseWaffleMixin):
@@ -50,7 +50,7 @@ class WaffleSampleMixin(BaseWaffleMixin):
         if not active:
             return self.invalid_waffle()
 
-        return super(WaffleSampleMixin, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
 
 class WaffleSwitchMixin(BaseWaffleMixin):
@@ -67,4 +67,4 @@ class WaffleSwitchMixin(BaseWaffleMixin):
         if not active:
             return self.invalid_waffle()
 
-        return super(WaffleSwitchMixin, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)

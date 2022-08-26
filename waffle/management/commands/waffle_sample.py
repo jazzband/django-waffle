@@ -30,7 +30,7 @@ class Command(BaseCommand):
         if options['list_samples']:
             self.stdout.write('Samples:')
             for sample in get_waffle_sample_model().objects.iterator():
-                self.stdout.write('%s: %.1f%%' % (sample.name, sample.percent))
+                self.stdout.write(f'{sample.name}: {sample.percent:.1f}%')
             self.stdout.write('')
             return
 

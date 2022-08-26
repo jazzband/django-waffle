@@ -11,7 +11,7 @@ class BaseManager(models.Manager):
 
     def create(self, *args, **kwargs):
         cache = get_cache()
-        ret = super(BaseManager, self).create(*args, **kwargs)
+        ret = super().create(*args, **kwargs)
         cache_key = get_setting(self.KEY_SETTING)
         cache.delete(cache_key)
         return ret

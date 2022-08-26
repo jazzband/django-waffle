@@ -24,7 +24,7 @@ class BaseModel(models.Model):
     SINGLE_CACHE_KEY = ''
     ALL_CACHE_KEY = ''
 
-    class Meta(object):
+    class Meta:
         abstract = True
 
     def __str__(self):
@@ -98,7 +98,7 @@ class BaseModel(models.Model):
 
     def save(self, *args, **kwargs):
         self.modified = timezone.now()
-        ret = super(BaseModel, self).save(*args, **kwargs)
+        ret = super().save(*args, **kwargs)
         if hasattr(transaction, 'on_commit'):
             transaction.on_commit(self.flush)
         else:
@@ -106,7 +106,7 @@ class BaseModel(models.Model):
         return ret
 
     def delete(self, *args, **kwargs):
-        ret = super(BaseModel, self).delete(*args, **kwargs)
+        ret = super().delete(*args, **kwargs)
         if hasattr(transaction, 'on_commit'):
             transaction.on_commit(self.flush)
         else:
@@ -342,7 +342,7 @@ class AbstractUserFlag(AbstractBaseFlag):
         verbose_name_plural = _('Flags')
 
     def get_flush_keys(self, flush_keys=None):
-        flush_keys = super(AbstractUserFlag, self).get_flush_keys(flush_keys)
+        flush_keys = super().get_flush_keys(flush_keys)
         flush_keys.extend([
             keyfmt(get_setting('FLAG_USERS_CACHE_KEY'), self.name),
             keyfmt(get_setting('FLAG_GROUPS_CACHE_KEY'), self.name),
@@ -384,7 +384,7 @@ class AbstractUserFlag(AbstractBaseFlag):
         return group_ids
 
     def is_active_for_user(self, user):
-        is_active = super(AbstractUserFlag, self).is_active_for_user(user)
+        is_active = super().is_active_for_user(user)
         if is_active:
             return is_active
 

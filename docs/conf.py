@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-#
 # django-waffle documentation build configuration file, created by
 # sphinx-quickstart on Wed Aug  1 17:45:05 2012.
 #

@@ -13,7 +13,7 @@ __all__ = ['override_flag', 'override_sample', 'override_switch']
 
 class _overrider(TestContextDecorator):
     def __init__(self, name, active):
-        super(_overrider, self).__init__()
+        super().__init__()
         self.name = name
         self.active = active
 
@@ -106,7 +106,7 @@ class override_sample(_overrider):
         else:
             p = active
         obj = self.cls.objects.get(pk=self.obj.pk)
-        obj.percent = '{0}'.format(p)
+        obj.percent = f'{p}'
         obj.save()
         obj.flush()
 

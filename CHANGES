@@ -2,6 +2,12 @@
 Waffle Changelog
 ================
 
+v3.0.0
+======
+- Added support for pluggable Sample and Switch models
+- Removed support EOL Python versions
+- Removed support for EOL Django versions
+
 v2.7.0
 ======
 - Exposed JSON endpoint for Waffle flag/switch/sample state

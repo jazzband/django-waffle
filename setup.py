@@ -13,6 +13,8 @@ setup(
     include_package_data=True,
     package_data={'': ['README.rst']},
     zip_safe=False,
+    python_requires='>=3.7',
+    install_requires=['django>=3.2'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',

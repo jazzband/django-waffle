@@ -20,6 +20,7 @@ logger = logging.getLogger('waffle')
 
 CACHE_EMPTY = '-'
 
+
 class BaseModel(models.Model):
     SINGLE_CACHE_KEY = ''
     ALL_CACHE_KEY = ''

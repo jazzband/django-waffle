@@ -108,7 +108,7 @@ class Command(BaseCommand):
                 )
                 self.stdout.write('USERS: %s' % list(
                     flag.users.values_list(UserModel.USERNAME_FIELD, flat=True))
-                                  )
+                )
                 self.stdout.write('')
             return
 

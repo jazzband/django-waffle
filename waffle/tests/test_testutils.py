@@ -197,7 +197,7 @@ class OverrideSampleTestsMixin:
             assert not waffle.sample_is_active('foo')
 
         self.assertEqual(Decimal('100.0'),
-                          waffle.get_waffle_sample_model().objects.get(name='foo').percent)
+                         waffle.get_waffle_sample_model().objects.get(name='foo').percent)
 
     def test_sample_existed_and_was_0(self):
         waffle.get_waffle_sample_model().objects.create(name='foo', percent='0.0')
@@ -209,7 +209,7 @@ class OverrideSampleTestsMixin:
             assert not waffle.sample_is_active('foo')
 
         self.assertEqual(Decimal('0.0'),
-                          waffle.get_waffle_sample_model().objects.get(name='foo').percent)
+                         waffle.get_waffle_sample_model().objects.get(name='foo').percent)
 
     def test_sample_existed_and_was_50(self):
         waffle.get_waffle_sample_model().objects.create(name='foo', percent='50.0')
@@ -221,7 +221,7 @@ class OverrideSampleTestsMixin:
             assert not waffle.sample_is_active('foo')
 
         self.assertEqual(Decimal('50.0'),
-                          waffle.get_waffle_sample_model().objects.get(name='foo').percent)
+                         waffle.get_waffle_sample_model().objects.get(name='foo').percent)
 
     def test_sample_did_not_exist(self):
         assert not waffle.get_waffle_sample_model().objects.filter(name='foo').exists()

@@ -29,6 +29,10 @@ def _add_log_entry(user, model, description, action_flag):
     )
 
 
+@admin.action(
+    description=_('Enable selected flags for everyone'),
+    permissions=('change',),
+)
 def enable_for_all(ma, request, qs):
     # Iterate over all objects to cause cache invalidation.
     for f in qs.all():
@@ -37,6 +41,10 @@ def enable_for_all(ma, request, qs):
         f.save()
 
 
+@admin.action(
+    description=_('Disable selected flags for everyone'),
+    permissions=('change',),
+)
 def disable_for_all(ma, request, qs):
     # Iterate over all objects to cause cache invalidation.
     for f in qs.all():
@@ -45,20 +53,15 @@ def disable_for_all(ma, request, qs):
         f.save()
 
 
+@admin.action(
+    description=_('Delete selected'),
+    permissions=('delete',),
+)
 def delete_individually(ma, request, qs):
     # Iterate over all objects to cause cache invalidation.
     for f in qs.all():
         _add_log_entry(request.user, f, "deleted", DELETION)
         f.delete()
-
-
-enable_for_all.short_description = _('Enable selected flags for everyone')
-disable_for_all.short_description = _('Disable selected flags for everyone')
-delete_individually.short_description = _('Delete selected')
-
-enable_for_all.allowed_permissions = ('change',)
-disable_for_all.allowed_permissions = ('change',)
-delete_individually.allowed_permissions = ('delete',)
 
 
 class InformativeManyToManyRawIdWidget(ManyToManyRawIdWidget):
@@ -100,6 +103,10 @@ class FlagAdmin(BaseAdmin):
         return super().formfield_for_dbfield(db_field, **kwargs)
 
 
+@admin.action(
+    description=_('Enable selected switches'),
+    permissions=('change',),
+)
 def enable_switches(ma, request, qs):
     for switch in qs:
         _add_log_entry(request.user, switch, "on", CHANGE)
@@ -107,18 +114,15 @@ def enable_switches(ma, request, qs):
         switch.save()
 
 
+@admin.action(
+    description=_('Disable selected switches'),
+    permissions=('change',),
+)
 def disable_switches(ma, request, qs):
     for switch in qs:
         _add_log_entry(request.user, switch, "off", CHANGE)
         switch.active = False
         switch.save()
-
-
-enable_switches.short_description = _('Enable selected switches')
-disable_switches.short_description = _('Disable selected switches')
-
-enable_switches.allowed_permissions = ('change',)
-disable_switches.allowed_permissions = ('change',)
 
 
 class SwitchAdmin(BaseAdmin):

@@ -2,6 +2,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 from waffle import get_waffle_sample_model
 
+
 class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument(

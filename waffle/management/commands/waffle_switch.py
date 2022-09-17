@@ -1,5 +1,7 @@
+from typing import Any
+
 from argparse import ArgumentTypeError
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand, CommandError, CommandParser
 
 from waffle import get_waffle_switch_model
 
@@ -12,7 +14,7 @@ def on_off_bool(string):
 
 
 class Command(BaseCommand):
-    def add_arguments(self, parser):
+    def add_arguments(self, parser: CommandParser) -> None:
         parser.add_argument(
             'name',
             nargs='?',
@@ -37,7 +39,7 @@ class Command(BaseCommand):
 
     help = 'Activate or deactivate a switch.'
 
-    def handle(self, *args, **options):
+    def handle(self, *args: Any, **options: Any) -> None:
         if options['list_switches']:
             self.stdout.write('Switches:')
             for switch in get_waffle_switch_model().objects.iterator():

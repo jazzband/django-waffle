@@ -1,10 +1,12 @@
-from django.core.management.base import BaseCommand, CommandError
+from typing import Any
+
+from django.core.management.base import BaseCommand, CommandError, CommandParser
 
 from waffle import get_waffle_sample_model
 
 
 class Command(BaseCommand):
-    def add_arguments(self, parser):
+    def add_arguments(self, parser: CommandParser) -> None:
         parser.add_argument(
             'name',
             nargs='?',
@@ -27,7 +29,7 @@ class Command(BaseCommand):
 
     help = 'Change percentage of a sample.'
 
-    def handle(self, *args, **options):
+    def handle(self, *args: Any, **options: Any) -> None:
         if options['list_samples']:
             self.stdout.write('Samples:')
             for sample in get_waffle_sample_model().objects.iterator():

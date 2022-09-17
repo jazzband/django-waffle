@@ -1,6 +1,8 @@
+from typing import Any
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand, CommandError, CommandParser
 from django.db.models import Q
 
 from waffle import get_waffle_flag_model
@@ -9,7 +11,7 @@ UserModel = get_user_model()
 
 
 class Command(BaseCommand):
-    def add_arguments(self, parser):
+    def add_arguments(self, parser: CommandParser) -> None:
         parser.add_argument(
             'name',
             nargs='?',
@@ -91,7 +93,7 @@ class Command(BaseCommand):
 
     help = 'Modify a flag.'
 
-    def handle(self, *args, **options):
+    def handle(self, *args: Any, **options: Any) -> None:
         if options['list_flags']:
             self.stdout.write('Flags:')
             for flag in get_waffle_flag_model().objects.iterator():

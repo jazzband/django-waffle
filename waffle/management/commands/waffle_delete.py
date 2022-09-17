@@ -1,4 +1,6 @@
-from django.core.management.base import BaseCommand
+from typing import Any
+
+from django.core.management.base import BaseCommand, CommandParser
 
 from waffle import (
     get_waffle_flag_model,
@@ -8,7 +10,7 @@ from waffle import (
 
 
 class Command(BaseCommand):
-    def add_arguments(self, parser):
+    def add_arguments(self, parser: CommandParser) -> None:
         parser.add_argument(
             '--flags',
             action='store',
@@ -30,7 +32,7 @@ class Command(BaseCommand):
 
     help = 'Delete flags, samples, and switches from database'
 
-    def handle(self, *args, **options):
+    def handle(self, *args: Any, **options: Any) -> None:
         flags = options['flag_names']
         if flags:
             flag_queryset = get_waffle_flag_model().objects.filter(name__in=flags)

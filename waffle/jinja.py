@@ -8,7 +8,7 @@ try:
     from jinja2 import pass_context
 except ImportError:
     # NOTE: We can get rid of this when we stop supporting Jinja2 < 3.
-    from jinja2 import contextfunction as pass_context
+    from jinja2 import contextfunction as pass_context  # type: ignore
 
 
 @pass_context

@@ -63,6 +63,27 @@ jobs:
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
+  typecheck:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+      - uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ matrix.python-version }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ matrix.python-version }}-pip-
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install tox-gh-actions
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Type-check
+        run: |
+          tox -e typecheck
+
   i18n:
     runs-on: ubuntu-latest
 

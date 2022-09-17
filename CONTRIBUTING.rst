@@ -61,15 +61,17 @@ To be mergable, patches must:
 - add tests for new code (bug fixes should include regression tests, new
   features should have relevant tests),
 - not introduce any new flake8_ errors (run ``./run.sh lint``),
+- not introduce any new mypy_ errors (run ``./run.sh typecheck``),
 - include updated source translations (run ``./run.sh makemessages`` and ``./run.sh compilemessages``),
 - document any new features, and
 - have a `good commit message`_.
 
 Regressions tests should fail without the rest of the patch and pass
-with it. 
+with it.
 
 
 .. _open a new issue: https://github.com/django-waffle/django-waffle/issues/new
 .. _Fork: https://github.com/django-waffle/django-waffle/fork
 .. _flake8: https://pypi.python.org/pypi/flake8
+.. _mypy: https://www.mypy-lang.org/
 .. _good commit message: http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html

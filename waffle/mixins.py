@@ -1,4 +1,5 @@
 from functools import partial
+from typing import Optional
 
 from django.http import Http404
 
@@ -24,7 +25,7 @@ class WaffleFlagMixin(BaseWaffleMixin):
     waffle_flag
     """
 
-    waffle_flag = None
+    waffle_flag: Optional[str] = None
 
     def dispatch(self, request, *args, **kwargs):
         func = partial(flag_is_active, request)
@@ -42,7 +43,7 @@ class WaffleSampleMixin(BaseWaffleMixin):
     waffle_sample.
     """
 
-    waffle_sample = None
+    waffle_sample: Optional[str] = None
 
     def dispatch(self, request, *args, **kwargs):
         active = self.validate_waffle(self.waffle_sample, sample_is_active)
@@ -59,7 +60,7 @@ class WaffleSwitchMixin(BaseWaffleMixin):
     waffle_switch.
     """
 
-    waffle_switch = None
+    waffle_switch: Optional[str] = None
 
     def dispatch(self, request, *args, **kwargs):
         active = self.validate_waffle(self.waffle_switch, switch_is_active)

@@ -1,20 +1,21 @@
 import hashlib
+from typing import Any, Optional
 
 from django.conf import settings
-from django.core.cache import caches
+from django.core.cache import BaseCache, caches
 
 import waffle
 from waffle import defaults
 
 
-def get_setting(name, default=None):
+def get_setting(name: str, default: Any = None) -> Any:
     try:
         return getattr(settings, 'WAFFLE_' + name)
     except AttributeError:
         return getattr(defaults, name, default)
 
 
-def keyfmt(k, v=None):
+def keyfmt(k: str, v: Optional[str] = None) -> str:
     prefix = get_setting('CACHE_PREFIX') + waffle.__version__
     if v is None:
         key = prefix + k
@@ -23,6 +24,6 @@ def keyfmt(k, v=None):
     return key
 
 
-def get_cache():
+def get_cache() -> BaseCache:
     CACHE_NAME = get_setting('CACHE_NAME')
     return caches[CACHE_NAME]

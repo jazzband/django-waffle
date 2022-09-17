@@ -1,10 +1,12 @@
+import logging
 import random
 from decimal import Decimal
-import logging
+from typing import Any, List, Optional, Set, Tuple, Type, TypeVar
 
 from django.conf import settings
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import AbstractBaseUser, Group
 from django.db import models, router, transaction
+from django.http import HttpRequest
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -21,6 +23,9 @@ logger = logging.getLogger('waffle')
 CACHE_EMPTY = '-'
 
 
+_BaseModelType = TypeVar("_BaseModelType", bound="BaseModel")
+
+
 class BaseModel(models.Model):
     SINGLE_CACHE_KEY = ''
     ALL_CACHE_KEY = ''
@@ -28,18 +33,18 @@ class BaseModel(models.Model):
     class Meta:
         abstract = True
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
-    def natural_key(self):
+    def natural_key(self) -> Tuple[str]:
         return (self.name,)
 
     @classmethod
-    def _cache_key(cls, name):
+    def _cache_key(cls, name: str) -> str:
         return keyfmt(get_setting(cls.SINGLE_CACHE_KEY), name)
 
     @classmethod
-    def get(cls, name):
+    def get(cls: Type[_BaseModelType], name: str) -> _BaseModelType:
         cache = get_cache()
         cache_key = cls._cache_key(name)
         cached = cache.get(cache_key)
@@ -58,14 +63,14 @@ class BaseModel(models.Model):
         return obj
 
     @classmethod
-    def get_from_db(cls, name):
+    def get_from_db(cls: Type[_BaseModelType], name: str) -> _BaseModelType:
         objects = cls.objects
         if get_setting('READ_FROM_WRITE_DB'):
             objects = objects.using(router.db_for_write(cls))
         return objects.get(name=name)
 
     @classmethod
-    def get_all(cls):
+    def get_all(cls: Type[_BaseModelType]) -> List[_BaseModelType]:
         cache = get_cache()
         cache_key = get_setting(cls.ALL_CACHE_KEY)
         cached = cache.get(cache_key)
@@ -83,13 +88,13 @@ class BaseModel(models.Model):
         return objs
 
     @classmethod
-    def get_all_from_db(cls):
+    def get_all_from_db(cls: Type[_BaseModelType]) -> List[_BaseModelType]:
         objects = cls.objects
         if get_setting('READ_FROM_WRITE_DB'):
             objects = objects.using(router.db_for_write(cls))
         return list(objects.all())
 
-    def flush(self):
+    def flush(self) -> None:
         cache = get_cache()
         keys = [
             self._cache_key(self.name),
@@ -115,7 +120,7 @@ class BaseModel(models.Model):
         return ret
 
 
-def set_flag(request, flag_name, active=True, session_only=False):
+def set_flag(request: HttpRequest, flag_name: str, active: Optional[bool] = True, session_only: bool = False) -> None:
     """Set a flag value on a request object."""
     if not hasattr(request, 'waffles'):
         request.waffles = {}
@@ -209,12 +214,12 @@ class AbstractBaseFlag(BaseModel):
         verbose_name = _('Flag')
         verbose_name_plural = _('Flags')
 
-    def flush(self):
+    def flush(self) -> None:
         cache = get_cache()
         keys = self.get_flush_keys()
         cache.delete_many(keys)
 
-    def get_flush_keys(self, flush_keys=None):
+    def get_flush_keys(self, flush_keys: Optional[List[str]] = None) -> List[str]:
         flush_keys = flush_keys or []
         flush_keys.extend([
             self._cache_key(self.name),
@@ -222,7 +227,7 @@ class AbstractBaseFlag(BaseModel):
         ])
         return flush_keys
 
-    def is_active_for_user(self, user):
+    def is_active_for_user(self, user: AbstractBaseUser) -> Optional[bool]:
         if self.authenticated and user.is_authenticated:
             return True
 
@@ -234,13 +239,13 @@ class AbstractBaseFlag(BaseModel):
 
         return None
 
-    def _is_active_for_user(self, request):
+    def _is_active_for_user(self, request: HttpRequest) -> Optional[bool]:
         user = getattr(request, "user", None)
         if user:
             return self.is_active_for_user(user)
         return False
 
-    def _is_active_for_language(self, request):
+    def _is_active_for_language(self, request: HttpRequest) -> Optional[bool]:
         if self.languages:
             languages = [ln.strip() for ln in self.languages.split(',')]
             if (hasattr(request, 'LANGUAGE_CODE') and
@@ -248,7 +253,7 @@ class AbstractBaseFlag(BaseModel):
                 return True
         return None
 
-    def is_active(self, request, read_only=False):
+    def is_active(self, request: HttpRequest, read_only: bool = False) -> Optional[bool]:
         if not self.pk:
             log_level = get_setting('LOG_MISSING_FLAGS')
             if log_level:
@@ -342,7 +347,7 @@ class AbstractUserFlag(AbstractBaseFlag):
         verbose_name = _('Flag')
         verbose_name_plural = _('Flags')
 
-    def get_flush_keys(self, flush_keys=None):
+    def get_flush_keys(self, flush_keys: Optional[List[str]] = None) -> List[str]:
         flush_keys = super().get_flush_keys(flush_keys)
         flush_keys.extend([
             keyfmt(get_setting('FLAG_USERS_CACHE_KEY'), self.name),
@@ -350,7 +355,7 @@ class AbstractUserFlag(AbstractBaseFlag):
         ])
         return flush_keys
 
-    def _get_user_ids(self):
+    def _get_user_ids(self) -> Set[Any]:
         cache = get_cache()
         cache_key = keyfmt(get_setting('FLAG_USERS_CACHE_KEY'), self.name)
         cached = cache.get(cache_key)
@@ -367,7 +372,7 @@ class AbstractUserFlag(AbstractBaseFlag):
         cache.add(cache_key, user_ids)
         return user_ids
 
-    def _get_group_ids(self):
+    def _get_group_ids(self) -> Set[Any]:
         cache = get_cache()
         cache_key = keyfmt(get_setting('FLAG_GROUPS_CACHE_KEY'), self.name)
         cached = cache.get(cache_key)
@@ -384,7 +389,7 @@ class AbstractUserFlag(AbstractBaseFlag):
         cache.add(cache_key, group_ids)
         return group_ids
 
-    def is_active_for_user(self, user):
+    def is_active_for_user(self, user: AbstractBaseUser) -> Optional[bool]:
         is_active = super().is_active_for_user(user)
         if is_active:
             return is_active
@@ -460,7 +465,7 @@ class AbstractBaseSwitch(BaseModel):
         verbose_name = _('Switch')
         verbose_name_plural = _('Switches')
 
-    def is_active(self):
+    def is_active(self) -> bool:
         if not self.pk:
             log_level = get_setting('LOG_MISSING_SWITCHES')
             if log_level:
@@ -525,7 +530,7 @@ class AbstractBaseSample(BaseModel):
         verbose_name = _('Sample')
         verbose_name_plural = _('Samples')
 
-    def is_active(self):
+    def is_active(self) -> bool:
         if not self.pk:
             log_level = get_setting('LOG_MISSING_SAMPLES')
             if log_level:

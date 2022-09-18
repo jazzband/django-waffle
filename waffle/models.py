@@ -1,7 +1,7 @@
 import logging
 import random
 from decimal import Decimal
-from typing import Any, List, Optional, Set, Tuple, Type, TypeVar
+from typing import Any, Dict, List, Optional, Set, Tuple, Type, TypeVar
 
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, Group
@@ -102,7 +102,7 @@ class BaseModel(models.Model):
         ]
         cache.delete_many(keys)
 
-    def save(self, *args, **kwargs):
+    def save(self, *args: Any, **kwargs: Any) -> None:
         self.modified = timezone.now()
         ret = super().save(*args, **kwargs)
         if hasattr(transaction, 'on_commit'):
@@ -111,7 +111,7 @@ class BaseModel(models.Model):
             self.flush()
         return ret
 
-    def delete(self, *args, **kwargs):
+    def delete(self, *args: Any, **kwargs: Any) -> Tuple[int, Dict[str, int]]:
         ret = super().delete(*args, **kwargs)
         if hasattr(transaction, 'on_commit'):
             transaction.on_commit(self.flush)

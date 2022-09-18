@@ -1,14 +1,17 @@
 from functools import wraps, WRAPPER_ASSIGNMENTS
+from typing import Any, Callable, Optional, Union
 
-from django.http import Http404
+from django.http import Http404, HttpRequest, HttpResponse, HttpResponsePermanentRedirect, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse, NoReverseMatch
 
 from waffle import flag_is_active, switch_is_active
 
 
-def waffle_flag(flag_name, redirect_to=None):
-    def decorator(view):
+def waffle_flag(
+    flag_name: str, redirect_to: Optional[Union[Callable, str]] = None,
+) -> Callable[[Callable[[HttpRequest], HttpResponse]], Callable[[HttpRequest], HttpResponse]]:
+    def decorator(view: Callable[[HttpRequest], HttpResponse]) -> Callable[[HttpRequest], HttpResponse]:
         @wraps(view, assigned=WRAPPER_ASSIGNMENTS)
         def _wrapped_view(request, *args, **kwargs):
             if flag_name.startswith('!'):
@@ -28,8 +31,10 @@ def waffle_flag(flag_name, redirect_to=None):
     return decorator
 
 
-def waffle_switch(switch_name, redirect_to=None):
-    def decorator(view):
+def waffle_switch(
+    switch_name: str, redirect_to: Optional[Union[Callable, str]] = None,
+) -> Callable[[Callable[[HttpRequest], HttpResponse]], Callable[[HttpRequest], HttpResponse]]:
+    def decorator(view: Callable[[HttpRequest], HttpResponse]) -> Callable[[HttpRequest], HttpResponse]:
         @wraps(view, assigned=WRAPPER_ASSIGNMENTS)
         def _wrapped_view(request, *args, **kwargs):
             if switch_name.startswith('!'):
@@ -49,7 +54,9 @@ def waffle_switch(switch_name, redirect_to=None):
     return decorator
 
 
-def get_response_to_redirect(view, *args, **kwargs):
+def get_response_to_redirect(
+    view: Optional[Union[Callable, str]], *args: Any, **kwargs: Any,
+) -> Optional[Union[HttpResponseRedirect, HttpResponsePermanentRedirect]]:
     try:
         return redirect(reverse(view, args=args, kwargs=kwargs)) if view else None
     except NoReverseMatch:

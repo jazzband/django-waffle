@@ -11,7 +11,10 @@ setup(
     license='BSD',
     packages=find_packages(exclude=['test_app', 'test_settings']),
     include_package_data=True,
-    package_data={'': ['README.rst']},
+    package_data={
+        '': ['README.rst'],
+        'waffle': ['py.typed'],
+    },
     zip_safe=False,
     python_requires='>=3.7',
     install_requires=['django>=3.2'],

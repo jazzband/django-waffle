@@ -1,4 +1,6 @@
-from django.http import HttpResponse, JsonResponse
+from typing import Any, Dict
+
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.template import loader
 from django.views.decorators.cache import never_cache
 
@@ -12,7 +14,7 @@ def wafflejs(request):
                         content_type='application/x-javascript')
 
 
-def _generate_waffle_js(request):
+def _generate_waffle_js(request: HttpRequest) -> str:
     flags = get_waffle_flag_model().get_all()
     flag_values = [(f.name, f.is_active(request)) for f in flags]
 
@@ -37,7 +39,7 @@ def waffle_json(request):
     return JsonResponse(_generate_waffle_json(request))
 
 
-def _generate_waffle_json(request):
+def _generate_waffle_json(request: HttpRequest) -> Dict[str, Dict[str, Any]]:
     flags = get_waffle_flag_model().get_all()
     flag_values = {
         f.name: {

@@ -6,7 +6,7 @@ from django.core.management.base import BaseCommand, CommandError, CommandParser
 from waffle import get_waffle_switch_model
 
 
-def on_off_bool(string):
+def on_off_bool(string: str) -> bool:
     if string not in ['on', 'off']:
         raise ArgumentTypeError("invalid choice: %r (choose from 'on', "
                                 "'off')" % string)

@@ -4,7 +4,6 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "django-waffle"
-version = "3.0.0"
 authors = [{name = "James Socol", email = "me@jamessocol.com"}]
 license = {text = "BSD"}
 description = "A feature flipper for Django."
@@ -38,6 +37,9 @@ Homepage = "http://github.com/django-waffle/django-waffle"
 [tool.setuptools]
 zip-safe = false
 include-package-data = true
+
+[tool.setuptools.dynamic]
+version = {attr = "waffle.__version__"}
 
 [tool.setuptools.packages.find]
 exclude = ["test_app"] # test_settings

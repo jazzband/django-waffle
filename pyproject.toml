@@ -4,6 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "django-waffle"
+dynamic = ["version"]
 authors = [{name = "James Socol", email = "me@jamessocol.com"}]
 license = {text = "BSD"}
 description = "A feature flipper for Django."

@@ -52,7 +52,7 @@ and squashed into a minimal set of commits. Each commit should include
 the necessary code, test, and documentation changes for a single "piece"
 of functionality.
 
-To be mergable, patches must:
+To be mergeable, patches must:
 
 - be rebased onto the latest master,
 - be automatically mergeable,

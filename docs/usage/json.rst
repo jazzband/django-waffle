@@ -9,7 +9,7 @@ Although :doc:`WaffleJS<javascript>` returns the status of all
 :ref:`samples <types-sample>`, it does so by exposing a Javascript
 object, rather than returning the data in a directly consumable format.
 
-In cases where a directly consumable format is preferrable,
+In cases where a directly consumable format is preferable,
 Waffle also exposes this data as JSON via the ``waffle_status`` view.
 
 

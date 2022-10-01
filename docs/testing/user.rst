@@ -55,8 +55,8 @@ an HTTP header instead of a querystring parameter.
 When a flag, ``foo``, is in testing mode, simply provide the HTTP header
 ``DWFT-Foo: 1`` (or ``0``) to turn the flag on (or off).
 
-This feature can also allow for a downstream service to make the decison of
-enabling/disabling a flag, and then propagating that decision to other upsteam
+This feature can also allow for a downstream service to make the decision of
+enabling/disabling a flag, and then propagating that decision to other upstream
 services, allowing for a more complete testing of more complex microservice
 infrastructures.
 

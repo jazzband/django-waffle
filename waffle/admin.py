@@ -1,4 +1,6 @@
-from typing import Any, Dict, Tuple
+from __future__ import annotations
+
+from typing import Any
 
 from django.contrib import admin
 from django.contrib.admin.models import LogEntry, CHANGE, DELETION
@@ -15,7 +17,7 @@ from waffle.utils import get_setting
 class BaseAdmin(admin.ModelAdmin):
     search_fields = ('name', 'note')
 
-    def get_actions(self, request: HttpRequest) -> Dict[str, Any]:
+    def get_actions(self, request: HttpRequest) -> dict[str, Any]:
         actions = super().get_actions(request)
         if 'delete_selected' in actions:
             del actions['delete_selected']
@@ -73,7 +75,7 @@ class InformativeManyToManyRawIdWidget(ManyToManyRawIdWidget):
     Will display the names of the users in a parenthesised list after the
     input field. This widget works with all models that have a "name" field.
     """
-    def label_and_url_for_value(self, values: Any) -> Tuple[str, str]:
+    def label_and_url_for_value(self, values: Any) -> tuple[str, str]:
         names = []
         key = self.rel.get_related_field().name
         for value in values:

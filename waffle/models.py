@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import logging
 import random
 from decimal import Decimal
-from typing import Any, Dict, List, Optional, Set, Tuple, Type, TypeVar
+from typing import Any, TypeVar
 
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, Group
@@ -36,7 +38,7 @@ class BaseModel(models.Model):
     def __str__(self) -> str:
         return self.name
 
-    def natural_key(self) -> Tuple[str]:
+    def natural_key(self) -> tuple[str]:
         return (self.name,)
 
     @classmethod
@@ -44,7 +46,7 @@ class BaseModel(models.Model):
         return keyfmt(get_setting(cls.SINGLE_CACHE_KEY), name)
 
     @classmethod
-    def get(cls: Type[_BaseModelType], name: str) -> _BaseModelType:
+    def get(cls: type[_BaseModelType], name: str) -> _BaseModelType:
         cache = get_cache()
         cache_key = cls._cache_key(name)
         cached = cache.get(cache_key)
@@ -63,14 +65,14 @@ class BaseModel(models.Model):
         return obj
 
     @classmethod
-    def get_from_db(cls: Type[_BaseModelType], name: str) -> _BaseModelType:
+    def get_from_db(cls: type[_BaseModelType], name: str) -> _BaseModelType:
         objects = cls.objects
         if get_setting('READ_FROM_WRITE_DB'):
             objects = objects.using(router.db_for_write(cls))
         return objects.get(name=name)
 
     @classmethod
-    def get_all(cls: Type[_BaseModelType]) -> List[_BaseModelType]:
+    def get_all(cls: type[_BaseModelType]) -> list[_BaseModelType]:
         cache = get_cache()
         cache_key = get_setting(cls.ALL_CACHE_KEY)
         cached = cache.get(cache_key)
@@ -88,7 +90,7 @@ class BaseModel(models.Model):
         return objs
 
     @classmethod
-    def get_all_from_db(cls: Type[_BaseModelType]) -> List[_BaseModelType]:
+    def get_all_from_db(cls: type[_BaseModelType]) -> list[_BaseModelType]:
         objects = cls.objects
         if get_setting('READ_FROM_WRITE_DB'):
             objects = objects.using(router.db_for_write(cls))
@@ -111,7 +113,7 @@ class BaseModel(models.Model):
             self.flush()
         return ret
 
-    def delete(self, *args: Any, **kwargs: Any) -> Tuple[int, Dict[str, int]]:
+    def delete(self, *args: Any, **kwargs: Any) -> tuple[int, dict[str, int]]:
         ret = super().delete(*args, **kwargs)
         if hasattr(transaction, 'on_commit'):
             transaction.on_commit(self.flush)
@@ -120,7 +122,7 @@ class BaseModel(models.Model):
         return ret
 
 
-def set_flag(request: HttpRequest, flag_name: str, active: Optional[bool] = True, session_only: bool = False) -> None:
+def set_flag(request: HttpRequest, flag_name: str, active: bool | None = True, session_only: bool = False) -> None:
     """Set a flag value on a request object."""
     if not hasattr(request, 'waffles'):
         request.waffles = {}
@@ -219,7 +221,7 @@ class AbstractBaseFlag(BaseModel):
         keys = self.get_flush_keys()
         cache.delete_many(keys)
 
-    def get_flush_keys(self, flush_keys: Optional[List[str]] = None) -> List[str]:
+    def get_flush_keys(self, flush_keys: list[str] | None = None) -> list[str]:
         flush_keys = flush_keys or []
         flush_keys.extend([
             self._cache_key(self.name),
@@ -227,7 +229,7 @@ class AbstractBaseFlag(BaseModel):
         ])
         return flush_keys
 
-    def is_active_for_user(self, user: AbstractBaseUser) -> Optional[bool]:
+    def is_active_for_user(self, user: AbstractBaseUser) -> bool | None:
         if self.authenticated and user.is_authenticated:
             return True
 
@@ -239,13 +241,13 @@ class AbstractBaseFlag(BaseModel):
 
         return None
 
-    def _is_active_for_user(self, request: HttpRequest) -> Optional[bool]:
+    def _is_active_for_user(self, request: HttpRequest) -> bool | None:
         user = getattr(request, "user", None)
         if user:
             return self.is_active_for_user(user)
         return False
 
-    def _is_active_for_language(self, request: HttpRequest) -> Optional[bool]:
+    def _is_active_for_language(self, request: HttpRequest) -> bool | None:
         if self.languages:
             languages = [ln.strip() for ln in self.languages.split(',')]
             if (hasattr(request, 'LANGUAGE_CODE') and
@@ -253,7 +255,7 @@ class AbstractBaseFlag(BaseModel):
                 return True
         return None
 
-    def is_active(self, request: HttpRequest, read_only: bool = False) -> Optional[bool]:
+    def is_active(self, request: HttpRequest, read_only: bool = False) -> bool | None:
         if not self.pk:
             log_level = get_setting('LOG_MISSING_FLAGS')
             if log_level:
@@ -347,7 +349,7 @@ class AbstractUserFlag(AbstractBaseFlag):
         verbose_name = _('Flag')
         verbose_name_plural = _('Flags')
 
-    def get_flush_keys(self, flush_keys: Optional[List[str]] = None) -> List[str]:
+    def get_flush_keys(self, flush_keys: list[str] | None = None) -> list[str]:
         flush_keys = super().get_flush_keys(flush_keys)
         flush_keys.extend([
             keyfmt(get_setting('FLAG_USERS_CACHE_KEY'), self.name),
@@ -355,7 +357,7 @@ class AbstractUserFlag(AbstractBaseFlag):
         ])
         return flush_keys
 
-    def _get_user_ids(self) -> Set[Any]:
+    def _get_user_ids(self) -> set[Any]:
         cache = get_cache()
         cache_key = keyfmt(get_setting('FLAG_USERS_CACHE_KEY'), self.name)
         cached = cache.get(cache_key)
@@ -372,7 +374,7 @@ class AbstractUserFlag(AbstractBaseFlag):
         cache.add(cache_key, user_ids)
         return user_ids
 
-    def _get_group_ids(self) -> Set[Any]:
+    def _get_group_ids(self) -> set[Any]:
         cache = get_cache()
         cache_key = keyfmt(get_setting('FLAG_GROUPS_CACHE_KEY'), self.name)
         cached = cache.get(cache_key)
@@ -389,7 +391,7 @@ class AbstractUserFlag(AbstractBaseFlag):
         cache.add(cache_key, group_ids)
         return group_ids
 
-    def is_active_for_user(self, user: AbstractBaseUser) -> Optional[bool]:
+    def is_active_for_user(self, user: AbstractBaseUser) -> bool | None:
         is_active = super().is_active_for_user(user)
         if is_active:
             return is_active

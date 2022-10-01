@@ -1,4 +1,6 @@
-from typing import Any, Dict
+from __future__ import annotations
+
+from typing import Any
 
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.template import loader
@@ -39,7 +41,7 @@ def waffle_json(request):
     return JsonResponse(_generate_waffle_json(request))
 
 
-def _generate_waffle_json(request: HttpRequest) -> Dict[str, Dict[str, Any]]:
+def _generate_waffle_json(request: HttpRequest) -> dict[str, dict[str, Any]]:
     flags = get_waffle_flag_model().get_all()
     flag_values = {
         f.name: {

@@ -1,0 +1,59 @@
+[build-system]
+requires = ["setuptools>=61.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "django-waffle"
+version = "3.0.0"
+authors = [{name = "James Socol", email = "me@jamessocol.com"}]
+license = {text = "BSD"}
+description = "A feature flipper for Django."
+readme = "README.rst"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Framework :: Django",
+    "Framework :: Django :: 3.2",
+    "Framework :: Django :: 4.0",
+    "Framework :: Django :: 4.1",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+requires-python = ">=3.7"
+dependencies = ["django>=3.2"]
+
+[project.urls]
+Homepage = "http://github.com/django-waffle/django-waffle"
+
+[tool.setuptools]
+zip-safe = false
+include-package-data = true
+
+[tool.setuptools.packages.find]
+exclude = ["test_app"] # test_settings
+namespaces = false
+
+[tool.setuptools.package-data]
+waffle = ["py.typed"]
+
+[tool.mypy]
+python_version = "3.7"
+exclude = "waffle/tests"
+disallow_incomplete_defs = true
+disallow_untyped_calls = true
+disallow_untyped_decorators = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = ["django.*"]
+ignore_missing_imports = true

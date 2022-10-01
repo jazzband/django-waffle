@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 import hashlib
-from typing import Any, Optional
+from typing import Any
 
 from django.conf import settings
 from django.core.cache import BaseCache, caches
@@ -15,7 +17,7 @@ def get_setting(name: str, default: Any = None) -> Any:
         return getattr(defaults, name, default)
 
 
-def keyfmt(k: str, v: Optional[str] = None) -> str:
+def keyfmt(k: str, v: str | None = None) -> str:
     prefix = get_setting('CACHE_PREFIX') + waffle.__version__
     if v is None:
         key = prefix + k

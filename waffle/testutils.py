@@ -81,13 +81,13 @@ class override_switch(_overrider[bool]):
 class override_flag(_overrider[Optional[bool]]):
     cls = get_waffle_flag_model()
 
-    def update(self, active: Optional[bool]) -> None:
+    def update(self, active: bool | None) -> None:
         obj = self.cls.objects.get(pk=self.obj.pk)
         obj.everyone = active
         obj.save()
         obj.flush()
 
-    def get_value(self) -> Optional[bool]:
+    def get_value(self) -> bool | None:
         return self.obj.everyone
 
 
@@ -102,7 +102,7 @@ class override_sample(_overrider[Union[bool, float]]):
             self.obj = self.cls.objects.create(name=self.name, percent='0.0')
             self.created = True
 
-    def update(self, active: Union[bool, float]) -> None:
+    def update(self, active: bool | float) -> None:
         if active is True:
             p = 100.0
         elif active is False:
@@ -114,7 +114,7 @@ class override_sample(_overrider[Union[bool, float]]):
         obj.save()
         obj.flush()
 
-    def get_value(self) -> Union[bool, float]:
+    def get_value(self) -> bool | float:
         p = self.obj.percent
         if p == 100.0:
             return True

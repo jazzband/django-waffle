@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING, Optional, Type, Union
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 import django
 from django.core.exceptions import ImproperlyConfigured
@@ -14,7 +16,7 @@ VERSION = (3, 0, 0)
 __version__ = '.'.join(map(str, VERSION))
 
 
-def flag_is_active(request: HttpRequest, flag_name: str, read_only: bool = False) -> Optional[bool]:
+def flag_is_active(request: HttpRequest, flag_name: str, read_only: bool = False) -> bool | None:
     flag = get_waffle_flag_model().get(flag_name)
     return flag.is_active(request, read_only=read_only)
 
@@ -29,21 +31,21 @@ def sample_is_active(sample_name: str) -> bool:
     return sample.is_active()
 
 
-def get_waffle_flag_model() -> Type['AbstractBaseFlag']:
+def get_waffle_flag_model() -> type[AbstractBaseFlag]:
     return get_waffle_model('FLAG_MODEL')
 
 
-def get_waffle_switch_model() -> Type['AbstractBaseSwitch']:
+def get_waffle_switch_model() -> type[AbstractBaseSwitch]:
     return get_waffle_model('SWITCH_MODEL')
 
 
-def get_waffle_sample_model() -> Type['AbstractBaseSample']:
+def get_waffle_sample_model() -> type[AbstractBaseSample]:
     return get_waffle_model('SAMPLE_MODEL')
 
 
-def get_waffle_model(setting_name: str) -> Union[
-    Type['AbstractBaseFlag'], Type['AbstractBaseSwitch'], Type['AbstractBaseSample']
-]:
+def get_waffle_model(setting_name: str) -> (
+    type[AbstractBaseFlag] | type[AbstractBaseSwitch] | type[AbstractBaseSample]
+):
     """
     Returns the waffle Flag model that is active in this project.
     """

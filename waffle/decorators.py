@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from functools import wraps, WRAPPER_ASSIGNMENTS
-from typing import Any, Callable, Optional, Union
+from typing import Any, Callable
 
 from django.http import Http404, HttpRequest, HttpResponse, HttpResponsePermanentRedirect, HttpResponseRedirect
 from django.shortcuts import redirect
@@ -9,7 +11,7 @@ from waffle import flag_is_active, switch_is_active
 
 
 def waffle_flag(
-    flag_name: str, redirect_to: Optional[Union[Callable, str]] = None,
+    flag_name: str, redirect_to: Callable | str | None = None,
 ) -> Callable[[Callable[[HttpRequest], HttpResponse]], Callable[[HttpRequest], HttpResponse]]:
     def decorator(view: Callable[[HttpRequest], HttpResponse]) -> Callable[[HttpRequest], HttpResponse]:
         @wraps(view, assigned=WRAPPER_ASSIGNMENTS)
@@ -32,7 +34,7 @@ def waffle_flag(
 
 
 def waffle_switch(
-    switch_name: str, redirect_to: Optional[Union[Callable, str]] = None,
+    switch_name: str, redirect_to: Callable | str | None = None,
 ) -> Callable[[Callable[[HttpRequest], HttpResponse]], Callable[[HttpRequest], HttpResponse]]:
     def decorator(view: Callable[[HttpRequest], HttpResponse]) -> Callable[[HttpRequest], HttpResponse]:
         @wraps(view, assigned=WRAPPER_ASSIGNMENTS)
@@ -55,8 +57,8 @@ def waffle_switch(
 
 
 def get_response_to_redirect(
-    view: Optional[Union[Callable, str]], *args: Any, **kwargs: Any,
-) -> Optional[Union[HttpResponseRedirect, HttpResponsePermanentRedirect]]:
+    view: Callable | str | None, *args: Any, **kwargs: Any,
+) -> HttpResponseRedirect | HttpResponsePermanentRedirect | None:
     try:
         return redirect(reverse(view, args=args, kwargs=kwargs)) if view else None
     except NoReverseMatch:

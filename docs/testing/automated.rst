@@ -41,6 +41,17 @@ Or::
         # samples behave normally.
         assert waffle.sample_is_active('sample_name')
 
+``override_flag`` also allows providing values for its different checks.
+For example::
+
+    @override_flag('flag_name', percent=25)
+    def test_with_flag():
+        ...
+
+    @override_flag('flag_name', staff=True, superusers=True)
+    def test_with_flag():
+        ...
+
 All three will restore the relevant flag, sample, or switch to its
 previous state: they will restore the old values and will delete objects
 that did not exist.

@@ -1,11 +1,15 @@
+import contextlib
+import random
 from decimal import Decimal
+from unittest import mock
 
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from django.db import transaction
-from django.test import TransactionTestCase, RequestFactory, TestCase
+from django.test import RequestFactory, TestCase, TransactionTestCase
 
 import waffle
-from waffle.testutils import override_switch, override_flag, override_sample
+from waffle.testutils import override_flag, override_sample, override_switch
 
 
 class OverrideSwitchMixin:
@@ -116,6 +120,14 @@ def req():
     return r
 
 
+@contextlib.contextmanager
+def provide_user(**kwargs):
+    user = get_user_model()(**kwargs)
+    user.save()
+    yield user
+    user.delete()
+
+
 class OverrideFlagTestsMixin:
     def test_flag_existed_and_was_active(self):
         waffle.get_waffle_flag_model().objects.create(name='foo', everyone=True)
@@ -172,6 +184,240 @@ class OverrideFlagTestsMixin:
                 assert not waffle.flag_is_active(req(), 'foo')
 
         assert waffle.flag_is_active(req(), 'foo')
+
+    @mock.patch.object(random, 'uniform')
+    def test_flag_existed_and_was_active_for_percent(self, uniform):
+        waffle.get_waffle_flag_model().objects.create(name='foo', everyone=None, percent='50')
+
+        uniform.return_value = '75'
+
+        with override_flag('foo', percent=80.0):
+            assert waffle.flag_is_active(req(), 'foo')
+
+        with override_flag('foo', percent=40.0):
+            assert not waffle.flag_is_active(req(), 'foo')
+
+        assert waffle.get_waffle_flag_model().objects.get(name='foo').percent == Decimal('50')
+
+    @mock.patch.object(random, 'uniform')
+    def test_flag_existed_and_was_inactive_for_percent(self, uniform):
+        waffle.get_waffle_flag_model().objects.create(name='foo', everyone=None, percent=None)
+
+        uniform.return_value = '75'
+
+        with override_flag('foo', percent=80.0):
+            assert waffle.flag_is_active(req(), 'foo')
+
+        with override_flag('foo', percent=40.0):
+            assert not waffle.flag_is_active(req(), 'foo')
+
+        assert not waffle.get_waffle_flag_model().objects.get(name='foo').percent
+
+    def test_flag_existed_and_was_active_for_testing(self):
+        waffle.get_waffle_flag_model().objects.create(name='foo', everyone=None, testing=True)
+
+        with override_flag('foo', testing=True):
+            request = req()
+            request.COOKIES['dwft_foo'] = 'True'
+            assert waffle.flag_is_active(request, 'foo')
+            assert not waffle.flag_is_active(req(), 'foo')
+
+        with override_flag('foo', testing=False):
+            request = req()
+            request.COOKIES['dwft_foo'] = 'True'
+            assert not waffle.flag_is_active(request, 'foo')
+            assert not waffle.flag_is_active(req(), 'foo')
+
+        assert waffle.get_waffle_flag_model().objects.get(name='foo').testing
+
+    def test_flag_existed_and_was_inactive_for_testing(self):
+        waffle.get_waffle_flag_model().objects.create(name='foo', everyone=None, testing=False)
+
+        with override_flag('foo', testing=True):
+            request = req()
+            request.COOKIES['dwft_foo'] = 'True'
+            assert waffle.flag_is_active(request, 'foo')
+            assert not waffle.flag_is_active(req(), 'foo')
+
+        with override_flag('foo', testing=False):
+            request = req()
+            request.COOKIES['dwft_foo'] = 'True'
+            assert not waffle.flag_is_active(request, 'foo')
+            assert not waffle.flag_is_active(req(), 'foo')
+
+        assert not waffle.get_waffle_flag_model().objects.get(name='foo').testing
+
+    def test_flag_existed_and_was_active_for_superusers(self):
+        waffle.get_waffle_flag_model().objects.create(name='foo', everyone=None, superusers=True)
+
+        with override_flag('foo', superusers=True):
+            with provide_user(username='foo', is_superuser=True) as user:
+                request = req()
+                request.user = user
+                assert waffle.flag_is_active(request, 'foo')
+            with provide_user(username='foo', is_superuser=False) as user:
+                request = req()
+                request.user = user
+                assert not waffle.flag_is_active(request, 'foo')
+
+        with override_flag('foo', superusers=False):
+            with provide_user(username='foo', is_superuser=True) as user:
+                request = req()
+                request.user = user
+                assert not waffle.flag_is_active(request, 'foo')
+            with provide_user(username='foo', is_superuser=False) as user:
+                request = req()
+                request.user = user
+                assert not waffle.flag_is_active(request, 'foo')
+
+        assert waffle.get_waffle_flag_model().objects.get(name='foo').superusers
+
+    def test_flag_existed_and_was_inactive_for_superusers(self):
+        waffle.get_waffle_flag_model().objects.create(name='foo', everyone=None, superusers=False)
+
+        with override_flag('foo', superusers=True):
+            with provide_user(username='foo', is_superuser=True) as user:
+                request = req()
+                request.user = user
+                assert waffle.flag_is_active(request, 'foo')
+            with provide_user(username='foo', is_superuser=False) as user:
+                request = req()
+                request.user = user
+                assert not waffle.flag_is_active(request, 'foo')
+
+        with override_flag('foo', superusers=False):
+            with provide_user(username='foo', is_superuser=True) as user:
+                request = req()
+                request.user = user
+                assert not waffle.flag_is_active(request, 'foo')
+            with provide_user(username='foo', is_superuser=False) as user:
+                request = req()
+                request.user = user
+                assert not waffle.flag_is_active(request, 'foo')
+
+        assert not waffle.get_waffle_flag_model().objects.get(name='foo').superusers
+
+    def test_flag_existed_and_was_active_for_staff(self):
+        waffle.get_waffle_flag_model().objects.create(name='foo', everyone=None, staff=True)
+
+        with override_flag('foo', staff=True):
+            with provide_user(username='foo', is_staff=True) as user:
+                request = req()
+                request.user = user
+                assert waffle.flag_is_active(request, 'foo')
+            with provide_user(username='foo', is_staff=False) as user:
+                request = req()
+                request.user = user
+                assert not waffle.flag_is_active(request, 'foo')
+
+        with override_flag('foo', staff=False):
+            with provide_user(username='foo', is_staff=True) as user:
+                request = req()
+                request.user = user
+                assert not waffle.flag_is_active(request, 'foo')
+            with provide_user(username='foo', is_staff=False) as user:
+                request = req()
+                request.user = user
+                assert not waffle.flag_is_active(request, 'foo')
+
+        assert waffle.get_waffle_flag_model().objects.get(name='foo').staff
+
+    def test_flag_existed_and_was_inactive_for_staff(self):
+        waffle.get_waffle_flag_model().objects.create(name='foo', everyone=None, staff=False)
+
+        with override_flag('foo', staff=True):
+            with provide_user(username='foo', is_staff=True) as user:
+                request = req()
+                request.user = user
+                assert waffle.flag_is_active(request, 'foo')
+            with provide_user(username='foo', is_staff=False) as user:
+                request = req()
+                request.user = user
+                assert not waffle.flag_is_active(request, 'foo')
+
+        with override_flag('foo', staff=False):
+            with provide_user(username='foo', is_staff=True) as user:
+                request = req()
+                request.user = user
+                assert not waffle.flag_is_active(request, 'foo')
+            with provide_user(username='foo', is_staff=False) as user:
+                request = req()
+                request.user = user
+                assert not waffle.flag_is_active(request, 'foo')
+
+        assert not waffle.get_waffle_flag_model().objects.get(name='foo').staff
+
+    def test_flag_existed_and_was_active_for_authenticated(self):
+        waffle.get_waffle_flag_model().objects.create(name='foo', everyone=None, authenticated=True)
+
+        with override_flag('foo', authenticated=True):
+            with provide_user(username='foo') as user:
+                request = req()
+                request.user = user
+                assert waffle.flag_is_active(request, 'foo')
+            assert not waffle.flag_is_active(req(), 'foo')
+
+        with override_flag('foo', authenticated=False):
+            with provide_user(username='foo') as user:
+                request = req()
+                request.user = user
+                assert not waffle.flag_is_active(request, 'foo')
+            assert not waffle.flag_is_active(req(), 'foo')
+
+        assert waffle.get_waffle_flag_model().objects.get(name='foo').authenticated
+
+    def test_flag_existed_and_was_inactive_for_authenticated(self):
+        waffle.get_waffle_flag_model().objects.create(name='foo', everyone=None, authenticated=False)
+
+        with override_flag('foo', authenticated=True):
+            with provide_user(username='foo') as user:
+                request = req()
+                request.user = user
+                assert waffle.flag_is_active(request, 'foo')
+            assert not waffle.flag_is_active(req(), 'foo')
+
+        with override_flag('foo', authenticated=False):
+            with provide_user(username='foo') as user:
+                request = req()
+                request.user = user
+                assert not waffle.flag_is_active(request, 'foo')
+            assert not waffle.flag_is_active(req(), 'foo')
+
+        assert not waffle.get_waffle_flag_model().objects.get(name='foo').authenticated
+
+    def test_flag_existed_and_was_active_for_languages(self):
+        waffle.get_waffle_flag_model().objects.create(name='foo', everyone=None, languages="en,es")
+
+        with override_flag('foo', languages="en,es"):
+            request = req()
+            request.LANGUAGE_CODE = "en"
+            assert waffle.flag_is_active(request, 'foo')
+            assert not waffle.flag_is_active(req(), 'foo')
+
+        with override_flag('foo', languages=""):
+            request = req()
+            request.LANGUAGE_CODE = "en"
+            assert not waffle.flag_is_active(request, 'foo')
+            assert not waffle.flag_is_active(req(), 'foo')
+
+        assert waffle.get_waffle_flag_model().objects.get(name='foo').languages == "en,es"
+
+    def test_flag_existed_and_was_inactive_for_languages(self):
+        waffle.get_waffle_flag_model().objects.create(name='foo', everyone=None, languages="")
+
+        with override_flag('foo', languages="en,es"):
+            request = req()
+            request.LANGUAGE_CODE = "en"
+            assert waffle.flag_is_active(request, 'foo')
+            assert not waffle.flag_is_active(req(), 'foo')
+
+        with override_flag('foo', languages=""):
+            request = req()
+            request.LANGUAGE_CODE = "en"
+            assert not waffle.flag_is_active(request, 'foo')
+            assert not waffle.flag_is_active(req(), 'foo')
+
+        assert waffle.get_waffle_flag_model().objects.get(name='foo').languages == ""
 
 
 class OverrideFlagsTestCase(OverrideFlagTestsMixin, TestCase):

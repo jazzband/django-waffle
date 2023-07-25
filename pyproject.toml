@@ -23,13 +23,12 @@ classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 dependencies = ["django>=3.2"]
 
 [project.urls]
@@ -50,7 +49,7 @@ namespaces = false
 waffle = ["py.typed"]
 
 [tool.mypy]
-python_version = "3.7"
+python_version = "3.8"
 exclude = "waffle/tests"
 disallow_incomplete_defs = true
 disallow_untyped_calls = true

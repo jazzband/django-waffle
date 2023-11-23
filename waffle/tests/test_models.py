@@ -5,6 +5,7 @@ from waffle import (
     get_waffle_sample_model,
     get_waffle_switch_model,
 )
+from django.contrib.auth.models import User
 
 
 class ModelsTests(TestCase):
@@ -30,3 +31,8 @@ class ModelsTests(TestCase):
     def test_flag_is_not_active_for_none_requests(self):
         flag = get_waffle_flag_model().objects.create(name='test-flag')
         self.assertEqual(flag.is_active(None), False)
+
+    def test_is_active_for_user_when_everyone_is_active(self):
+        flag = get_waffle_flag_model().objects.create(name='test-flag')
+        flag.everyone = True
+        self.assertEqual(flag.is_active_for_user(User()), True)

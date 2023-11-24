@@ -230,6 +230,9 @@ class AbstractBaseFlag(BaseModel):
         return flush_keys
 
     def is_active_for_user(self, user: AbstractBaseUser) -> bool | None:
+        if self.everyone:
+            return True
+
         if self.authenticated and user.is_authenticated:
             return True
 

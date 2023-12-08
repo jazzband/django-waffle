@@ -17,13 +17,14 @@ class WaffleFlagManagementCommandTests(TestCase):
         name = 'test'
         percent = 20
         Group.objects.create(name='waffle_group')
-        call_command('waffle_flag', name, percent=percent,
+        call_command('waffle_flag', name, percent=percent, testing=True,
                      superusers=True, staff=True, authenticated=True,
                      rollout=True, create=True, group=['waffle_group'])
 
         flag = get_waffle_flag_model().objects.get(name=name)
         self.assertEqual(flag.percent, percent)
         self.assertIsNone(flag.everyone)
+        self.assertTrue(flag.testing)
         self.assertTrue(flag.superusers)
         self.assertTrue(flag.staff)
         self.assertTrue(flag.authenticated)

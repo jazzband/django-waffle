@@ -5,6 +5,14 @@
 Contributing to Waffle
 ======================
 
+.. image:: https://jazzband.co/static/img/jazzband.svg
+   :target: https://jazzband.co/
+   :alt: Jazzband
+
+This is a `Jazzband <https://jazzband.co>`_ project. By contributing you agree to abide by the
+`Contributor Code of Conduct <https://jazzband.co/about/conduct>`_ and follow the
+`guidelines <https://jazzband.co/about/guidelines>`_.
+
 Waffle is pretty simple to hack, and has a decent test suite! Here's how
 to patch Waffle, add tests, run them, and contribute changes.
 

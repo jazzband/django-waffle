@@ -84,6 +84,13 @@ class Command(BaseCommand):
             default=False,
             help='Turn on rollout mode.')
         parser.add_argument(
+            '--testing', '-t',
+            action='store_true',
+            dest='testing',
+            default=False,
+            help='Turn on testing mode, allowing the flag to be specified via '
+                 'a querystring parameter.')
+        parser.add_argument(
             '--create',
             action='store_true',
             dest='create',

@@ -2,6 +2,11 @@
 Waffle Changelog
 ================
 
+v4.1.0
+======
+- Updated `is_active_for_user` method to account for `everyone` option
+- Added `--testing` option to waffle_flag management command
+
 v4.0.0
 ======
 - Added support for Django 4.2 and Python 3.11

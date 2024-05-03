@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import django
 from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpRequest
 

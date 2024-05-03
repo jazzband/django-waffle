@@ -253,8 +253,8 @@ class AbstractBaseFlag(BaseModel):
     def _is_active_for_language(self, request: HttpRequest) -> bool | None:
         if self.languages:
             languages = [ln.strip() for ln in self.languages.split(',')]
-            if (hasattr(request, 'LANGUAGE_CODE') and
-                    request.LANGUAGE_CODE in languages):
+            if (hasattr(request, 'LANGUAGE_CODE')
+                    and request.LANGUAGE_CODE in languages):
                 return True
         return None
 

@@ -163,8 +163,8 @@ class Command(BaseCommand):
                 for username in options['user']:
                     try:
                         user_instance = UserModel.objects.get(
-                            Q(**{UserModel.USERNAME_FIELD: username}) |
-                            Q(**{UserModel.EMAIL_FIELD: username})
+                            Q(**{UserModel.USERNAME_FIELD: username})
+                            | Q(**{UserModel.EMAIL_FIELD: username})
                         )
                         user_hash.add(user_instance)
                     except UserModel.DoesNotExist:

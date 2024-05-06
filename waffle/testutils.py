@@ -7,7 +7,6 @@ from waffle import (
     get_waffle_sample_model,
     get_waffle_switch_model,
 )
-from waffle.models import Switch, Sample
 
 
 __all__ = ['override_flag', 'override_sample', 'override_switch']

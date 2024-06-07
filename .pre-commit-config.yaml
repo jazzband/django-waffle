@@ -1,6 +1,10 @@
-files: ^waffle/
 repos:
 -   repo: https://github.com/pycqa/flake8
     rev: '7.0.0'
     hooks:
     -   id: flake8
+        exclude: docs/conf.py|test_settings.py
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: 'v4.6.0'
+    hooks:
+    -   id: end-of-file-fixer

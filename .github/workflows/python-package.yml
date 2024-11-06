@@ -16,15 +16,15 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [ 3.8, 3.9, '3.10', '3.11' ]
+        python-version: [ 3.9, '3.10', 3.11, 3.12, 3.13 ]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: ${{ matrix.python-version }}-pip-${{ hashFiles('**/requirements.txt') }}
@@ -43,9 +43,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-      - uses: actions/cache@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+      - uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: ${{ matrix.python-version }}-pip-${{ hashFiles('**/requirements.txt') }}
@@ -67,9 +67,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-      - uses: actions/cache@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+      - uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: ${{ matrix.python-version }}-pip-${{ hashFiles('**/requirements.txt') }}
@@ -88,9 +88,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-      - uses: actions/cache@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+      - uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: ${{ matrix.python-version }}-pip-${{ hashFiles('**/requirements.txt') }}
@@ -117,8 +117,8 @@ jobs:
     needs: [test, lint, i18n]
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v2
       - uses: casperdcl/deploy-pypi@v2
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}

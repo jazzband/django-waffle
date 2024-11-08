@@ -17,20 +17,22 @@ classifiers = [
     "License :: OSI Approved :: BSD License",
     "Operating System :: OS Independent",
     "Framework :: Django",
-    "Framework :: Django :: 3.2",
-    "Framework :: Django :: 4.0",
-    "Framework :: Django :: 4.1",
+    "Framework :: Django :: 4.2",
+    "Framework :: Django :: 5.0",
+    "Framework :: Django :: 5.1",
+    "Framework :: Django :: 5.2",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
-requires-python = ">=3.8"
-dependencies = ["django>=3.2"]
+requires-python = ">=3.9"
+dependencies = ["django>=4.2"]
 
 [project.urls]
 Homepage = "http://github.com/django-waffle/django-waffle"
@@ -50,7 +52,7 @@ namespaces = false
 waffle = ["py.typed"]
 
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.9"
 exclude = "waffle/tests"
 disallow_incomplete_defs = true
 disallow_untyped_calls = true

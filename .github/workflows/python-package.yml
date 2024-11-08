@@ -118,7 +118,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v5
       - uses: casperdcl/deploy-pypi@v2
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}

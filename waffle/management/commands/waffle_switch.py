@@ -8,8 +8,8 @@ from waffle import get_waffle_switch_model
 
 def on_off_bool(string: str) -> bool:
     if string not in ['on', 'off']:
-        raise ArgumentTypeError("invalid choice: %r (choose from 'on', "
-                                "'off')" % string)
+        raise ArgumentTypeError(f"invalid choice: {string!r} (choose from 'on', "
+                                "'off')")
     return string == 'on'
 
 
@@ -60,7 +60,7 @@ class Command(BaseCommand):
                 name=switch_name
             )
             if created:
-                self.stdout.write('Creating switch: %s' % switch_name)
+                self.stdout.write(f'Creating switch: {switch_name}')
         else:
             try:
                 switch = get_waffle_switch_model().objects.get(name=switch_name)

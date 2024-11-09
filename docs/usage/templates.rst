@@ -11,7 +11,7 @@ features on the front-end. It includes support for both Django's
 built-in templates and for Jinja2_.
 
 .. warning::
-    
+
     Before using samples in templates, see the warning in the
     :ref:`Sample chapter <types-sample>`.
 
@@ -92,7 +92,7 @@ Switches
 --------
 
 ::
-    
+
     {% if waffle.switch('switch_name') %}
         switch_name is active!
     {% endif %}

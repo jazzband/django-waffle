@@ -25,7 +25,7 @@ Flags
     @waffle_flag('flag_name')
     def myview(request):
         pass
-    
+
     @waffle_flag('flag_name', 'url_name_to_redirect_to')
     def myotherview(request):
         pass

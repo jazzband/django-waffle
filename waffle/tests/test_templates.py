@@ -60,7 +60,7 @@ class WaffleTemplateTests(TestCase):
 
     @skipUnless(
         settings.JINJA_INSTALLED,
-        "django-jinja is currently unmaintained and uncompatible with django >= 3.0"
+        "django-jinja is currently unmaintained and incompatible with django >= 3.0"
     )
     def test_jinja_tags(self):
         request = get()

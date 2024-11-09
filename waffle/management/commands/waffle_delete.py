@@ -33,15 +33,13 @@ class Command(BaseCommand):
     help = 'Delete flags, samples, and switches from database'
 
     def handle(self, *args: Any, **options: Any) -> None:
-        flags = options['flag_names']
-        if flags:
+        if flags := options['flag_names']:
             flag_queryset = get_waffle_flag_model().objects.filter(name__in=flags)
             flag_count = flag_queryset.count()
             flag_queryset.delete()
             self.stdout.write(f'Deleted {flag_count} Flags')
 
-        switches = options['switch_names']
-        if switches:
+        if switches := options['switch_names']:
             switches_queryset = get_waffle_switch_model().objects.filter(
                 name__in=switches
             )
@@ -49,8 +47,7 @@ class Command(BaseCommand):
             switches_queryset.delete()
             self.stdout.write(f'Deleted {switch_count} Switches')
 
-        samples = options['sample_names']
-        if samples:
+        if samples := options['sample_names']:
             sample_queryset = get_waffle_sample_model().objects.filter(name__in=samples)
             sample_count = sample_queryset.count()
             sample_queryset.delete()

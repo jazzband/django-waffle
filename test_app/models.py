@@ -52,8 +52,7 @@ class CompanyAwareFlag(AbstractUserFlag):
         return flush_keys
 
     def is_active_for_user(self, user):
-        is_active = super().is_active_for_user(user)
-        if is_active:
+        if is_active := super().is_active_for_user(user):
             return is_active
 
         if getattr(user, 'company_id', None):

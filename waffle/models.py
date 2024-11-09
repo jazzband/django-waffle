@@ -245,8 +245,7 @@ class AbstractBaseFlag(BaseModel):
         return None
 
     def _is_active_for_user(self, request: HttpRequest) -> bool | None:
-        user = getattr(request, "user", None)
-        if user:
+        if user := getattr(request, "user", None):
             return self.is_active_for_user(user)
         return False
 
@@ -300,12 +299,10 @@ class AbstractBaseFlag(BaseModel):
             if tc in request.COOKIES:
                 return request.COOKIES[tc] == 'True'
 
-        active_for_language = self._is_active_for_language(request)
-        if active_for_language is not None:
+        if (active_for_language := self._is_active_for_language(request)) is not None:
             return active_for_language
 
-        active_for_user = self._is_active_for_user(request)
-        if active_for_user is not None:
+        if (active_for_user := self._is_active_for_user(request)) is not None:
             return active_for_user
 
         if self.percent and self.percent > 0:
@@ -395,8 +392,7 @@ class AbstractUserFlag(AbstractBaseFlag):
         return group_ids
 
     def is_active_for_user(self, user: AbstractBaseUser) -> bool | None:
-        is_active = super().is_active_for_user(user)
-        if is_active:
+        if is_active := super().is_active_for_user(user):
             return is_active
 
         user_ids = self._get_user_ids()

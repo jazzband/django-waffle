@@ -20,7 +20,7 @@ class WaffleNode(template.Node):
         self.compiled_name = compiled_name
 
     def __repr__(self):
-        return '<Waffle node: %s>' % self.name
+        return f'<Waffle node: {self.name}>'
 
     def __iter__(self):
         yield from self.nodelist_true
@@ -41,16 +41,15 @@ class WaffleNode(template.Node):
     def handle_token(cls, parser, token, kind, condition):
         bits = token.split_contents()
         if len(bits) < 2:
-            raise template.TemplateSyntaxError("%r tag requires an argument" %
-                                               bits[0])
+            raise template.TemplateSyntaxError(f"{bits[0]!r} tag requires an argument")
 
         name = bits[1]
         compiled_name = parser.compile_filter(name)
 
-        nodelist_true = parser.parse(('else', 'end%s' % kind))
+        nodelist_true = parser.parse(('else', f'end{kind}'))
         token = parser.next_token()
         if token.contents == 'else':
-            nodelist_false = parser.parse(('end%s' % kind,))
+            nodelist_false = parser.parse((f'end{kind}',))
             parser.delete_first_token()
         else:
             nodelist_false = template.NodeList()

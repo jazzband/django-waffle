@@ -91,8 +91,5 @@ schema. Simply run the ``migrate`` management command after adding Waffle to
 
     $ django-admin.py migrate
 
-If you're using a version of Django without migrations, you can run
-``syncdb`` to create the Waffle tables.
-
 .. _Django migrations: https://docs.djangoproject.com/en/dev/topics/migrations/
 .. _django-jinja: https://pypi.python.org/pypi/django-jinja/

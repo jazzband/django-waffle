@@ -11,13 +11,11 @@ met, installing Waffle is a simple process.
 Getting Waffle
 ==============
 
-Waffle is `hosted on PyPI`_ and can be installed with ``pip`` or
-``easy_install``:
+Waffle is `hosted on PyPI`_ and can be installed with ``pip``
 
 .. code-block:: shell
 
     $ pip install django-waffle
-    $ easy_install django-waffle
 
 Waffle is also available `on GitHub`_. In general, ``master`` should be
 stable, but use caution depending on unreleased versions.
@@ -80,33 +78,18 @@ With django-jinja_, add the extension to the ``extensions`` list::
         # ...
     ]
 
-With jingo_, add it to the ``JINJA_CONFIG['extensions']`` list::
-
-    JINJA_CONFIG = {
-        'extensions': [
-            # ...
-            'waffle.jinja.WaffleExtension',
-        ],
-        # ...
-    }
-
-
 .. _installation-settings-migrations:
 
 Database Schema
 ===============
 
 Waffle includes `Django migrations`_ for creating the correct database
-schema. If using Django >= 1.7, simply run the ``migrate`` management
-command after adding Waffle to ``INSTALLED_APPS``:
+schema. Simply run the ``migrate`` management command after adding Waffle to
+``INSTALLED_APPS``:
 
 .. code-block:: shell
 
     $ django-admin.py migrate
 
-If you're using a version of Django without migrations, you can run
-``syncdb`` to create the Waffle tables.
-
 .. _Django migrations: https://docs.djangoproject.com/en/dev/topics/migrations/
 .. _django-jinja: https://pypi.python.org/pypi/django-jinja/
-.. _jingo: http://jingo.readthedocs.org/

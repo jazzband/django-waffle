@@ -9,5 +9,4 @@ Getting Started
 
    requirements
    installation
-   upgrading
    configuring

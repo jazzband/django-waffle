@@ -22,15 +22,14 @@ Waffle has an `active community`_ and gets `fairly steady updates`_.
 Waffle in Production
 ====================
 
-Despite its pre-1.0 version number, Waffle has been used in production
-for years at places like Mozilla, Yipit and TodaysMeet.
+Waffle has been used in production for years at places like Mozilla, Yipit and TodaysMeet.
 
 - Mozilla (Support, MDN, Addons, etc)
 - TodaysMeet
 - Yipit
 
 (If you're using Waffle in production and don't mind being included
-here, let me know or add yourself in a pull request!)
+here, let us know or add yourself in a pull request!)
 
 
 .. _Feature flags: http://code.flickr.net/2009/12/02/flipping-out/

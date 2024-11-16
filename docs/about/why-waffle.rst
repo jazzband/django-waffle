@@ -19,15 +19,6 @@ Waffle :ref:`aims to <about-goals>`
 Waffle has an `active community`_ and gets `fairly steady updates`_.
 
 
-vs Gargoyle
-===========
-
-The other major, active feature flag tool for Django is Disqus's
-Gargoyle_. Both support similar features, though Gargoyle offers more
-options for building custom segments in exchange for some more
-complexity and requirements.
-
-
 Waffle in Production
 ====================
 
@@ -46,4 +37,3 @@ here, let me know or add yourself in a pull request!)
 .. _several options: https://www.djangopackages.com/grids/g/feature-flip/
 .. _active community: https://github.com/jazzband/django-waffle/graphs/contributors
 .. _fairly steady updates: https://github.com/jazzband/django-waffle/pulse/monthly
-.. _Gargoyle: https://github.com/disqus/gargoyle

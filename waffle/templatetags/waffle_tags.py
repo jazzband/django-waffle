@@ -94,7 +94,7 @@ def wafflejs(parser, token):
 def switch_is_active(switch_name: str) -> bool:
     """
     This template filter works like the switch tag, but you can use it within
-    if statement conditions in Django templates. Example `{% if "switch"|switch_is_active %}`.
+    if statement conditions in Django templates. Example: `{% if "switch_name"|switch_is_active %}`.
     """
     return waffle_switch_is_active(switch_name)
 
@@ -114,6 +114,6 @@ def flag_is_active(flag_name: str, request: HttpRequest, read_only: bool = False
 def sample_is_active(sample_name: str) -> bool:
     """
     This template filter works like the sample tag, but you can use it within if
-    statement conditions in Django templates. Example `{% if "sample_name"|sample_is_active %}`.
+    statement conditions in Django templates. Example: `{% if "sample_name"|sample_is_active %}`.
     """
     return waffle_sample_is_active(sample_name)

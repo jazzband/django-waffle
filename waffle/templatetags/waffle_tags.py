@@ -3,7 +3,11 @@ from django import template
 from django.http import HttpRequest
 from django.template.base import VariableDoesNotExist
 
-from waffle import flag_is_active as waffle_flag_is_active, sample_is_active as waffle_sample_is_active, switch_is_active as waffle_switch_is_active
+from waffle import (
+    flag_is_active as waffle_flag_is_active,
+    sample_is_active as waffle_sample_is_active,
+    switch_is_active as waffle_switch_is_active
+    )
 from waffle.views import _generate_waffle_js
 
 

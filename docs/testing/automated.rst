@@ -53,9 +53,8 @@ Tests that run in a separate process, such as Selenium tests, may not
 have access to the test database or the ability to mock Waffle values.
 
 For tests that make HTTP requests to the system-under-test (e.g. with
-Selenium_ or PhantomJS_) the ``WAFFLE_OVERRIDE`` :ref:`setting
-<starting-configuring>` makes it possible to control the value of any
-*Flag* via the querystring.
+Selenium_) the ``WAFFLE_OVERRIDE`` :ref:`setting <starting-configuring>`
+makes it possible to control the value of any *Flag* via the querystring.
 
 .. highlight:: http
 
@@ -72,4 +71,3 @@ or that it is "off"::
 .. _mock: http://pypi.python.org/pypi/mock/
 .. _fudge: http://farmdev.com/projects/fudge/
 .. _Selenium: http://www.seleniumhq.org/
-.. _PhantomJS: http://phantomjs.org/

@@ -15,16 +15,17 @@ jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        python-version: [ 3.8, 3.9, '3.10', '3.11' ]
+        python-version: [ 3.8, 3.9, '3.10', 3.11, 3.12, 3.13 ]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: ${{ matrix.python-version }}-pip-${{ hashFiles('**/requirements.txt') }}
@@ -43,9 +44,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-      - uses: actions/cache@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+      - uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: ${{ matrix.python-version }}-pip-${{ hashFiles('**/requirements.txt') }}
@@ -57,19 +58,15 @@ jobs:
           python -m pip install tox-gh-actions
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Lint
-        run: |
-          # stop the build if there are Python syntax errors or undefined names
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+        run: ruff check --output-format=github .
 
   typecheck:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-      - uses: actions/cache@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+      - uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: ${{ matrix.python-version }}-pip-${{ hashFiles('**/requirements.txt') }}
@@ -88,9 +85,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-      - uses: actions/cache@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+      - uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: ${{ matrix.python-version }}-pip-${{ hashFiles('**/requirements.txt') }}
@@ -117,8 +114,8 @@ jobs:
     needs: [test, lint, i18n]
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
       - uses: casperdcl/deploy-pypi@v2
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}

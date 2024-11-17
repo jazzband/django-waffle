@@ -11,7 +11,7 @@ from django.apps import apps as django_apps
 if TYPE_CHECKING:
     from waffle.models import AbstractBaseFlag, AbstractBaseSample, AbstractBaseSwitch
 
-__version__ = '4.1.0'
+__version__ = '4.2.0'
 
 
 def flag_is_active(request: HttpRequest, flag_name: str, read_only: bool = False) -> bool | None:
@@ -42,7 +42,7 @@ def get_waffle_sample_model() -> type[AbstractBaseSample]:
 
 
 def get_waffle_model(setting_name: str) -> (
-    type[AbstractBaseFlag] | type[AbstractBaseSwitch] | type[AbstractBaseSample]
+    type[AbstractBaseFlag | AbstractBaseSwitch | AbstractBaseSample]
 ):
     """
     Returns the waffle Flag model that is active in this project.
@@ -63,12 +63,8 @@ def get_waffle_model(setting_name: str) -> (
     try:
         return django_apps.get_model(flag_model_name)
     except ValueError:
-        raise ImproperlyConfigured("WAFFLE_{} must be of the form 'app_label.model_name'".format(
-            setting_name
-        ))
+        raise ImproperlyConfigured(f"WAFFLE_{setting_name} must be of the form 'app_label.model_name'")
     except LookupError:
         raise ImproperlyConfigured(
-            "WAFFLE_{} refers to model '{}' that has not been installed".format(
-                setting_name, flag_model_name
-            )
+            f"WAFFLE_{setting_name} refers to model '{flag_model_name}' that has not been installed"
         )

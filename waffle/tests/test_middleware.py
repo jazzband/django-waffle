@@ -29,7 +29,7 @@ def test_rollout_cookies():
     resp = HttpResponse()
     resp = WaffleMiddleware().process_response(get, resp)
     for k in get.waffles:
-        cookie = f'dwf_{k}'
+        cookie = 'dwf_%s' % k
         assert cookie in resp.cookies
         assert str(get.waffles[k][0]) == resp.cookies[cookie].value
         if get.waffles[k][1]:
@@ -44,6 +44,6 @@ def test_testing_cookies():
     resp = HttpResponse()
     resp = WaffleMiddleware().process_response(get, resp)
     for k in get.waffle_tests:
-        cookie = f'dwft_{k}'
+        cookie = 'dwft_%s' % k
         assert str(get.waffle_tests[k]) == resp.cookies[cookie].value
         assert not resp.cookies[cookie]['max-age']

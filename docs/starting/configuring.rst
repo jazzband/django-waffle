@@ -100,7 +100,7 @@ behavior.
     The value describes the level of wanted warning, possible values are all levels know by pythons default logging,
     e.g. ``logging.WARNING``.
     Defaults to ``None``.
-
+    
 
 ``WAFFLE_ENABLE_ADMIN_PAGES``
     Enables the default admin pages for Waffle models. This is True by default,

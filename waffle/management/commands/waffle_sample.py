@@ -48,7 +48,7 @@ class Command(BaseCommand):
         try:
             percent = float(percent)
             if not (0.0 <= percent <= 100.0):
-                raise ValueError
+                raise ValueError()
         except ValueError:
             raise CommandError('You need to enter a valid percentage value.')
 
@@ -56,7 +56,7 @@ class Command(BaseCommand):
             sample, created = get_waffle_sample_model().objects.get_or_create(
                 name=sample_name, defaults={'percent': 0})
             if created:
-                self.stdout.write(f'Creating sample: {sample_name}')
+                self.stdout.write('Creating sample: %s' % sample_name)
         else:
             try:
                 sample = get_waffle_sample_model().objects.get(name=sample_name)

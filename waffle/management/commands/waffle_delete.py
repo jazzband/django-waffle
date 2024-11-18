@@ -38,7 +38,7 @@ class Command(BaseCommand):
             flag_queryset = get_waffle_flag_model().objects.filter(name__in=flags)
             flag_count = flag_queryset.count()
             flag_queryset.delete()
-            self.stdout.write(f'Deleted {flag_count} Flags')
+            self.stdout.write('Deleted %s Flags' % flag_count)
 
         switches = options['switch_names']
         if switches:
@@ -47,11 +47,11 @@ class Command(BaseCommand):
             )
             switch_count = switches_queryset.count()
             switches_queryset.delete()
-            self.stdout.write(f'Deleted {switch_count} Switches')
+            self.stdout.write('Deleted %s Switches' % switch_count)
 
         samples = options['sample_names']
         if samples:
             sample_queryset = get_waffle_sample_model().objects.filter(name__in=samples)
             sample_count = sample_queryset.count()
             sample_queryset.delete()
-            self.stdout.write(f'Deleted {sample_count} Samples')
+            self.stdout.write('Deleted %s Samples' % sample_count)

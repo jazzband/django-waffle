@@ -49,5 +49,5 @@ Samples
 Returns ``True`` if the sample is active, else ``False``.
 
 .. warning::
-
+    
     See the warning in the :ref:`Sample chapter <types-sample>`.

@@ -2,13 +2,6 @@
 Waffle Changelog
 ================
 
-v4.2.0
-======
-- Joined Jazzband (https://jazzband.co/)
-- Linting improvements and cleanups
-- Added support for Django 5.0 and 5.1
-- Added support for Python 3.13
-
 v4.1.0
 ======
 - Updated `is_active_for_user` method to account for `everyone` option

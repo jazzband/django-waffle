@@ -104,19 +104,19 @@ class Command(BaseCommand):
         if options['list_flags']:
             self.stdout.write('Flags:')
             for flag in get_waffle_flag_model().objects.iterator():
-                self.stdout.write(f'NAME: {flag.name}')
-                self.stdout.write(f'SUPERUSERS: {flag.superusers}')
-                self.stdout.write(f'EVERYONE: {flag.everyone}')
-                self.stdout.write(f'AUTHENTICATED: {flag.authenticated}')
-                self.stdout.write(f'PERCENT: {flag.percent}')
-                self.stdout.write(f'TESTING: {flag.testing}')
-                self.stdout.write(f'ROLLOUT: {flag.rollout}')
-                self.stdout.write(f'STAFF: {flag.staff}')
-                self.stdout.write('GROUPS: {}'.format(list(
-                    flag.groups.values_list('name', flat=True)))
+                self.stdout.write('NAME: %s' % flag.name)
+                self.stdout.write('SUPERUSERS: %s' % flag.superusers)
+                self.stdout.write('EVERYONE: %s' % flag.everyone)
+                self.stdout.write('AUTHENTICATED: %s' % flag.authenticated)
+                self.stdout.write('PERCENT: %s' % flag.percent)
+                self.stdout.write('TESTING: %s' % flag.testing)
+                self.stdout.write('ROLLOUT: %s' % flag.rollout)
+                self.stdout.write('STAFF: %s' % flag.staff)
+                self.stdout.write('GROUPS: %s' % list(
+                    flag.groups.values_list('name', flat=True))
                 )
-                self.stdout.write('USERS: {}'.format(list(
-                    flag.users.values_list(UserModel.USERNAME_FIELD, flat=True)))
+                self.stdout.write('USERS: %s' % list(
+                    flag.users.values_list(UserModel.USERNAME_FIELD, flat=True))
                 )
                 self.stdout.write('')
             return
@@ -129,7 +129,7 @@ class Command(BaseCommand):
         if options['create']:
             flag, created = get_waffle_flag_model().objects.get_or_create(name=flag_name)
             if created:
-                self.stdout.write(f'Creating flag: {flag_name}')
+                self.stdout.write('Creating flag: %s' % flag_name)
         else:
             try:
                 flag = get_waffle_flag_model().objects.get(name=flag_name)
@@ -149,7 +149,7 @@ class Command(BaseCommand):
                         group_instance = Group.objects.get(name=group)
                         group_hash[group_instance.name] = group_instance.id
                     except Group.DoesNotExist:
-                        raise CommandError(f'Group {group} does not exist')
+                        raise CommandError('Group %s does not exist' % group)
                 # If 'append' was not passed, we clear related groups
                 if not options['append']:
                     flag.groups.clear()
@@ -168,11 +168,11 @@ class Command(BaseCommand):
                         )
                         user_hash.add(user_instance)
                     except UserModel.DoesNotExist:
-                        raise CommandError(f'User {username} does not exist')
+                        raise CommandError('User %s does not exist' % username)
                 # If 'append' was not passed, we clear related users
                 if not options['append']:
                     flag.users.clear()
-                self.stdout.write(f'Setting user(s): {user_hash}')
+                self.stdout.write('Setting user(s): %s' % user_hash)
                 # for user in user_hash:
                 flag.users.add(*[user.id for user in user_hash])
             elif hasattr(flag, option):

@@ -159,6 +159,6 @@ Wow, good work!
 You can use similar methods to derive the impact on other factors.
 
 
-.. _session variables: https://support.google.com/analytics/answer/9191807?hl=en
+.. _session variables: https://developers.google.com/analytics/devguides/collection/upgrade/reference/gajs-analyticsjs#custom-vars
 .. _#80: https://github.com/jazzband/django-waffle/issues/80
 .. _StatsD: https://github.com/etsy/statsd

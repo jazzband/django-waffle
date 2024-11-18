@@ -42,7 +42,7 @@ def get_waffle_sample_model() -> type[AbstractBaseSample]:
 
 
 def get_waffle_model(setting_name: str) -> (
-    type[AbstractBaseFlag | AbstractBaseSwitch | AbstractBaseSample]
+    type[AbstractBaseFlag] | type[AbstractBaseSwitch] | type[AbstractBaseSample]
 ):
     """
     Returns the waffle Flag model that is active in this project.
@@ -63,8 +63,12 @@ def get_waffle_model(setting_name: str) -> (
     try:
         return django_apps.get_model(flag_model_name)
     except ValueError:
-        raise ImproperlyConfigured(f"WAFFLE_{setting_name} must be of the form 'app_label.model_name'")
+        raise ImproperlyConfigured("WAFFLE_{} must be of the form 'app_label.model_name'".format(
+            setting_name
+        ))
     except LookupError:
         raise ImproperlyConfigured(
-            f"WAFFLE_{setting_name} refers to model '{flag_model_name}' that has not been installed"
+            "WAFFLE_{} refers to model '{}' that has not been installed".format(
+                setting_name, flag_model_name
+            )
         )

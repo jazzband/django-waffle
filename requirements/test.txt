@@ -1,2 +1,2 @@
-ruff
+flake8
 tox

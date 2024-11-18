@@ -68,7 +68,7 @@ To be mergeable, patches must:
 - not change existing tests without a *very* good reason,
 - add tests for new code (bug fixes should include regression tests, new
   features should have relevant tests),
-- not introduce any new ruff_ errors (run ``./run.sh lint``),
+- not introduce any new flake8_ errors (run ``./run.sh lint``),
 - not introduce any new mypy_ errors (run ``./run.sh typecheck``),
 - include updated source translations (run ``./run.sh makemessages`` and ``./run.sh compilemessages``),
 - document any new features, and
@@ -80,6 +80,6 @@ with it.
 
 .. _open a new issue: https://github.com/jazzband/django-waffle/issues/new
 .. _Fork: https://github.com/jazzband/django-waffle/fork
-.. _ruff: https://pypi.python.org/pypi/ruff
+.. _flake8: https://pypi.python.org/pypi/flake8
 .. _mypy: https://www.mypy-lang.org/
 .. _good commit message: http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html

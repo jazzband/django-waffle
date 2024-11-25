@@ -5,6 +5,7 @@ from django.contrib.auth.models import Group
 from django.core.management.base import BaseCommand, CommandError, CommandParser
 from django.db.models import Q
 
+from build.lib.waffle.models import AbstractBaseFlag
 from waffle import get_waffle_flag_model
 
 UserModel = get_user_model()
@@ -166,7 +167,7 @@ class Command(BaseCommand):
 
         flag.save()
 
-    def log_flag_to_stdout(self, flag):
+    def log_flag_to_stdout(self, flag: AbstractBaseFlag) -> None:
         self.stdout.write(f'NAME: {flag.name}')
         self.stdout.write(f'SUPERUSERS: {flag.superusers}')
         self.stdout.write(f'EVERYONE: {flag.everyone}')

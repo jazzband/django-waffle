@@ -5,7 +5,7 @@ from django.contrib.auth.models import Group
 from django.core.management.base import BaseCommand, CommandError, CommandParser
 from django.db.models import Q
 
-from build.lib.waffle.models import AbstractBaseFlag
+from waffle.models import AbstractBaseFlag
 from waffle import get_waffle_flag_model
 
 UserModel = get_user_model()

@@ -5,6 +5,7 @@ from django.contrib.auth.models import Group
 from django.core.management.base import BaseCommand, CommandError, CommandParser
 from django.db.models import Q
 
+from waffle.models import AbstractBaseFlag
 from waffle import get_waffle_flag_model
 
 UserModel = get_user_model()
@@ -104,21 +105,7 @@ class Command(BaseCommand):
         if options['list_flags']:
             self.stdout.write('Flags:')
             for flag in get_waffle_flag_model().objects.iterator():
-                self.stdout.write(f'NAME: {flag.name}')
-                self.stdout.write(f'SUPERUSERS: {flag.superusers}')
-                self.stdout.write(f'EVERYONE: {flag.everyone}')
-                self.stdout.write(f'AUTHENTICATED: {flag.authenticated}')
-                self.stdout.write(f'PERCENT: {flag.percent}')
-                self.stdout.write(f'TESTING: {flag.testing}')
-                self.stdout.write(f'ROLLOUT: {flag.rollout}')
-                self.stdout.write(f'STAFF: {flag.staff}')
-                self.stdout.write('GROUPS: {}'.format(list(
-                    flag.groups.values_list('name', flat=True)))
-                )
-                self.stdout.write('USERS: {}'.format(list(
-                    flag.users.values_list(UserModel.USERNAME_FIELD, flat=True)))
-                )
-                self.stdout.write('')
+                self.log_flag_to_stdout(flag)
             return
 
         flag_name = options['name']
@@ -136,47 +123,63 @@ class Command(BaseCommand):
             except get_waffle_flag_model().DoesNotExist:
                 raise CommandError('This flag does not exist.')
 
-        # Loop through all options, setting Flag attributes that
-        # match (ie. don't want to try setting flag.verbosity)
-        for option in options:
-            # Group isn't an attribute on the Flag, but a related Many to Many
-            # field, so we handle it a bit differently by looking up groups and
-            # adding each group to the flag individually
-            if option == 'group':
-                group_hash = {}
-                for group in options['group']:
-                    try:
-                        group_instance = Group.objects.get(name=group)
-                        group_hash[group_instance.name] = group_instance.id
-                    except Group.DoesNotExist:
-                        raise CommandError(f'Group {group} does not exist')
-                # If 'append' was not passed, we clear related groups
-                if not options['append']:
-                    flag.groups.clear()
-                self.stdout.write('Setting group(s): %s' % (
-                    [name for name, _id in group_hash.items()])
-                )
-                for group_name, group_id in group_hash.items():
-                    flag.groups.add(group_id)
-            elif option == 'user':
-                user_hash = set()
-                for username in options['user']:
-                    try:
-                        user_instance = UserModel.objects.get(
-                            Q(**{UserModel.USERNAME_FIELD: username})
-                            | Q(**{UserModel.EMAIL_FIELD: username})
-                        )
-                        user_hash.add(user_instance)
-                    except UserModel.DoesNotExist:
-                        raise CommandError(f'User {username} does not exist')
-                # If 'append' was not passed, we clear related users
-                if not options['append']:
-                    flag.users.clear()
-                self.stdout.write(f'Setting user(s): {user_hash}')
-                # for user in user_hash:
-                flag.users.add(*[user.id for user in user_hash])
-            elif hasattr(flag, option):
-                self.stdout.write(f'Setting {option}: {options[option]}')
-                setattr(flag, option, options[option])
+        # Group isn't an attribute on the Flag, but a related Many-to-Many
+        # field, so we handle it a bit differently by looking up groups and
+        # adding each group to the flag individually
+        options_append = options.pop('append')
+        if groups := options.pop('group'):
+            group_hash = {}
+            for group in groups:
+                try:
+                    group_instance = Group.objects.get(name=group)
+                    group_hash[group_instance.name] = group_instance.id
+                except Group.DoesNotExist:
+                    raise CommandError(f'Group {group} does not exist')
+            # If 'append' was not passed, we clear related groups
+            if not options_append:
+                flag.groups.clear()
+            self.stdout.write('Setting group(s): %s' % (
+                [name for name, _id in group_hash.items()])
+                              )
+            for group_id in group_hash.values():
+                flag.groups.add(group_id)
+        if users := options.pop('user'):
+            user_hash = set()
+            for username in users:
+                try:
+                    user_instance = UserModel.objects.get(
+                        Q(**{UserModel.USERNAME_FIELD: username})
+                        | Q(**{UserModel.EMAIL_FIELD: username})
+                    )
+                    user_hash.add(user_instance)
+                except UserModel.DoesNotExist:
+                    raise CommandError(f'User {username} does not exist')
+            # If 'append' was not passed, we clear related users
+            if not options_append:
+                flag.users.clear()
+            self.stdout.write(f'Setting user(s): {user_hash}')
+            # for user in user_hash:
+            flag.users.add(*[user.id for user in user_hash])
+        for option_name, option in options.items():
+            if hasattr(flag, option_name):
+                self.stdout.write(f'Setting {option_name}: {option}')
+                setattr(flag, option_name, option)
 
         flag.save()
+
+    def log_flag_to_stdout(self, flag: AbstractBaseFlag) -> None:
+        self.stdout.write(f'NAME: {flag.name}')
+        self.stdout.write(f'SUPERUSERS: {flag.superusers}')
+        self.stdout.write(f'EVERYONE: {flag.everyone}')
+        self.stdout.write(f'AUTHENTICATED: {flag.authenticated}')
+        self.stdout.write(f'PERCENT: {flag.percent}')
+        self.stdout.write(f'TESTING: {flag.testing}')
+        self.stdout.write(f'ROLLOUT: {flag.rollout}')
+        self.stdout.write(f'STAFF: {flag.staff}')
+        self.stdout.write('GROUPS: {}'.format(list(
+            flag.groups.values_list('name', flat=True)))
+        )
+        self.stdout.write('USERS: {}'.format(list(
+            flag.users.values_list(UserModel.USERNAME_FIELD, flat=True)))
+        )
+        self.stdout.write('')

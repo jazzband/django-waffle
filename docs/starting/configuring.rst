@@ -28,6 +28,22 @@ behavior.
     Needs to be set at the start of a project, as the Django migrations framework does not
     support changing swappable models after the initial migration.
 
+``WAFFLE_SWITCH_MODEL``
+    The Django model that will be used for switches. Defaults to ``waffle.Switch``, which 
+    provides basic switch functionality. This can be swapped for a custom Switch model if 
+    additional fields or behaviors are needed. The custom model must inherit from 
+    ``waffle.models.AbstractBaseSwitch``. Needs to be set at the start of a project, as 
+    Django’s migration framework does not support changing swappable models after the 
+    initial migration.
+
+``WAFFLE_SAMPLE_MODEL``
+    The Django model that will be used for samples. Defaults to ``waffle.Sample``, which 
+    provides basic sample functionality. This can be swapped for a custom Sample model if 
+    additional fields or behaviors are needed. The custom model must inherit from 
+    ``waffle.models.AbstractBaseSample``. Needs to be set at the start of a project, as 
+    Django’s migration framework does not support changing swappable models after the 
+    initial migration.
+
 ``WAFFLE_SWITCH_DEFAULT``
     When a Switch is undefined in the database, Waffle considers it
     ``False``.  Set this to ``True`` to make Waffle consider undefined

@@ -123,7 +123,7 @@ jobs:
           python -m pip install sphinx
       - name: Build docs
         run: |
-          ./run.sh builddocs
+          sphinx-build -b html docs docs/_build
 
   release-production:
     # Only upload if a tag is pushed (otherwise just build & check)

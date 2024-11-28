@@ -10,10 +10,6 @@ usage() {
     echo "  typecheck - run mypy"
     echo "  shell - open the Django shell"
     echo "  makemigrations - create a schema migration"
-    echo "  makemessages - create message files for translation"
-    echo "  compilemessages - compile message files for translation"
-    echo "  find_uncommitted_translations - find uncommitted translation changes"
-    echo "  builddocs - build the documentation using Sphinx"
     exit 1
 }
 
@@ -37,8 +33,6 @@ case "$CMD" in
         export DJANGO_SETTINGS_MODULE= && cd waffle && django-admin compilemessages && cd - ;;
     "find_uncommitted_translations" )
         git diff --exit-code -G "^(msgid|msgstr)" || (echo "Please run ./run.sh makemessages and commit the updated django.po file." && false) ;;
-    "builddocs" )
-        sphinx-build -b html docs docs/_build ;;
     * )
         usage ;;
 esac

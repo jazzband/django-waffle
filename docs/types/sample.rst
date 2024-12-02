@@ -136,3 +136,12 @@ Whether or not you enabled :ref:`Auto Create Missing Sample <types-sample-auto-c
 it can be practical to be informed that a sample was or is missing.
 If you'd like waffle to log a warning, error, ... you can set :ref:`WAFFLE_LOG_MISSING_SAMPLES
 <starting-configuring>` to any level known by Python default logger.
+
+
+Sample Methods
+==============
+
+The Sample class has the following public methods:
+
+:is_active:
+    Determines if the sample is active. Returns a boolean value.

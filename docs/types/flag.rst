@@ -243,3 +243,14 @@ Whether or not you enabled :ref:`Auto Create Missing Flags <types-flag-auto-crea
 it can be practical to be informed that a flag was or is missing.
 If you'd like waffle to log a warning, error, ... you can set :ref:`WAFFLE_LOG_MISSING_FLAGS
 <starting-configuring>` to any level known by Python default logger.
+
+
+Flag Methods
+============
+
+The Flag class has the following public methods:
+
+:is_active:
+    Determines if the flag is active for a given request. Returns a boolean value.
+:is_active_for_user:
+    Determines if the flag is active for a given user. Returns a boolean value.

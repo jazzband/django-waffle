@@ -106,3 +106,12 @@ Whether or not you enabled :ref:`Auto Create Missing Switch <types-switch-auto-c
 it can be practical to be informed that a switch was or is missing.
 If you'd like waffle to log a warning, error, ... you can set :ref:`WAFFLE_LOG_MISSING_FLAGS
 <starting-configuring>` to any level known by Python default logger.
+
+
+Switch Methods
+==============
+
+The Switch class has the following public methods:
+
+:is_active:
+    Determines if the switch is active. Returns a boolean value.

@@ -42,13 +42,23 @@ Sample Attributes
 Samples can be administered through the Django `admin site`_ or the
 :ref:`command line <usage-cli>`. They have the following attributes:
 
-:Name:
+:name:
     The name of the Sample.
-:Percent:
+:percent:
     A number from 0.0 to 100.0 that determines how often the Sample
     will be active.
-:Note:
-    Describe where the Sample is used.
+:note:
+    Describes where the Sample is used.
+
+
+
+Sample Methods
+==============
+
+The Sample class has the following public methods:
+
+:is_active:
+    Determines if the sample is active. Returns a boolean value.
 
 
 .. _admin site: https://docs.djangoproject.com/en/dev/ref/contrib/admin/
@@ -136,12 +146,3 @@ Whether or not you enabled :ref:`Auto Create Missing Sample <types-sample-auto-c
 it can be practical to be informed that a sample was or is missing.
 If you'd like waffle to log a warning, error, ... you can set :ref:`WAFFLE_LOG_MISSING_SAMPLES
 <starting-configuring>` to any level known by Python default logger.
-
-
-Sample Methods
-==============
-
-The Sample class has the following public methods:
-
-:is_active:
-    Determines if the sample is active. Returns a boolean value.

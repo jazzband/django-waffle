@@ -15,15 +15,24 @@ Switch Attributes
 Switches can be administered through the Django `admin site`_ or the
 :ref:`command line <usage-cli>`. They have the following attributes:
 
-:Name:
+:name:
     The name of the Switch.
-:Active:
+:active:
     Is the Switch active or inactive.
-:Note:
-    Describe where the Switch is used.
+:note:
+    Describes where the Switch is used.
 
 
 .. _admin site: https://docs.djangoproject.com/en/dev/ref/contrib/admin/
+
+
+Switch Methods
+==============
+
+The Switch class has the following public methods:
+
+:is_active:
+    Determines if the switch is active. Returns a boolean value.
 
 
 .. _types-custom-switch-models:
@@ -106,12 +115,3 @@ Whether or not you enabled :ref:`Auto Create Missing Switch <types-switch-auto-c
 it can be practical to be informed that a switch was or is missing.
 If you'd like waffle to log a warning, error, ... you can set :ref:`WAFFLE_LOG_MISSING_FLAGS
 <starting-configuring>` to any level known by Python default logger.
-
-
-Switch Methods
-==============
-
-The Switch class has the following public methods:
-
-:is_active:
-    Determines if the switch is active. Returns a boolean value.

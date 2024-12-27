@@ -43,33 +43,33 @@ Flag Attributes
 Flags can be administered through the Django `admin site`_ or the
 :ref:`command line <usage-cli>`. They have the following attributes:
 
-:Name:
+:name:
     The name of the flag. Will be used to identify the flag everywhere.
-:Everyone:
+:everyone:
     Globally set the Flag, **overriding all other criteria**. Leave as
     *Unknown* to use other criteria.
-:Testing:
+:testing:
     Can the flag be specified via a querystring parameter? :ref:`See
     below <types-flag-testing>`.
-:Percent:
+:percent:
     A percentage of users for whom the flag will be active, if no other
     criteria applies to them.
-:Superusers:
+:superusers:
     Is this flag always active for superusers?
-:Staff:
+:staff:
     Is this flag always active for staff?
-:Authenticated:
+:authenticated:
     Is this flag always active for authenticated users?
-:Languages:
+:languages:
     Is the ``LANGUAGE_CODE`` of the request in this list?
     (Comma-separated values.)
-:Groups:
+:groups:
     A list of group IDs for which this flag will always be active.
-:Users:
+:users:
     A list of user IDs for which this flag will always be active.
-:Rollout:
+:rollout:
     Activate Rollout mode? :ref:`See below <types-flag-rollout>`.
-:Note:
+:note:
     Describe where the flag is used.
 
 A Flag will be active if *any* of the criteria are true for the current
@@ -84,6 +84,16 @@ are in the group *or* if they are in the 12%.
     Users are assigned randomly when using Percentages, so in practice
     the actual proportion of users for whom the Flag is active will
     probably differ slightly from the Percentage value.
+
+Flag Methods
+============
+
+The Flag class has the following public methods:
+
+:is_active:
+    Determines if the flag is active for a given request. Returns a boolean value.
+:is_active_for_user:
+    Determines if the flag is active for a given user. Returns a boolean value.
 
 
 .. _types-flag-custom-model:

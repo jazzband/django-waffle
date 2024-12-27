@@ -15,6 +15,10 @@ a number of ways.
 .. image:: https://badge.fury.io/py/django-waffle.svg
    :target: https://badge.fury.io/py/django-waffle
    :alt: PyPI status badge
+.. image:: https://img.shields.io/readthedocs/waffle
+   :target: https://app.readthedocs.org/projects/waffle
+   :alt: Read the Docs
+
 
 :Code:          https://github.com/jazzband/django-waffle
 :License:       BSD; see LICENSE file

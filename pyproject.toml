@@ -34,7 +34,7 @@ classifiers = [
 requires-python = ">=3.8"
 dependencies = ["django>=4.2"]
 [project.optional-dependencies]
-docs = ["sphinx"]
+docs = ["sphinx", "sphinx-rtd-theme"]
 
 [project.urls]
 Homepage = "http://github.com/django-waffle/django-waffle"

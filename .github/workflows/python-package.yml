@@ -142,7 +142,7 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Run coverage
         run: |
-          coverage run --source=waffle -m pytest
+          coverage run --source=waffle ./run.sh test
           coverage report
           coverage xml
       - name: Upload coverage to Codecov

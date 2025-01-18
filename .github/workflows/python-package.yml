@@ -142,16 +142,10 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Run coverage
         run: |
-          coverage run --source=waffle ./run.sh test
-          coverage report
-          coverage xml
+          coverage run --source=waffle django-admin test waffle
+          coverage report -m
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage.xml
-          flags: unittests
-          name: codecov-umbrella
 
   release-production:
     # Only upload if a tag is pushed (otherwise just build & check)

@@ -142,11 +142,11 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
           python -m pip install coverage codecov
-          export DJANGO_SETTINGS_MODULE="test_settings"
-          export PYTHONPATH=.".:$PYTHONPATH"
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Run coverage
         run: |
+          source .venv/bin/activate
+          export DJANGO_SETTINGS_MODULE="test_settings"
+          export PYTHONPATH=.".:$PYTHONPATH"
           coverage run --source=waffle django-admin test waffle
           coverage report -m
       - name: Upload coverage to Codecov

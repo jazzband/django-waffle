@@ -149,6 +149,8 @@ jobs:
           export PYTHONPATH=.".:$PYTHONPATH"
           python -m coverage run --source=waffle `which django-admin` test waffle
           coverage report -m
+          coverage html
+          coverage xml
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
 

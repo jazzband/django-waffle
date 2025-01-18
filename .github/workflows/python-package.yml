@@ -147,7 +147,7 @@ jobs:
           source .venv/bin/activate
           export DJANGO_SETTINGS_MODULE="test_settings"
           export PYTHONPATH=.".:$PYTHONPATH"
-          python -m coverage run --source=waffle django-admin test waffle
+          python -m coverage run --source=waffle `which django-admin` test waffle
           coverage report -m
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5

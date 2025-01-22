@@ -1,2 +1,3 @@
 ruff
 tox
+coverage

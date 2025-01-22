@@ -18,7 +18,9 @@ a number of ways.
 .. image:: https://img.shields.io/readthedocs/waffle
    :target: https://app.readthedocs.org/projects/waffle
    :alt: Read the Docs
-
+.. image:: https://codecov.io/gh/jazzband/django-waffle/branch/master/graph/badge.svg
+   :target: https://codecov.io/gh/jazzband/django-waffle
+   :alt: Codecov
 
 :Code:          https://github.com/jazzband/django-waffle
 :License:       BSD; see LICENSE file

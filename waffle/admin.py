@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, ClassVar
 
 from django.contrib import admin
 from django.contrib.admin.models import LogEntry, CHANGE, DELETION
@@ -84,13 +84,13 @@ class InformativeManyToManyRawIdWidget(ManyToManyRawIdWidget):
                     .using(self.db) \
                     .get(**{key: value})
                 names.append(escape(str(name)))
-            except self.rel.model.DoesNotExist:
+            except self.rel.model.DoesNotExist:  # noqa: PERF203
                 names.append('<missing>')
         return "(" + ", ".join(names) + ")", ""
 
 
 class FlagAdmin(BaseAdmin):
-    actions = [enable_for_all, disable_for_all, delete_individually]
+    actions: ClassVar = [enable_for_all, disable_for_all, delete_individually]
     list_display = ('name', 'note', 'everyone', 'percent', 'superusers',
                     'staff', 'authenticated', 'languages')
     list_filter = ('everyone', 'superusers', 'staff', 'authenticated')
@@ -131,14 +131,14 @@ def disable_switches(ma, request, qs):
 
 
 class SwitchAdmin(BaseAdmin):
-    actions = [enable_switches, disable_switches, delete_individually]
+    actions: ClassVar = [enable_switches, disable_switches, delete_individually]
     list_display = ('name', 'active', 'note', 'created', 'modified')
     list_filter = ('active',)
     ordering = ('-id',)
 
 
 class SampleAdmin(BaseAdmin):
-    actions = [delete_individually]
+    actions: ClassVar = [delete_individually]
     list_display = ('name', 'percent', 'note', 'created', 'modified')
     ordering = ('-id',)
 

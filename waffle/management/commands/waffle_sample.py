@@ -41,16 +41,16 @@ class Command(BaseCommand):
         percent = options['percent']
 
         if not (sample_name and percent):
-            raise CommandError(
-                'You need to specify a sample name and percentage.'
-            )
+            msg = 'You need to specify a sample name and percentage.'
+            raise CommandError(msg)
 
         try:
             percent = float(percent)
             if not (0.0 <= percent <= 100.0):
                 raise ValueError
-        except ValueError:
-            raise CommandError('You need to enter a valid percentage value.')
+        except ValueError as ve:
+            msg = 'You need to enter a valid percentage value.'
+            raise CommandError(msg) from ve
 
         if options['create']:
             sample, created = get_waffle_sample_model().objects.get_or_create(
@@ -60,8 +60,9 @@ class Command(BaseCommand):
         else:
             try:
                 sample = get_waffle_sample_model().objects.get(name=sample_name)
-            except get_waffle_sample_model().DoesNotExist:
-                raise CommandError('This sample does not exist.')
+            except get_waffle_sample_model().DoesNotExist as dne:
+                msg = 'This sample does not exist.'
+                raise CommandError(msg) from dne
 
         sample.percent = percent
         sample.save()

@@ -62,9 +62,9 @@ def get_waffle_model(setting_name: str) -> (
 
     try:
         return django_apps.get_model(flag_model_name)
-    except ValueError:
-        raise ImproperlyConfigured(f"WAFFLE_{setting_name} must be of the form 'app_label.model_name'")
-    except LookupError:
-        raise ImproperlyConfigured(
-            f"WAFFLE_{setting_name} refers to model '{flag_model_name}' that has not been installed"
-        )
+    except ValueError as ve:
+        msg = f"WAFFLE_{setting_name} must be of the form 'app_label.model_name'"
+        raise ImproperlyConfigured(msg) from ve
+    except LookupError as le:
+        msg = f"WAFFLE_{setting_name} refers to model '{flag_model_name}' that has not been installed"
+        raise ImproperlyConfigured(msg) from le

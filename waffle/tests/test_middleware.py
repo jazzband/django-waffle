@@ -17,8 +17,8 @@ def test_set_cookies():
     assert 'dwf_foo' in resp.cookies
     assert 'dwf_bar' in resp.cookies
 
-    assert 'True' == resp.cookies['dwf_foo'].value
-    assert 'False' == resp.cookies['dwf_bar'].value
+    assert resp.cookies['dwf_foo'].value == 'True'
+    assert resp.cookies['dwf_bar'].value == 'False'
 
 
 def test_rollout_cookies():

@@ -40,7 +40,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'django-waffle'
-copyright = '2012-2018, James Socol'
+copyright = '2012-2018, James Socol'  # noqa: A001
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

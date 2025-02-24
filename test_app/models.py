@@ -60,6 +60,8 @@ class CompanyAwareFlag(AbstractUserFlag):
             company_ids = self._get_company_ids()
             if user.company_id in company_ids:
                 return True
+            return None
+        return None
 
     def _get_company_ids(self):
         cache_key = keyfmt(

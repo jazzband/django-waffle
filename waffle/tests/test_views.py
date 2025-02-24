@@ -37,19 +37,19 @@ class WaffleViewTests(TestCase):
         self.assertEqual(200, response.status_code)
         content = response.json()
 
-        assert 'test_flag_active' in content['flags'].keys()
+        assert 'test_flag_active' in content['flags']
         assert content['flags']['test_flag_active']['is_active']
-        assert 'test_flag_inactive' in content['flags'].keys()
+        assert 'test_flag_inactive' in content['flags']
         assert not content['flags']['test_flag_inactive']['is_active']
 
-        assert 'test_switch_active' in content['switches'].keys()
+        assert 'test_switch_active' in content['switches']
         assert content['switches']['test_switch_active']['is_active']
-        assert 'test_switch_inactive' in content['switches'].keys()
+        assert 'test_switch_inactive' in content['switches']
         assert not content['switches']['test_switch_inactive']['is_active']
 
-        assert 'test_sample_active' in content['samples'].keys()
+        assert 'test_sample_active' in content['samples']
         assert content['samples']['test_sample_active']['is_active']
-        assert 'test_sample_inactive' in content['samples'].keys()
+        assert 'test_sample_inactive' in content['samples']
         assert not content['samples']['test_sample_inactive']['is_active']
 
     def test_flush_all_flags(self):

@@ -84,7 +84,7 @@ class InformativeManyToManyRawIdWidget(ManyToManyRawIdWidget):
                     .using(self.db) \
                     .get(**{key: value})
                 names.append(escape(str(name)))
-            except self.rel.model.DoesNotExist:  # noqa: PERF203
+            except self.rel.model.DoesNotExist:
                 names.append('<missing>')
         return "(" + ", ".join(names) + ")", ""
 

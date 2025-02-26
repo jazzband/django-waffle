@@ -66,8 +66,7 @@ class OverrideSwitchMixin:
 
         def inner():
             with override_switch('foo', active=False):
-                msg = "Trying to break"
-                raise RuntimeError(msg)
+                raise RuntimeError("Trying to break")
 
         with self.assertRaises(RuntimeError):
             inner()
@@ -79,8 +78,7 @@ class OverrideSwitchMixin:
 
         @override_switch('foo', active=False)
         def inner():
-            msg = "Trying to break"
-            raise RuntimeError(msg)
+            raise RuntimeError("Trying to break")
 
         with self.assertRaises(RuntimeError):
             inner()

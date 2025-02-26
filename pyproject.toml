@@ -81,7 +81,6 @@ select = [
   "DJ",     # flake8-django
   "DTZ",    # flake8-datetimez
   "E",      # pycodestyle errors
-  "EM",     # flake8-errmsg
   "F",      # Pyflakes
   "FIX",    # flake8-fixme
   "FLY",    # flynt
@@ -92,7 +91,6 @@ select = [
   "ISC",    # flake8-implicit-str-concat
   "NPY",    # NumPy-specific rules
   "PD",     # pandas-vet
-  "PERF",   # Perflint
   "PGH",    # pygrep-hooks
   "PIE",    # flake8-pie
   "PL",     # Pylint
@@ -116,12 +114,14 @@ select = [
   # "COM",  # flake8-commas
   # "CPY",  # flake8-copyright
   # "D",    # pydocstyle
+  # "EM",   # flake8-errmsg
   # "ERA",  # eradicate
   # "EXE",  # flake8-executable
   # "FA",   # flake8-future-annotations
   # "FBT",  # flake8-boolean-trap
   # "I",    # isort
   # "N",    # pep8-naming
+  # "PERF", # Perflint
   # "PT",   # flake8-pytest-style
   # "PTH",  # flake8-use-pathlib
   # "Q",    # flake8-quotes

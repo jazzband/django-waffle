@@ -41,8 +41,7 @@ class WaffleNode(template.Node):
     def handle_token(cls, parser, token, kind, condition):
         bits = token.split_contents()
         if len(bits) < 2:
-            msg = f"{bits[0]!r} tag requires an argument"
-            raise template.TemplateSyntaxError(msg)
+            raise template.TemplateSyntaxError(f"{bits[0]!r} tag requires an argument")
 
         name = bits[1]
         compiled_name = parser.compile_filter(name)

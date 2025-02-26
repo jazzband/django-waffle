@@ -7,9 +7,9 @@ from waffle import get_waffle_switch_model
 
 
 def on_off_bool(string: str) -> bool:
-    if string not in {'on', 'off'}:
-        msg = f"invalid choice: {string!r} (choose from 'on', 'off')"
-        raise ArgumentTypeError(msg)
+    if string not in ['on', 'off']:
+        raise ArgumentTypeError(f"invalid choice: {string!r} (choose from 'on', "
+                                "'off')")
     return string == 'on'
 
 
@@ -53,8 +53,7 @@ class Command(BaseCommand):
         state = options['state']
 
         if not (switch_name and state is not None):
-            msg = 'You need to specify a switch name and state.'
-            raise CommandError(msg)
+            raise CommandError('You need to specify a switch name and state.')
 
         if options["create"]:
             switch, created = get_waffle_switch_model().objects.get_or_create(
@@ -66,8 +65,7 @@ class Command(BaseCommand):
             try:
                 switch = get_waffle_switch_model().objects.get(name=switch_name)
             except get_waffle_switch_model().DoesNotExist as dne:
-                msg = 'This switch does not exist.'
-                raise CommandError(msg) from dne
+                raise CommandError('This switch does not exist.') from dne
 
         switch.active = state
         switch.save()

@@ -111,8 +111,7 @@ class Command(BaseCommand):
         flag_name = options['name']
 
         if not flag_name:
-            msg = 'You need to specify a flag name.'
-            raise CommandError(msg)
+            raise CommandError('You need to specify a flag name.')
 
         if options['create']:
             flag, created = get_waffle_flag_model().objects.get_or_create(name=flag_name)
@@ -122,8 +121,7 @@ class Command(BaseCommand):
             try:
                 flag = get_waffle_flag_model().objects.get(name=flag_name)
             except get_waffle_flag_model().DoesNotExist as dne:
-                msg = 'This flag does not exist.'
-                raise CommandError(msg) from dne
+                raise CommandError('This flag does not exist.') from dne
 
         # Group isn't an attribute on the Flag, but a related Many-to-Many
         # field, so we handle it a bit differently by looking up groups and
@@ -135,9 +133,8 @@ class Command(BaseCommand):
                 try:
                     group_instance = Group.objects.get(name=group)
                     group_hash[group_instance.name] = group_instance.id
-                except Group.DoesNotExist as dne:  # noqa: PERF203
-                    msg = f'Group {group} does not exist'
-                    raise CommandError(msg) from dne
+                except Group.DoesNotExist as dne:
+                    raise CommandError(f'Group {group} does not exist') from dne
             # If 'append' was not passed, we clear related groups
             if not options_append:
                 flag.groups.clear()
@@ -155,9 +152,8 @@ class Command(BaseCommand):
                         | Q(**{UserModel.EMAIL_FIELD: username})
                     )
                     user_hash.add(user_instance)
-                except UserModel.DoesNotExist as dne:  # noqa: PERF203
-                    msg = f'User {username} does not exist'
-                    raise CommandError(msg) from dne
+                except UserModel.DoesNotExist as dne:
+                    raise CommandError(f'User {username} does not exist') from dne
             # If 'append' was not passed, we clear related users
             if not options_append:
                 flag.users.clear()

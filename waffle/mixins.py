@@ -15,8 +15,7 @@ class BaseWaffleMixin:
         return func(waffle)
 
     def invalid_waffle(self):
-        msg = 'Inactive waffle'
-        raise Http404(msg)
+        raise Http404('Inactive waffle')
 
 
 class WaffleFlagMixin(BaseWaffleMixin):

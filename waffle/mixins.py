@@ -11,10 +11,8 @@ class BaseWaffleMixin:
 
     def validate_waffle(self, waffle, func):
         if waffle.startswith('!'):
-            active = not func(waffle[1:])
-        else:
-            active = func(waffle)
-        return active
+            return not func(waffle[1:])
+        return func(waffle)
 
     def invalid_waffle(self):
         raise Http404('Inactive waffle')

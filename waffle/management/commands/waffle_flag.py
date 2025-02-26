@@ -61,14 +61,14 @@ class Command(BaseCommand):
         parser.add_argument(
             '--group', '-g',
             action='append',
-            default=list(),
+            default=[],
             help='Turn on the flag for listed group names (use flag more '
                  'than once for multiple groups). WARNING: This will remove '
                  'any currently associated groups unless --append is used!')
         parser.add_argument(
             '--user', '-u',
             action='append',
-            default=list(),
+            default=[],
             help='Turn on the flag for listed usernames (use flag more '
                  'than once for multiple users). WARNING: This will remove '
                  'any currently associated users unless --append is used!')
@@ -120,8 +120,8 @@ class Command(BaseCommand):
         else:
             try:
                 flag = get_waffle_flag_model().objects.get(name=flag_name)
-            except get_waffle_flag_model().DoesNotExist:
-                raise CommandError('This flag does not exist.')
+            except get_waffle_flag_model().DoesNotExist as dne:
+                raise CommandError('This flag does not exist.') from dne
 
         # Group isn't an attribute on the Flag, but a related Many-to-Many
         # field, so we handle it a bit differently by looking up groups and
@@ -133,8 +133,8 @@ class Command(BaseCommand):
                 try:
                     group_instance = Group.objects.get(name=group)
                     group_hash[group_instance.name] = group_instance.id
-                except Group.DoesNotExist:
-                    raise CommandError(f'Group {group} does not exist')
+                except Group.DoesNotExist as dne:
+                    raise CommandError(f'Group {group} does not exist') from dne
             # If 'append' was not passed, we clear related groups
             if not options_append:
                 flag.groups.clear()
@@ -152,8 +152,8 @@ class Command(BaseCommand):
                         | Q(**{UserModel.EMAIL_FIELD: username})
                     )
                     user_hash.add(user_instance)
-                except UserModel.DoesNotExist:
-                    raise CommandError(f'User {username} does not exist')
+                except UserModel.DoesNotExist as dne:
+                    raise CommandError(f'User {username} does not exist') from dne
             # If 'append' was not passed, we clear related users
             if not options_append:
                 flag.users.clear()

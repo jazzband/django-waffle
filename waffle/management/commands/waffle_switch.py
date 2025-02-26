@@ -64,8 +64,8 @@ class Command(BaseCommand):
         else:
             try:
                 switch = get_waffle_switch_model().objects.get(name=switch_name)
-            except get_waffle_switch_model().DoesNotExist:
-                raise CommandError('This switch does not exist.')
+            except get_waffle_switch_model().DoesNotExist as dne:
+                raise CommandError('This switch does not exist.') from dne
 
         switch.active = state
         switch.save()

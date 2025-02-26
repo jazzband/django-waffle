@@ -275,13 +275,12 @@ class AbstractBaseFlag(BaseModel):
 
             return get_setting('FLAG_DEFAULT')
 
-        if get_setting('OVERRIDE'):
-            if self.name in request.GET:
-                return request.GET[self.name] == '1'
+        if get_setting('OVERRIDE') and self.name in request.GET:
+            return request.GET[self.name] == '1'
 
         if self.everyone:
             return True
-        elif self.everyone is False:
+        if self.everyone is False:
             return False
 
         if self.testing:  # Testing mode is on.
@@ -322,7 +321,7 @@ class AbstractBaseFlag(BaseModel):
                 return flag_active
 
             if not read_only:
-                if Decimal(str(random.uniform(0, 100))) <= self.percent:
+                if Decimal(str(random.uniform(0, 100))) <= self.percent:  # noqa: S311
                     set_flag(request, self.name, True, self.rollout)
                     return True
                 set_flag(request, self.name, False, self.rollout)
@@ -551,7 +550,7 @@ class AbstractBaseSample(BaseModel):
                 cache.set(self._cache_key(self.name), sample)
 
             return get_setting('SAMPLE_DEFAULT')
-        return Decimal(str(random.uniform(0, 100))) <= self.percent
+        return Decimal(str(random.uniform(0, 100))) <= self.percent  # noqa: S311
 
 
 class Switch(AbstractBaseSwitch):

@@ -20,7 +20,7 @@ JINJA_CONFIG = {}
 SITE_ID = 1
 USE_I18N = False
 
-SECRET_KEY = 'foobar'
+SECRET_KEY = 'foobar'  # noqa: S105
 
 DATABASES = {
     'default': {

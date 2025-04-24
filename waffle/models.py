@@ -258,6 +258,28 @@ class AbstractBaseFlag(BaseModel):
                 return True
         return None
 
+    def _is_active_for_percent(self, request: HttpRequest, read_only: bool) -> bool | None:
+        if self.percent and self.percent > 0:
+            if not hasattr(request, 'waffles'):
+                request.waffles = {}
+            elif self.name in request.waffles:
+                return request.waffles[self.name][0]
+
+            cookie = get_setting('COOKIE') % self.name
+            if cookie in request.COOKIES:
+                flag_active = request.COOKIES[cookie] == 'True'
+                if not read_only:
+                    set_flag(request, self.name, flag_active, self.rollout)
+                return flag_active
+
+            if not read_only:
+                if Decimal(str(random.uniform(0, 100))) <= self.percent:
+                    set_flag(request, self.name, True, self.rollout)
+                    return True
+                set_flag(request, self.name, False, self.rollout)
+
+        return None
+
     def is_active(self, request: HttpRequest, read_only: bool = False) -> bool | None:
         if not self.pk:
             log_level = get_setting('LOG_MISSING_FLAGS')
@@ -308,27 +330,9 @@ class AbstractBaseFlag(BaseModel):
         if active_for_user is not None:
             return active_for_user
 
-        if self.percent and self.percent > 0:
-            if not hasattr(request, 'waffles'):
-                request.waffles = {}
-            elif self.name in request.waffles:
-                return request.waffles[self.name][0]
-
-            cookie = get_setting('COOKIE') % self.name
-            if cookie in request.COOKIES:
-                flag_active = request.COOKIES[cookie] == 'True'
-                if not read_only:
-                    set_flag(request, self.name, flag_active, self.rollout)
-                return flag_active
-
-            if not read_only:
-                if Decimal(str(random.uniform(0, 100))) <= self.percent:
-                    set_flag(request, self.name, True, self.rollout)
-                    return True
-                set_flag(request, self.name, False, self.rollout)
-
-            else:
-                return None
+        active_for_percent = self._is_active_for_percent(request, read_only)
+        if active_for_percent is not None:
+            return active_for_percent
 
         return False
 
